@@ -7,10 +7,8 @@ Phishing email detector
 1. Create a folder on your computer for the code
 2. Press "Clone Repository" on Github page
 3. Save the cloned repo into the newly created folder on your computer
- 
-Creating the Virtual Enviornment
 4. Open repo in IDE
-5. Open a terminal in the IDE and type
+5. Create virtual environment: Open a terminal in the IDE and type
 ````bash 
 python -m venv venv
 ````
