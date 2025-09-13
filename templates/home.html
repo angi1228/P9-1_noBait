@@ -43,7 +43,7 @@
                 <div class="card stat">
                     <i class="fas fa-envelope-open-text scanned"></i>
                     
-                    <h2>142</h2>
+                    <h2>This is a dynamic variable {{total_length}}</h2>
                     <p>Emails Scanned</p>
                 </div>
             </div>
@@ -57,18 +57,21 @@
             <div class="col-md-3 col-6 mb-3">
                 <div class="card stat">
                     <i class="fas fa-exclamation-triangle suspicious"></i>
-                    <h2>11</h2>
+                    <h2>This is another dyanmic variable score = {{totalscore}}</h2>
                     <p>Suspicious</p>
                 </div>
             </div>
             <div class="col-md-3 col-6 mb-3">
                 <div class="card stat">
                     <i class="fas fa-bug phishing"></i>
-                    <h2>5</h2>
+                    <h2>Dynamic variable,why did the email got flagged out>> {{reason}}</h2>
                     <p>Phishing Detected</p>
                 </div>
             </div>
         </div>
+
+
+        
 
         <div class="row">
             <div class="col-lg-7">
@@ -112,6 +115,7 @@
                             </div>
                         </div>
                         
+                        
                         <div class="email-item">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
@@ -144,7 +148,10 @@
                         </div>
                         <button class="btn btn-primary w-100" id="analyzeBtn">
                             <i class="fas fa-search me-1"></i> Analyze Email
+                            
                         </button>
+                        
+                        
                         
                         <div id="analysisResult" class="analysis-result result-safe" style="display: none;">
                             <div class="risk-score">3.2</div>
@@ -166,6 +173,38 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3><i class="fas fa-traffic-light me-2"></i>Classification Thresholds</h3>
+                        <p>Emails are classified based on their final risk score:</p>
+                        
+                        <div class="result-box safe">
+                            <h4>Safe Email</h4>
+                            <div class="score-value">0 - 3.9</div>
+                            <p>No significant risk factors detected</p>
+                        </div>
+                        
+                        <div class="result-box suspicious">
+                            <h4>Suspicious Email</h4>
+                            <div class="score-value">4.0 - 6.9</div>
+                            <p>Some risk factors present, requires careful review</p>
+                        </div>
+                        
+                        <div class="result-box phishing">
+                            <h4>Phishing Email</h4>
+                            <div class="score-value">7.0 - 10</div>
+                            <p>High probability of phishing attempt</p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4>Total Score</h4>
+                            
+                                <p id="classificationDescription">Risk score will appear here<br> Current Score:{{totalscore}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </div>
 
     
