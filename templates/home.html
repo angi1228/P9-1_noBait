@@ -3,13 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href={{url_for("static", filename="styles.css")}}>
-    <title>NoBait</title>
+    <title>NoBait - Email Phishing Detector</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href={{url_for("static", filename="styles.css")}}>
 </head>
 <body>
-    <h1>Welcome to NoBait</h1>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>
+                NoBait
+            </a>
+            
+           
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analyzer"><i class="fas fa-search me-1"></i> Analyze</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+             <h1>Welcome to NoBait</h1>
     <p>
         Congrats on successfully running a flask project &#129395;
     </p>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="card stat">
+                    <i class="fas fa-envelope-open-text scanned"></i>
+                    
+                    <h2>142</h2>
+                    <p>Emails Scanned</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="card stat">
+                    <i class="fas fa-check-circle safe"></i>
+                    <h2>126</h2>
+                    <p>Safe Emails</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="card stat">
+                    <i class="fas fa-exclamation-triangle suspicious"></i>
+                    <h2>11</h2>
+                    <p>Suspicious</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="card stat">
+                    <i class="fas fa-bug phishing"></i>
+                    <h2>5</h2>
+                    <p>Phishing Detected</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Recent Email Analysis</span>
+                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="email-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Your account needs verification</h6>
+                                    <p class="text-muted text-small mb-0">From: security@bank-support.com</p>
+                                </div>
+                                <span class="risk-badge suspicious">Suspicious</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-small">Risk Score: 5.2/10</span>
+                                    <p class="text-small text-muted mb-0">Contains suspicious keywords: "verify", "account"</p>
+                                </div>
+                                <span class="text-small text-muted">9:45 AM</span>
+                            </div>
+                        </div>
+                        
+                        <div class="email-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">URGENT: Your password has expired</h6>
+                                    <p class="text-muted text-small mb-0">From: no-reply@it-department.net</p>
+                                </div>
+                                <span class="risk-badge phishing">Phishing</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-small">Risk Score: 8.7/10</span>
+                                    <p class="text-small text-muted mb-0">Suspicious URL detected</p>
+                                </div>
+                                <span class="text-small text-muted">9:12 AM</span>
+                            </div>
+                        </div>
+                        
+                        <div class="email-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">Project Review Meeting</h6>
+                                    <p class="text-muted text-small mb-0">From: sarah.jones@company.com</p>
+                                </div>
+                                <span class="risk-badge safe">Safe</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-small">Risk Score: 1.2/10</span>
+                                    <p class="text-small text-muted mb-0">No suspicious elements detected</p>
+                                </div>
+                                <span class="text-small text-muted">Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-5">
+                <div class="card" id="analyzer">
+                    <div class="card-header">
+                        Analyze Email Content
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="emailContent" class="form-label">Paste email content:</label>
+                            <textarea class="form-control" id="emailContent" rows="5" placeholder="Paste the content of the email you want to analyze here..."></textarea>
+                        </div>
+                        <button class="btn btn-primary w-100" id="analyzeBtn">
+                            <i class="fas fa-search me-1"></i> Analyze Email
+                        </button>
+                        
+                        <div id="analysisResult" class="analysis-result result-safe" style="display: none;">
+                            <div class="risk-score">3.2</div>
+                            <div class="risk-meter">
+                                <div class="risk-meter-fill" style="width: 32%; background-color: var(--warning);"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-small">Low Risk</span>
+                                <span class="text-small">High Risk</span>
+                            </div>
+                            <h6 class="mb-2">Suspicious Email</h6>
+                            <p class="text-small mb-1"><strong>Reasons:</strong></p>
+                            <ul class="text-small mb-0">
+                                <li>Contains suspicious keywords: "urgent", "verify"</li>
+                                <li>Unknown sender domain</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
 </body>
 </html>
