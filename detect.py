@@ -43,7 +43,8 @@ def check_whitelist(email):
     safe_domains = [
         'gmail.com', 'outlook.com', 'neo.email', 'yahoo.com',
         'proton.me', 'protonmail.com', 'icloud.com', 'zohomail.com',
-        'aol.com', 'tuta.com', 'tutanota.com', 'mailfence.com'
+        'aol.com', 'tuta.com', 'tutanota.com', 'mailfence.com',
+        'sit.singaporetech.edu.sg'
     ]
     
     risk_score = 0
