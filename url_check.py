@@ -35,19 +35,37 @@ def parse_URL(url_list):
 
 # domain check
 def check_domain(parsed_url_list):
+    riskscore = 0
+
+    # list for riskscore 
+    domain_score = []
     for i in parsed_url_list:
         if i.netloc not in TRUSTED_DOMAINS:
             print("UNTRUSTED")
+            if i.netloc in SHORTENING_SERVICES:
+                print("URL_SHORTENER USED")
+                riskscore += 70
+                print(riskscore)
+                domain_score.append(riskscore)
+                break
+            riskscore += 50
+            domain_score.append(riskscore)
             break
         print("Trusted")
+        print(riskscore)
+        domain_score.append(riskscore)
+    print(domain_score)
+    return domain_score
 
 
 
 
+def check_url(email_body):
+    found_url_list = extract_URL(email_body)
+    parsed_list = parse_URL(['http://yahoo.com', "https://tinyurl.com/utdmmett"])
+    domainscore = check_domain(parsed_list)
+    parsed_list = parse_URL(found_url_list)
+    domainscore = check_domain(parsed_list)
 
 
-found_url_list = extract_URL(body)
-parsed_list = parse_URL(['http://yahoo.com'])
-check_domain(parsed_list)
-parsed_list = parse_URL(found_url_list)
-check_domain(parsed_list)
+check_url(body)
