@@ -1,228 +1,359 @@
- 
-        :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --light: #f8fafc;
-            --dark: #1e293b;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            background-color: #f9fafb;
-            color: var(--dark);
-            line-height: 1.6;
-            padding-top: 60px;
-        }
-        
-        .navbar {
-            background-color: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .navbar-brand {
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 1.3rem;
-        }
-        
-        .nav-link {
-            color: var(--secondary);
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            transition: color 0.2s;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            background: white;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-        
-        .card-header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .card-body {
-            padding: 1.5rem;
-        }
-        
-        .stat {
-            text-align: center;
-            padding: 1.5rem 1rem;
-        }
-        
-        .stat i {
-            font-size: 1.8rem;
-            margin-bottom: 0.8rem;
-            display: block;
-        }
-        
-        .stat h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-        
-        .stat p {
-            color: var(--secondary);
-            font-size: 0.9rem;
-        }
-        
-        .scanned { color: var(--primary); }
-        .safe { color: var(--success); }
-        .suspicious { color: var(--warning); }
-        .phishing { color: var(--danger); }
-        
-        .email-item {
-            padding: 1.2rem;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background-color 0.2s;
-        }
-        
-        .email-item:last-child {
-            border-bottom: none;
-        }
-        
-        .email-item:hover {
-            background-color: #f9fafb;
-        }
-        
-        .risk-badge {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
+ :root {
+     --primary: #2563eb;
+     --primary-light: #3b82f6;
+     --secondary: #64748b;
+     --success: #10b981;
+     --warning: #f59e0b;
+     --danger: #ef4444;
+     --light: #f8fafc;
+     --dark: #1e293b;
+ }
+
+ body {
+     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+     background-color: #f9fafb;
+     color: var(--dark);
+     line-height: 1.6;
+     padding-top: 60px;
+ }
+
+ .navbar {
+     background-color: white;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+     padding: 0.8rem 0;
+     border-bottom: 1px solid #e5e7eb;
+ }
+
+ .navbar-brand {
+     font-weight: 600;
+     color: var(--primary);
+     font-size: 1.3rem;
+ }
+
+ .nav-link {
+     color: var(--secondary);
+     font-weight: 500;
+     padding: 0.5rem 1rem;
+     transition: color 0.2s;
+ }
+
+ .nav-link:hover,
+ .nav-link.active {
+     color: var(--primary);
+ }
+
+ .card {
+     border: none;
+     border-radius: 8px;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+     background: white;
+     margin-bottom: 1.5rem;
+     overflow: hidden;
+ }
+
+ .card-header {
+     background: white;
+     border-bottom: 1px solid #e5e7eb;
+     padding: 1rem 1.5rem;
+     font-weight: 600;
+     color: var(--dark);
+ }
+
+ .card-body {
+     padding: 1.5rem;
+ }
+
+ .stat {
+     text-align: center;
+     padding: 1.5rem 1rem;
+ }
+
+ .stat i {
+     font-size: 1.8rem;
+     margin-bottom: 0.8rem;
+     display: block;
+ }
+
+ .stat h2 {
+     font-size: 2rem;
+     font-weight: 700;
+     margin-bottom: 0.3rem;
+ }
+
+ .stat p {
+     color: var(--secondary);
+     font-size: 0.9rem;
+ }
+
+ .scanned {
+     color: var(--primary);
+ }
+
+ .safe {
+     color: var(--success);
+ }
+
+ .suspicious {
+     color: var(--warning);
+ }
+
+ .phishing {
+     color: var(--danger);
+ }
+
+ .email-item {
+     padding: 1.2rem;
+     border-bottom: 1px solid #e5e7eb;
+     transition: background-color 0.2s;
+ }
+
+ .email-item:last-child {
+     border-bottom: none;
+ }
+
+ .email-item:hover {
+     background-color: #f9fafb;
+ }
+
+ .risk-badge {
+     font-size: 0.75rem;
+     padding: 0.3rem 0.6rem;
+     border-radius: 4px;
+     font-weight: 500;
+ }
+
+ .risk-badge.safe {
+     background-color: #ecfdf5;
+     color: var(--success);
+ }
+
+ .risk-badge.suspicious {
+     background-color: #fffbeb;
+     color: var(--warning);
+ }
+
+ .risk-badge.phishing {
+     background-color: #fef2f2;
+     color: var(--danger);
+ }
+
+ .form-control {
+     border: 1px solid #e5e7eb;
+     border-radius: 6px;
+     padding: 0.7rem 1rem;
+     font-size: 0.95rem;
+ }
+
+ .form-control:focus {
+     border-color: var(--primary-light);
+     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+ }
+
+ textarea.form-control {
+     min-height: 150px;
+ }
+
+ .btn {
+     border-radius: 6px;
+     padding: 0.7rem 1.5rem;
+     font-weight: 500;
+     transition: all 0.2s;
+ }
+
+ .btn-primary {
+     background-color: var(--primary);
+     border: none;
+ }
+
+ .btn-primary:hover {
+     background-color: var(--primary-light);
+ }
+
+ .btn-outline-primary {
+     color: var(--primary);
+     border-color: var(--primary);
+ }
+
+ .btn-outline-primary:hover {
+     background-color: var(--primary);
+     color: white;
+ }
+
+ .analysis-result {
+     padding: 1.2rem;
+     border-radius: 8px;
+     margin-top: 1.5rem;
+ }
+
+ .result-safe {
+     background-color: #ecfdf5;
+     border-left: 4px solid var(--success);
+ }
+
+ .result-suspicious {
+     background-color: #fffbeb;
+     border-left: 4px solid var(--warning);
+ }
+
+ .result-phishing {
+     background-color: #fef2f2;
+     border-left: 4px solid var(--danger);
+ }
+
+ .risk-score {
+     font-size: 2.5rem;
+     font-weight: 700;
+     margin-bottom: 0.5rem;
+ }
+
+ .risk-meter {
+     height: 6px;
+     border-radius: 3px;
+     background-color: #e5e7eb;
+     margin: 1rem 0;
+     overflow: hidden;
+ }
+
+ .risk-meter-fill {
+     height: 100%;
+     border-radius: 3px;
+ }
+
+ .text-small {
+     font-size: 0.85rem;
+ }
+
+ .text-muted {
+     color: var(--secondary);
+ }
+
+ @media (max-width: 768px) {
+     .stat {
+         padding: 1rem 0.5rem;
+     }
+
+     .stat h2 {
+         font-size: 1.7rem;
+     }
+ }
+
+
+ #emailFileInput::file-selector-button {
+     /* Basic styling */
+     background-color: #007bff;
+     color: white;
+     padding: 10px 15px;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+     font-size: 16px;
+     font-family: sans-serif;
+
+     /* Hover effect */
+     transition: background-color 0.3s ease;
+ }
+
+ #myFileUpload::file-selector-button:hover {
+     background-color: #0056b3;
+ }
+
+ /* Styling for the file name display area (optional) */
+ #myFileUpload {
+     border: 1px solid #ccc;
+     padding: 5px;
+     border-radius: 5px;
+ }
+
+
+
+
+
+/* this css is for upload email content*/
+ .container {
+     background: white;
+     border-radius: 8px;
+     padding: 2rem;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+ }
+
+ h1 {
+     font-weight: 600;
+     font-size: 1.5rem;
+     margin-bottom: 0.5rem;
+ }
+
+ p {
+     color: #6c757d;
+     margin-bottom: 1.5rem;
+ }
+
+ .file-input {
+     margin-bottom: 1.5rem;
+ }
+
+ input[type="file"] {
+     width: 100%;
+     padding: 0.75rem;
+     border: 1px solid #dee2e6;
+     border-radius: 4px;
+     background: #f8f9fa;
+ }
+
+ #fileContent {
+     background: #f8f9fa;
+     border-radius: 4px;
+     padding: 1rem;
+     white-space: pre-wrap;
+     word-break: break-word;
+     font-family: monospace;
+     font-size: 0.875rem;
+     border: 1px solid #e9ecef;
+     max-height: 50vh;
+     overflow-y: auto;
+     display: none;
+ }
+
+
+
+
+ textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            font-weight: 500;
+            resize: vertical;
         }
-        
-        .risk-badge.safe {
-            background-color: #ecfdf5;
-            color: var(--success);
-        }
-        
-        .risk-badge.suspicious {
-            background-color: #fffbeb;
-            color: var(--warning);
-        }
-        
-        .risk-badge.phishing {
-            background-color: #fef2f2;
-            color: var(--danger);
-        }
-        
-        .form-control {
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 0.7rem 1rem;
-            font-size: 0.95rem;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-        
-        textarea.form-control {
-            min-height: 150px;
-        }
-        
-        .btn {
-            border-radius: 6px;
-            padding: 0.7rem 1.5rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-light);
-        }
-        
-        .btn-outline-primary {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: var(--primary);
+        button {
+            background-color: #4CAF50;
             color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
         }
-        
-        .analysis-result {
-            padding: 1.2rem;
-            border-radius: 8px;
-            margin-top: 1.5rem;
+        button:hover {
+            background-color: #45a049;
         }
-        
-        .result-safe {
-            background-color: #ecfdf5;
-            border-left: 4px solid var(--success);
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
         }
-        
-        .result-suspicious {
-            background-color: #fffbeb;
-            border-left: 4px solid var(--warning);
+        .safe1 {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        
-        .result-phishing {
-            background-color: #fef2f2;
-            border-left: 4px solid var(--danger);
+        .suspicious1 {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
         }
-        
-        .risk-score {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .malicious1 {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
-        
-        .risk-meter {
-            height: 6px;
-            border-radius: 3px;
-            background-color: #e5e7eb;
-            margin: 1rem 0;
-            overflow: hidden;
-        }
-        
-        .risk-meter-fill {
-            height: 100%;
-            border-radius: 3px;
-        }
-        
-        .text-small {
-            font-size: 0.85rem;
-        }
-        
-        .text-muted {
-            color: var(--secondary);
-        }
-        
-        @media (max-width: 768px) {
-            .stat {
-                padding: 1rem 0.5rem;
-            }
-            
-            .stat h2 {
-                font-size: 1.7rem;
-            }
-        }
-    

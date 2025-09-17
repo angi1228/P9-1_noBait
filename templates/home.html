@@ -37,13 +37,13 @@
         <div class="row mb-4">
              <h1>Welcome to NoBait</h1>
     <p>
-        Congrats on successfully running a flask project &#129395;
+        Congrats on successfully running a flask project! NoBait is an intelligent email analysis engine designed to empower users to identify and understand phishing attempts in real-time. By going beyond simple keyword matching, our tool parses raw email content—including headers, subject lines, and body text—to assess the intent and calculate a dynamic threat score. &#129395;
     </p>
             <div class="col-md-3 col-6 mb-3">
                 <div class="card stat">
                     <i class="fas fa-envelope-open-text scanned"></i>
                     
-                    <h2>This is a dynamic variable {{total_length}}</h2>
+                    <h2>{{total_length}}</h2>
                     <p>Emails Scanned</p>
                 </div>
             </div>
@@ -57,14 +57,14 @@
             <div class="col-md-3 col-6 mb-3">
                 <div class="card stat">
                     <i class="fas fa-exclamation-triangle suspicious"></i>
-                    <h2>This is another dyanmic variable score = {{totalscore}}</h2>
+                    <h2>{{totalscore}}</h2>
                     <p>Suspicious</p>
                 </div>
             </div>
             <div class="col-md-3 col-6 mb-3">
                 <div class="card stat">
                     <i class="fas fa-bug phishing"></i>
-                    <h2>Dynamic variable,why did the email got flagged out>> {{reason}}</h2>
+                    <h2>>>{{reason}}</h2>
                     <p>Phishing Detected</p>
                 </div>
             </div>
@@ -136,6 +136,9 @@
                 </div>
             </div>
             
+          
+
+            
             <div class="col-lg-5">
                 <div class="card" id="analyzer">
                     <div class="card-header">
@@ -150,8 +153,10 @@
                             <i class="fas fa-search me-1"></i> Analyze Email
                             
                         </button>
+
                         
                         
+                 
                         
                         <div id="analysisResult" class="analysis-result result-safe" style="display: none;">
                             <div class="risk-score">3.2</div>
@@ -202,11 +207,219 @@
                             
                                 <p id="classificationDescription">Risk score will appear here<br> Current Score:{{totalscore}}</p>
                             </div>
+
+                             <h1>Email Content</h1>
+                            <p><strong>From:</strong> {{ sender }}</p>
+                            <p><strong>To:</strong> {{ recipient }}</p>
+                            <p><strong>Subject:</strong> {{ subject }}</p>
+                            
+                            {% if html_body %}
+                                <div>{{ html_body | safe }}</div>  <!-- Use | safe to render HTML -->
+                            {% else %}
+                                <pre>{{ plain_body }}</pre>  <!-- Display plain text in a <pre> tag -->
+                            {% endif %}
                         </div>
                     </div>
                 </div>
+                 <div class="container">
+        <h1>Upload Email Content</h1>
+        <p>Select a file (e.g., a `.eml` or `.txt` file) to display its contents.</p>
+        
+        <div class="file-input">
+            <input type="file" id="emailFileInput" accept=".eml,.txt">
+        </div>
+        
+        <pre id="fileContent"></pre>
     </div>
+
+
+
+    <div class="container">
+        <h1>Email Phishing Detector</h1>
+        <p>Paste the raw email content (including headers) below to analyze for phishing attempts:</p>
+        
+        <textarea id="emailContent" placeholder="From: sender@example.com
+To: recipient@example.com
+Subject: Your Subject Here
+Date: Tue, 9 Sep 2025 09:12:00 +0800
+
+Email body content here..."></textarea>
+        
+        <button onclick="analyzeEmail()">Analyze Email</button>
+        
+        <div id="result">
+            <h2>Analysis Results</h2>
+            <p><strong>From:</strong> <span id="sender"></span></p>
+            <p><strong>To:</strong> <span id="recipient"></span></p>
+            <p><strong>Subject:</strong> <span id="subject"></span></p>
+            <p><strong>Score:</strong> <span id="score"></span>/10</p>
+            <p><strong>Category:</strong> <span id="category"></span></p>
+            <div id="reasons"></div>
+        </div>
+    </div>
+
+
+    </div>
+
+
+
+
+
+    <script>
+
+//Script for the uploading of email file:
+
+ document.getElementById('emailFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileContent = document.getElementById('fileContent');
+                fileContent.textContent = e.target.result;
+                fileContent.style.display = 'block';
+            };
+            reader.readAsText(file);
+        });
+
+
+
+
+
+
+
+       document.addEventListener('DOMContentLoaded', function() {
+    // Get the button and result elements
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const emailContentTextarea = document.getElementById('emailContent');
+    const analysisResultDiv = document.getElementById('analysisResult');
+    const classificationDescription = document.getElementById('classificationDescription');
+
+    // Add click event listener to the analyze button
+    analyzeBtn.addEventListener('click', function() {
+        // Get the email content from the textarea
+        const emailContent = emailContentTextarea.value.trim();
+
+        // Check if the textarea is empty
+        if (!emailContent) {
+            alert('Please paste some email content to analyze.');
+            return;
+        }
+
+        // Show loading state on the button
+        const originalButtonText = analyzeBtn.innerHTML;
+        analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Analyzing...';
+        analyzeBtn.disabled = true;
+
+        // Send the data to the backend for analysis (using Fetch API)
+        fetch('/analyze', { // This endpoint should match your Flask route
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ emailContent: emailContent })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Check if the analysis was successful
+            if (data.success) {
+                // Update the analysis result div with the received data
+                updateResultsUI(data);
+            } else {
+                // Show error message
+                alert('Analysis failed: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            // Handle any errors
+            console.error('Error:', error);
+            alert('An error occurred during analysis. Please try again.');
+        })
+        .finally(() => {
+            // Restore the button to its original state
+            analyzeBtn.innerHTML = originalButtonText;
+            analyzeBtn.disabled = false;
+        });
+    });
+
+    // Function to update the UI with the analysis results
+    function updateResultsUI(data) {
+        // Destructure the data (adjust these property names to match what your backend sends)
+        const { score, category, reasons } = data;
+
+        // 1. Update the risk score
+        const riskScoreEl = analysisResultDiv.querySelector('.risk-score');
+        if (riskScoreEl) riskScoreEl.textContent = score.toFixed(1); // Show one decimal place
+
+        // 2. Update the risk meter fill width and color
+        const riskMeterFill = analysisResultDiv.querySelector('.risk-meter-fill');
+        if (riskMeterFill) {
+            // Calculate width as a percentage (assuming score is out of 10)
+            const widthPercentage = (score / 10) * 100;
+            riskMeterFill.style.width = `${widthPercentage}%`;
+
+            // Dynamically set the color based on the score/category
+            riskMeterFill.style.backgroundColor = getColorForScore(score);
+        }
+
+        // 3. Update the category title
+        const categoryTitle = analysisResultDiv.querySelector('h6');
+        if (categoryTitle) categoryTitle.textContent = `${category} Email`;
+
+        // 4. Update the reasons list
+        const reasonsList = analysisResultDiv.querySelector('ul');
+        if (reasonsList && reasons && Array.isArray(reasons)) {
+            // Clear any existing list items
+            reasonsList.innerHTML = '';
+
+            // Add new list items for each reason
+            reasons.forEach(reason => {
+                const listItem = document.createElement('li');
+                listItem.textContent = reason;
+                reasonsList.appendChild(listItem);
+            });
+        }
+
+        // 5. Update the classification description
+        if (classificationDescription) {
+            classificationDescription.innerHTML = `
+                Risk score will appear here<br> 
+                Current Score: <strong>${score.toFixed(1)}</strong> - ${category}
+            `;
+        }
+
+        // 6. Show the result div
+        analysisResultDiv.style.display = 'block';
+
+        // 7. (Optional) Update the overall class for styling (e.g., result-safe, result-suspicious, result-phishing)
+        // First, remove any existing category classes
+        analysisResultDiv.classList.remove('result-safe', 'result-suspicious', 'result-phishing');
+        // Add the new class based on the category
+        analysisResultDiv.classList.add(`result-${category.toLowerCase().split(' ')[0]}`); // Gets first word e.g., "suspicious"
+    }
+
+    // Helper function to determine color based on score
+    function getColorForScore(score) {
+        if (score >= 7.0) {
+            return 'var(--danger)'; // Red for phishing
+        } else if (score >= 4.0) {
+            return 'var(--warning)'; // Orange/Yellow for suspicious
+        } else {
+            return 'var(--success)'; // Green for safe
+        }
+    }
+});
+    </script>
+
+
+
 
     
 </body>
+
 </html>
