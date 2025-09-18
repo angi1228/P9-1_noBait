@@ -35,12 +35,11 @@ def parse_URL(url_list):
 
 # domain check
 def check_domain(parsed_url_list):
-    riskscore = 0
-
     # list for riskscore 
     domain_score = []
     # for every url in list
     for i in parsed_url_list:
+        riskscore = 0
         if i.netloc not in TRUSTED_DOMAINS:     # if domain name not in trusted domains
             # print("UNTRUSTED")
             if i.netloc in SHORTENING_SERVICES: # if domain name is url shortener
@@ -48,7 +47,7 @@ def check_domain(parsed_url_list):
                 riskscore += 70
                 print(riskscore)
                 domain_score.append(riskscore)  
-                break
+                # break
             else:                                  # can't seem to get urls with unknown domains into else loop | check after restart
                 print("UNTRUSTED DOMAIN")
                 riskscore += 50
