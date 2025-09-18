@@ -53,7 +53,7 @@ def check_domain(parsed_url_list):
                 riskscore += 50
                 print(riskscore)
                 domain_score.append(riskscore)
-                break
+                # break
         else:
             print("Trusted")
             print(riskscore)
