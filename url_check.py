@@ -48,7 +48,7 @@ def check_domain(parsed_url_list):
                 print(riskscore)
                 domain_score.append(riskscore)  
                 # break
-            else:                                  # can't seem to get urls with unknown domains into else loop | check after restart
+            else:                                 
                 print("UNTRUSTED DOMAIN")
                 riskscore += 50
                 print(riskscore)
@@ -68,7 +68,10 @@ def check_page(parsed_url_list, domain_score):
     for i in parsed_url_list:
         # if page name found in suspicious keywords
         print(i.path[1:])
-        if i.path[1:] in SUSPICIOUS_KEYWORDS:       #  string sliced to remove /
+        print(i.path[-1:]) 
+        # if i.path[-1:] == "/":
+        #     print(i.path[1:-1])
+        if i.path[1:] in SUSPICIOUS_KEYWORDS or i.path[1:-1] in SUSPICIOUS_KEYWORDS:       #  string sliced to remove /
             print("SUSPICIOUS PAGE NAME")
             print(domain_score[count])
             domain_score[count] += 50
@@ -79,17 +82,50 @@ def check_page(parsed_url_list, domain_score):
     return domain_score
         
 
+def generate_reason(domainscore):
+    reasonList = []
+    for i in domainscore:
+        if i<50:
+            reason = "URL is not suspicious"
+
+        elif 50<=i<70:
+            reason = "URL is from an untrusted domain"
+
+        elif 70<=i<100:
+            reason = "URL shortener used"
+
+        elif i>=100:
+            reason = "Highly malicious:URL from untrusted domain and contain suspicious keyword"
+    reasonList.append(reason)
+    # Dict Format {1: [riskscore,reason], 2:[riskscore,reason]....}
+    length = len(domainscore)-1          # length helps for defines number of loops to append to Dict
+                                         # len-1 to start from 0
+    URL_Check_Dict = {}
+    for count in range(length):
+        print(count)
+        URL_Check_Dict[count] = [domainscore[count], reasonList[count]]
+    print(URL_Check_Dict)
+    return URL_Check_Dict
+
+
+
+
+
 
 
 def check_url(email_body):
     found_url_list = extract_URL(email_body)
     parsed_list = parse_URL(['http://yahoo.com', 'https://tinyurl.com/utdmmett', 'https://bankscam.net/login'])
     domainscore = check_domain(parsed_list)
-    check_page(parsed_list, domainscore)
+    Finaldomainscore = check_page(parsed_list, domainscore)
+    print(type(Finaldomainscore[1]))
+    generate_reason(Finaldomainscore)
+
     #domain score is a list 
-    parsed_list = parse_URL(found_url_list)
-    domainscore = check_domain(parsed_list)
-    check_page(parsed_list, domainscore)
+
+    # parsed_list = parse_URL(found_url_list)
+    # domainscore = check_domain(parsed_list)
+    # check_page(parsed_list, domainscore)
 
 
 check_url(body)
