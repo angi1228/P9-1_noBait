@@ -8,15 +8,19 @@ def preprocess_text(text):
     return clean_text
 
 def find_suspicious_keywords(text):
-
+    
     suspicious_keywords = [
-    "urgent","immediately","terminated","suspended","compromised","on hold","violation","verify",
-    "login","password","security","locked","pay","overdue","action","transfer",
-    "download","click","won","winner","free","gift","prize","congratulations",
-    "selected","exclusive","dear Customer","favour","last chance","final call","last call","sexy",
-    "hot","single","near you"
+        "urgent", "immediately", "limited time", "account", "terminated", "suspended", "compromised", "on hold",
+        "violation", "verify", "last warning", "final notice", "final call", "last call", "last chance",
+        "important notice", "login", "password", "security", "locked", "pay", "overdue", "action required",
+        "transfer", "claim your refund", "download", "click", "won", "winner", "free", "gift", "prize",
+        "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
+        "no cost", "guaranteed", "dear customer", "favour", "sexy", "hot", "single", "near you", "meet singles",
+        "dating", "babes", "babe", "nude", "naked", "money", "cash", "payment", "payments", "credit card", "loan",
+        "offer", "deal", "sales", "earn", "membership"
     ]
-
+        
+    #Initialize
     count = 0
     found = []
 
@@ -32,25 +36,26 @@ def find_suspicious_keywords(text):
                 found.append(word)
 
     risk_score = 50 if count > 0 else 0
-    
-    if count == 0: 
-        return False, risk_score, {"count": count, "found": found}
-    else:
-        return True, risk_score, {"count": count, "found": found}
+
+    return {"is_suspicious": count > 0, "risk_score": risk_score, "count": count, "found": found}
 
 def check_whitelist(email):
 
     safe_domains = [
-        'gmail.com', 'outlook.com', 'neo.email', 'yahoo.com',
-        'proton.me', 'protonmail.com', 'icloud.com', 'zohomail.com',
-        'aol.com', 'tuta.com', 'tutanota.com', 'mailfence.com',
-        'sit.singaporetech.edu.sg'
+        "gmail.com", "outlook.com", "neo.email", "yahoo.com",
+        "proton.me", "protonmail.com", "icloud.com", "zohomail.com",
+        "aol.com", "tuta.com", "tutanota.com", "mailfence.com",
+        "sit.singaporetech.edu.sg"
     ]
     
+    #Initialize
+    is_safe = False
     risk_score = 0
+    domain = None
 
     # Check if email contains @
-    if "@" not in email: risk_score += 100, "invalid email"
+    if "@" not in email:
+        return {"is_safe": False, "risk_score": 100, "domain": None, "message": "Invalid email format"}
 
     # Extract domain
     domain = email.split("@")[1]
@@ -63,4 +68,28 @@ def check_whitelist(email):
         risk_score += 100
         is_safe = False
 
-    return risk_score, is_safe, domain.lower()
+    return {"is_safe": is_safe, "risk_score": risk_score, "domain": domain.lower()}
+
+
+#Test Codesss
+if __name__ == "__main__":
+    test_texts = [
+        "Your account has been suspended. Please login immediately to verify your details.",
+        "Congratulations! You are a winner of a free gift card.",
+        "Hello, just checking in to confirm our meeting tomorrow."
+    ]
+
+    test_emails = [
+        "user@gmail.com",
+        "example@randomdomain.com",
+        "noreply@sit.singaporetech.edu.sg",
+        "fakeemail.com"
+    ]
+
+    print("===== Suspicious Keyword Tests =====")
+    for txt in test_texts:
+        print(find_suspicious_keywords(txt))
+
+    print("\n===== Whitelist Tests =====")
+    for email in test_emails:
+        print(check_whitelist(email))
