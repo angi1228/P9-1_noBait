@@ -205,42 +205,6 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
             return result_unknown
         else:
             return result_unknown
-                    
-
-# def check_display_name_vs_domain(sender_name: str, sender_email: str, SAFE_DOMAIN_LIST: List[str]) -> dict:
-#     """
-#     Check if the sender's display name suggests a brand/org but the email domain does not match the official domain of that brand/org.
-#     """
-#     result_safe = {
-#         "sender_name": sender_name,
-#         "sender_email": sender_email,
-#         "suspicious": False,
-#         'risk_score': None,
-#         "reason": None
-#     }
-
-#     # Normalize input
-#     sender_name = sender_name.lower()
-#     domain = sender_email.split("@")[-1].lower() # Get the domain name
-
-#     # If domain is in SAFE list, then okay, the sender is safe
-#     if domain in SAFE_DOMAIN_LIST:
-#         return result_safe
-
-#     # Check if sender_name contains any known brand keyword
-#     for safe_sender in SAFE_SENDER_LIST:
-#         if safe_sender in sender_name:
-#             # But the domain is not one of the brand’s official domains
-#             official_domains = [d for d in SAFE_DOMAIN_LIST if safe_sender in d]
-#             if not any(official_domain in domain for official_domain in official_domains):
-#                 result_safe["suspicious"] = True
-#                 result_safe["reason"] = f"Display name suggests '{safe_sender}' but domain is {domain}, not {official_domains}"
-#                 return result_safe
-
-#     return result_safe
-
-
-
 
 # Check if the email domain is safe
 if __name__ == "__main__":
