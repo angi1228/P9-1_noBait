@@ -1,359 +1,254 @@
- :root {
-     --primary: #2563eb;
-     --primary-light: #3b82f6;
-     --secondary: #64748b;
-     --success: #10b981;
-     --warning: #f59e0b;
-     --danger: #ef4444;
-     --light: #f8fafc;
-     --dark: #1e293b;
- }
+:root {
+    /* Base Colors */
+    --primary: #2563eb;
+    --primary-light: #3b82f6;
+    --secondary: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --light: #f8fafc;
+    --dark: #1e293b;
 
- body {
-     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-     background-color: #f9fafb;
-     color: var(--dark);
-     line-height: 1.6;
-     padding-top: 60px;
- }
+    /* --- Custom Risk Colors (NEW) --- */
+    /* Safe: Green */
+    --risk-safe-bg: #e6f7ea;
+    --risk-safe-text: #1e7e34;
+    --risk-safe-border: #c3e6cb;
 
- .navbar {
-     background-color: white;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-     padding: 0.8rem 0;
-     border-bottom: 1px solid #e5e7eb;
- }
+    /* Low: Yellow/Light Warning (50-64) */
+    --risk-low-bg: #fff3cd;
+    --risk-low-text: #856404;
+    --risk-low-border: #ffeeba;
 
- .navbar-brand {
-     font-weight: 600;
-     color: var(--primary);
-     font-size: 1.3rem;
- }
+    /* Medium: Salmon/Moderate Danger (65-80) */
+    --risk-medium-bg: #fce7e8; 
+    --risk-medium-text: #842029;
+    --risk-medium-border: #f5c6cb;
 
- .nav-link {
-     color: var(--secondary);
-     font-weight: 500;
-     padding: 0.5rem 1rem;
-     transition: color 0.2s;
- }
+    /* High: Strong Red/Danger (>=81) */
+    --risk-high-bg: #f8d7da;
+    --risk-high-text: #721c24;
+    --risk-high-border: #f5c6cb;
+}
 
- .nav-link:hover,
- .nav-link.active {
-     color: var(--primary);
- }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background-color: #f9fafb;
+    color: var(--dark);
+    line-height: 1.6;
+    padding-top: 70px; /* Increased to accommodate fixed navbar */
+}
 
- .card {
-     border: none;
-     border-radius: 8px;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-     background: white;
-     margin-bottom: 1.5rem;
-     overflow: hidden;
- }
+/* --- Navigation --- */
+.navbar {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
 
- .card-header {
-     background: white;
-     border-bottom: 1px solid #e5e7eb;
-     padding: 1rem 1.5rem;
-     font-weight: 600;
-     color: var(--dark);
- }
+.navbar-brand {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 1.3rem;
+}
 
- .card-body {
-     padding: 1.5rem;
- }
+.nav-link {
+    color: var(--secondary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s;
+}
 
- .stat {
-     text-align: center;
-     padding: 1.5rem 1rem;
- }
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary);
+}
 
- .stat i {
-     font-size: 1.8rem;
-     margin-bottom: 0.8rem;
-     display: block;
- }
+/* --- Cards --- */
+.card {
+    border: none;
+    border-radius: 12px; /* Increased radius for modern look */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Stronger shadow */
+    background: white;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
 
- .stat h2 {
-     font-size: 2rem;
-     font-weight: 700;
-     margin-bottom: 0.3rem;
- }
+.card-header {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 1.1rem; /* Slightly larger header text */
+}
 
- .stat p {
-     color: var(--secondary);
-     font-size: 0.9rem;
- }
+.card-body {
+    padding: 1.5rem;
+}
 
- .scanned {
-     color: var(--primary);
- }
+/* --- Statistics Boxes --- */
+.stat-box {
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    transition: transform 0.2s;
+    min-height: 150px;
+}
+.stat-box:hover {
+    transform: translateY(-3px);
+}
 
- .safe {
-     color: var(--success);
- }
+.stat-box i {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
 
- .suspicious {
-     color: var(--warning);
- }
+.stat-box h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
 
- .phishing {
-     color: var(--danger);
- }
+.stat-box p {
+    color: rgba(255, 255, 255, 0.9); /* Lighter text for contrast on colored boxes */
+    font-size: 0.95rem;
+}
 
- .email-item {
-     padding: 1.2rem;
-     border-bottom: 1px solid #e5e7eb;
-     transition: background-color 0.2s;
- }
+/* You must remove the redundant .stat i, .stat h2, .stat p rules */
 
- .email-item:last-child {
-     border-bottom: none;
- }
+/* --- Recent Email Analysis (List Format) (NEW/MODIFIED) --- */
+.scroll-box {
+    max-height: 500px; /* Fixed height for scrollable area */
+    overflow-y: auto;
+}
 
- .email-item:hover {
-     background-color: #f9fafb;
- }
+.list-group-item {
+    padding: 1.25rem 1.5rem;
+    border-color: #e5e7eb;
+    transition: background-color 0.2s;
+}
 
- .risk-badge {
-     font-size: 0.75rem;
-     padding: 0.3rem 0.6rem;
-     border-radius: 4px;
-     font-weight: 500;
- }
+.list-group-item:hover {
+    background-color: #f9fafb;
+}
 
- .risk-badge.safe {
-     background-color: #ecfdf5;
-     color: var(--success);
- }
+/* --- Risk Badges (MODIFIED) --- */
+.risk-badge {
+    padding: 5px 12px;
+    border-radius: 20px; /* Pill shape */
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+    border: 1px solid transparent;
+}
 
- .risk-badge.suspicious {
-     background-color: #fffbeb;
-     color: var(--warning);
- }
+/* Safe */
+.risk-safe {
+    background-color: var(--risk-safe-bg);
+    color: var(--risk-safe-text);
+    border-color: var(--risk-safe-border);
+}
 
- .risk-badge.phishing {
-     background-color: #fef2f2;
-     color: var(--danger);
- }
+/* Low Suspicious (50-64) */
+.risk-low {
+    background-color: var(--risk-low-bg);
+    color: var(--risk-low-text);
+    border-color: var(--risk-low-border);
+}
 
- .form-control {
-     border: 1px solid #e5e7eb;
-     border-radius: 6px;
-     padding: 0.7rem 1rem;
-     font-size: 0.95rem;
- }
+/* Moderately Suspicious (65-80) */
+.risk-medium {
+    background-color: var(--risk-medium-bg);
+    color: var(--risk-medium-text);
+    border-color: var(--risk-medium-border);
+}
 
- .form-control:focus {
-     border-color: var(--primary-light);
-     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
- }
+/* Highly Suspicious (>=81) */
+.risk-high {
+    background-color: var(--risk-high-bg);
+    color: var(--risk-high-text);
+    border-color: var(--risk-high-border);
+}
 
- textarea.form-control {
-     min-height: 150px;
- }
+/* You can remove the old .risk-badge.safe, .risk-badge.suspicious, .risk-badge.phishing */
 
- .btn {
-     border-radius: 6px;
-     padding: 0.7rem 1.5rem;
-     font-weight: 500;
-     transition: all 0.2s;
- }
+/* --- Classification Thresholds (NEW) --- */
+.classification-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+.classification-box h5, .classification-box h6 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+.score-value { 
+    font-weight: bold; 
+    font-size: 1.05rem; 
+    color: var(--secondary);
+}
 
- .btn-primary {
-     background-color: var(--primary);
-     border: none;
- }
-
- .btn-primary:hover {
-     background-color: var(--primary-light);
- }
-
- .btn-outline-primary {
-     color: var(--primary);
-     border-color: var(--primary);
- }
-
- .btn-outline-primary:hover {
-     background-color: var(--primary);
-     color: white;
- }
-
- .analysis-result {
-     padding: 1.2rem;
-     border-radius: 8px;
-     margin-top: 1.5rem;
- }
-
- .result-safe {
-     background-color: #ecfdf5;
-     border-left: 4px solid var(--success);
- }
-
- .result-suspicious {
-     background-color: #fffbeb;
-     border-left: 4px solid var(--warning);
- }
-
- .result-phishing {
-     background-color: #fef2f2;
-     border-left: 4px solid var(--danger);
- }
-
- .risk-score {
-     font-size: 2.5rem;
-     font-weight: 700;
-     margin-bottom: 0.5rem;
- }
-
- .risk-meter {
-     height: 6px;
-     border-radius: 3px;
-     background-color: #e5e7eb;
-     margin: 1rem 0;
-     overflow: hidden;
- }
-
- .risk-meter-fill {
-     height: 100%;
-     border-radius: 3px;
- }
-
- .text-small {
-     font-size: 0.85rem;
- }
-
- .text-muted {
-     color: var(--secondary);
- }
-
- @media (max-width: 768px) {
-     .stat {
-         padding: 1rem 0.5rem;
-     }
-
-     .stat h2 {
-         font-size: 1.7rem;
-     }
- }
+/* Threshold Colors */
+.safe-threshold { background-color: var(--risk-safe-bg); border-left: 5px solid var(--risk-safe-text); }
+.low-threshold { background-color: var(--risk-low-bg); border-left: 5px solid var(--risk-low-text); }
+.medium-threshold { background-color: var(--risk-medium-bg); border-left: 5px solid var(--risk-medium-text); }
+.high-threshold { background-color: var(--risk-high-bg); border-left: 5px solid var(--risk-high-text); }
 
 
- #emailFileInput::file-selector-button {
-     /* Basic styling */
-     background-color: #007bff;
-     color: white;
-     padding: 10px 15px;
-     border: none;
-     border-radius: 5px;
-     cursor: pointer;
-     font-size: 16px;
-     font-family: sans-serif;
+/* --- Form & Input Styles --- */
+.form-control {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px; /* Slightly more rounded */
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+}
 
-     /* Hover effect */
-     transition: background-color 0.3s ease;
- }
+.form-control:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); /* Slightly stronger focus ring */
+}
 
- #myFileUpload::file-selector-button:hover {
-     background-color: #0056b3;
- }
+textarea.form-control {
+    min-height: 150px;
+}
 
- /* Styling for the file name display area (optional) */
- #myFileUpload {
-     border: 1px solid #ccc;
-     padding: 5px;
-     border-radius: 5px;
- }
+.btn {
+    border-radius: 8px; /* Slightly more rounded */
+    padding: 0.7rem 1.5rem;
+    font-weight: 600; /* Bolder button text */
+    transition: all 0.2s;
+}
 
+.btn-dark { /* Used for the Analyze button */
+    background-color: var(--dark);
+    border-color: var(--dark);
+    color: white;
+}
+.btn-dark:hover {
+    background-color: #374151;
+    border-color: #374151;
+}
 
-
-
-
-/* this css is for upload email content*/
- /* .container {
-     background: white;
-     border-radius: 8px;
-     padding: 2rem;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
- } */
-
- h1 {
-     font-weight: 600;
-     font-size: 1.5rem;
-     margin-bottom: 0.5rem;
- }
-
- p {
-     color: #6c757d;
-     margin-bottom: 1.5rem;
- }
-
- .file-input {
-     margin-bottom: 1.5rem;
- }
-
- input[type="file"] {
-     width: 100%;
-     padding: 0.75rem;
-     border: 1px solid #dee2e6;
-     border-radius: 4px;
-     background: #f8f9fa;
- }
-
- #fileContent {
-     background: #f8f9fa;
-     border-radius: 4px;
-     padding: 1rem;
-     white-space: pre-wrap;
-     word-break: break-word;
-     font-family: monospace;
-     font-size: 0.875rem;
-     border: 1px solid #e9ecef;
-     max-height: 50vh;
-     overflow-y: auto;
-     display: none;
- }
+/* Remove or update old .analysis-result styles if you are using the new list format */
+/* You should keep .result-safe, .result-suspicious, etc. only if they are used elsewhere */
 
 
+/* --- Media Queries --- */
+@media (max-width: 992px) { /* Adjust for larger screens too */
+    .card-body {
+        padding: 1rem;
+    }
+}
+@media (max-width: 768px) {
+    .stat-box {
+        padding: 1rem 0.5rem;
+    }
 
-
- textarea {
-            width: 100%;
-            height: 200px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            display: none;
-        }
-        .safe1 {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .suspicious1 {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-        .malicious1 {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+    .stat-box h2 {
+        font-size: 1.7rem;
+    }
+}

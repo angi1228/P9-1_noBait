@@ -6,17 +6,89 @@
     <title>NoBait - Email Phishing Detector</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <link rel="stylesheet" href={{url_for("static", filename="styles.css")}}>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <style>
+        /* --- General Aesthetics & Layout --- */
+        body { background-color: #f8f9fa; }
+        .card { 
+            border: none; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        }
+        h1, h2, h3, h4 { color: #2c3e50; } /* Darker text for titles */
+        
+        /* --- Statistics Boxes --- */
+        .stat-box {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.2s;
+            min-height: 150px;
+        }
+        .stat-box:hover {
+            transform: translateY(-3px); /* Lift effect on hover */
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        /* --- Analysis Table & Scroll --- */
+        .scroll-box {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f8f9fa; /* Ensure header stands out when scrolling */
+        }
+        
+        /* --- Risk Badges & Color Coding --- */
+        .risk-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        /* Define the colors based on your thresholds (0-49=Safe, 50-64=Low, 65-80=Medium, >=81=High) */
+        .risk-safe { background-color: #e6f7ea; color: #1e7e34; border: 1px solid #c3e6cb; } /* Light Green */
+        .risk-low { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; } /* Yellow/Warning */
+        .risk-medium { background-color: #fce7e8; color: #842029; border: 1px solid #f5c6cb; } /* Light Red/Salmon */
+        .risk-high { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; } /* Strong Red */
+
+        /* --- Classification Thresholds --- */
+        .classification-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        .score-value { font-weight: bold; font-size: 1.1rem; }
+
+        /* Match threshold colors to risk badges */
+        .safe-threshold { background-color: #e6f7ea; border-left: 5px solid #1e7e34; }
+        .low-threshold { background-color: #fff3cd; border-left: 5px solid #856404; }
+        .medium-threshold { background-color: #fce7e8; border-left: 5px solid #842029; }
+        .high-threshold { background-color: #f8d7da; border-left: 5px solid #721c24; }
+        
+        /* --- Analyzer Form --- */
+        .form-control[type="file"] { border: 1px solid #ced4da; }
+
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-shield-alt me-2"></i>
                 NoBait
             </a>
             
-           
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -33,393 +105,185 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <div class="row mb-4">
-             <h1>Welcome to NoBait</h1>
-    <p>
-        Congrats on successfully running a flask project! NoBait is an intelligent email analysis engine designed to empower users to identify and understand phishing attempts in real-time. By going beyond simple keyword matching, our tool parses raw email content—including headers, subject lines, and body text—to assess the intent and calculate a dynamic threat score. &#129395;
-    </p>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat">
-                    <i class="fas fa-envelope-open-text scanned"></i>
-                    
-                    <h2>{{total_length}}</h2>
-                    <p>Emails Scanned</p>
+    <div class="container mt-5 pt-4">
+        <h1 class="mb-4 pt-3">Welcome to NoBait</h1>
+        <p class="mb-5 text-muted">
+            NoBait is an intelligent email analysis engine that identifies phishing attempts by analyzing headers, subject lines, and content to calculate a dynamic threat score. 🛡️
+        </p>
+
+        <div class="row mb-5">
+            <div class="col-md-4 col-6 mb-3">
+                <div class="card stat-box bg-primary text-white">
+                    <i class="fas fa-envelope-open-text stat-icon"></i>
+                    <h2 class="display-5">{{ total_scanned|default(0) }}</h2>
+                    <p class="lead mb-0">Emails Scanned</p>
                 </div>
             </div>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat">
-                    <i class="fas fa-check-circle safe"></i>
-                    <h2>126</h2>
-                    <p>Safe Emails</p>
+            <div class="col-md-4 col-6 mb-3">
+                <div class="card stat-box bg-success text-white">
+                    <i class="fas fa-check-circle stat-icon"></i>
+                    <h2 class="display-5">{{ total_safe|default(0) }}</h2>
+                    <p class="lead mb-0">Safe Emails (Score 0-49)</p>
                 </div>
             </div>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat">
-                    <i class="fas fa-exclamation-triangle suspicious"></i>
-                    <h2>{{totalscore}}</h2>
-                    <p>Suspicious</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat">
-                    <i class="fas fa-bug phishing"></i>
-                    <h2>>>{{reason}}</h2>
-                    <p>Phishing Detected</p>
+            <div class="col-md-4 col-6 mb-3">
+                <div class="card stat-box bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle stat-icon"></i>
+                    <h2 class="display-5">{{ total_suspicious|default(0) }}</h2>
+                    <p class="lead mb-0">Suspicious (Score >=50)</p>
                 </div>
             </div>
         </div>
-
-
         
-
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span>Recent Email Analysis</span>
-                        <button class="btn btn-sm btn-outline-primary"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="email-item">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="mb-1">Your account needs verification</h6>
-                                    <p class="text-muted text-small mb-0">From: security@bank-support.com</p>
-                                </div>
-                                <span class="risk-badge suspicious">Suspicious</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-small">Risk Score: 5.2/10</span>
-                                    <p class="text-small text-muted mb-0">Contains suspicious keywords: "verify", "account"</p>
-                                </div>
-                                <span class="text-small text-muted">9:45 AM</span>
-                            </div>
-                        </div>
-                        
-                        <div class="email-item">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="mb-1">URGENT: Your password has expired</h6>
-                                    <p class="text-muted text-small mb-0">From: no-reply@it-department.net</p>
-                                </div>
-                                <span class="risk-badge phishing">Phishing</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-small">Risk Score: 8.7/10</span>
-                                    <p class="text-small text-muted mb-0">Suspicious URL detected</p>
-                                </div>
-                                <span class="text-small text-muted">9:12 AM</span>
-                            </div>
-                        </div>
-                        
-                        
-                        <div class="email-item">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="mb-1">Project Review Meeting</h6>
-                                    <p class="text-muted text-small mb-0">From: sarah.jones@company.com</p>
-                                </div>
-                                <span class="risk-badge safe">Safe</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-small">Risk Score: 1.2/10</span>
-                                    <p class="text-small text-muted mb-0">No suspicious elements detected</p>
-                                </div>
-                                <span class="text-small text-muted">Yesterday</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="row mb-5">
             
-          
-
-            
-            <div class="col-lg-5">
-                <div class="card" id="analyzer">
-                    <div class="card-header">
-                        Analyze Email Content
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="emailContent" class="form-label">Paste email content:</label>
-                            <textarea class="form-control" id="emailContent" rows="5" placeholder="Paste the content of the email you want to analyze here..."></textarea>
-                        </div>
-                        <button class="btn btn-primary w-100" id="analyzeBtn">
-                            <i class="fas fa-search me-1"></i> Analyze Email
-                            
-                        </button>
-
-                        
-                        
-                 
-                        
-                        <div id="analysisResult" class="analysis-result result-safe" style="display: none;">
-                            <div class="risk-score">3.2</div>
-                            <div class="risk-meter">
-                                <div class="risk-meter-fill" style="width: 32%; background-color: var(--warning);"></div>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-small">Low Risk</span>
-                                <span class="text-small">High Risk</span>
-                            </div>
-                            <h6 class="mb-2">Suspicious Email</h6>
-                            <p class="text-small mb-1"><strong>Reasons:</strong></p>
-                            <ul class="text-small mb-0">
-                                <li>Contains suspicious keywords: "urgent", "verify"</li>
-                                <li>Unknown sender domain</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
+            <!--- Details of email results -->
+            <div class="col-lg-8 mb-4">
                 <div class="card">
-                    <div class="card-body">
-                        <h3><i class="fas fa-traffic-light me-2"></i>Classification Thresholds</h3>
-                        <p>Emails are classified based on their final risk score:</p>
-                        
-                        <div class="result-box safe">
-                            <h4>Safe Email</h4>
-                            <div class="score-value">0 - 3.9</div>
-                            <p>No significant risk factors detected</p>
-                        </div>
-                        
-                        <div class="result-box suspicious">
-                            <h4>Suspicious Email</h4>
-                            <div class="score-value">4.0 - 6.9</div>
-                            <p>Some risk factors present, requires careful review</p>
-                        </div>
-                        
-                        <div class="result-box phishing">
-                            <h4>Phishing Email</h4>
-                            <div class="score-value">7.0 - 10</div>
-                            <p>High probability of phishing attempt</p>
-                        </div>
-                        
-                        <div class="mt-4">
-                            <h4>Total Score</h4>
-                            
-                                <p id="classificationDescription">Risk score will appear here<br> Current Score:{{totalscore}}</p>
+                    <div class="card-header h4 bg-white border-bottom">
+                        Recent Email Analysis
+                    </div>
+                    <div class="card-body p-0 scroll-box">
+                        <div class="list-group list-group-flush">
+                            {% for email in recent_analyses %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    
+                                    <div>
+                                        <h5 class="mb-1 text-truncate" style="font-weight: bold;">{{ email.title|default("No Subject Provided") }}</h5>
+                                        <p class="text-muted small mb-2">{{ email.sender_email|default("unknown@example.com") }}</p>
+                                        
+                                        <p class="mb-1"><strong>Risk Score:</strong> <span class="badge bg-dark">{{ email.risk_score|default(0)|round(0) }}</span></p>
+                                        
+                                        <p class="small text-dark mb-0">
+                                            <i class="fas fa-info-circle me-1"></i> 
+                                            {{ email.reason|default("No suspicious elements detected.") }}
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="text-end">
+                                        <span class="risk-badge 
+                                            {% if email.risk_score >= 81 %} risk-high 
+                                            {% elif email.risk_score >= 65 %} risk-medium 
+                                            {% elif email.risk_score >= 50 %} risk-low 
+                                            {% else %} risk-safe {% endif %} mb-2">
+                                            {{ email.conclusion|default("Safe") }}
+                                        </span>
+                                        
+                                        <p class="text-muted small mb-0 mt-3">Scanned: {{ email.time_of_scan|default("Just now") }}</p>
+                                    </div>
+                                </div>
                             </div>
-
-                             <h1>Email Content</h1>
-                            <p><strong>From:</strong> {{ sender }}</p>
-                            <p><strong>To:</strong> {{ recipient }}</p>
-                            <p><strong>Subject:</strong> {{ subject }}</p>
-                            
-                            {% if html_body %}
-                                <div>{{ html_body | safe }}</div>  <!-- Use | safe to render HTML -->
                             {% else %}
-                                <pre>{{ plain_body }}</pre>  <!-- Display plain text in a <pre> tag -->
-                            {% endif %}
+                            <div class="list-group-item text-center text-muted p-4">
+                                No recent analysis data available.
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-                 <div class="container">
-        <h1>Upload Email Content</h1>
-        <p>Select a file (e.g., a `.eml` or `.txt` file) to display its contents.</p>
-        
-        <div class="file-input">
-            <input type="file" id="emailFileInput" accept=".eml,.txt">
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header h5 bg-white border-bottom">
+                        Classification Thresholds
+                    </div>
+                    <div class="card-body">
+                        <div class="classification-box safe-threshold">
+                            <h5><i class="fas fa-check-circle me-1"></i> Safe Email</h5>
+                            <p class="score-value mb-0">Score: <strong>0 - 49</strong></p>
+                        </div>
+                        
+                        <h5 class="mt-3 mb-2 text-muted">Suspicious Email:</h5>
+                        <div class="classification-box low-threshold">
+                            <h6><i class="fas fa-exclamation-circle me-1"></i> Low Risk</h6>
+                            <p class="score-value mb-0">Score: <strong>50 - 64</strong></p>
+                        </div>
+                        <div class="classification-box medium-threshold">
+                            <h6><i class="fas fa-triangle-exclamation me-1"></i> Medium Risk</h6>
+                            <p class="score-value mb-0">Score: <strong>65 - 80</strong></p>
+                        </div>
+                        <div class="classification-box high-threshold">
+                            <h6><i class="fas fa-skull-crossbones me-1"></i> High Risk (Phishing)</h6>
+                            <p class="score-value mb-0">Score: <strong>>= 81</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <pre id="fileContent"></pre>
-    </div>
-
-
-
-    <div class="container">
-        <h1>Email Phishing Detector</h1>
-        <p>Paste the raw email content (including headers) below to analyze for phishing attempts:</p>
-        
-        <textarea id="emailContent" placeholder="From: sender@example.com
-To: recipient@example.com
-Subject: Your Subject Here
-Date: Tue, 9 Sep 2025 09:12:00 +0800
-
-Email body content here..."></textarea>
-        
-        <button onclick="analyzeEmail()">Analyze Email</button>
-        
-        <div id="result">
-            <h2>Analysis Results</h2>
-            <p><strong>From:</strong> <span id="sender"></span></p>
-            <p><strong>To:</strong> <span id="recipient"></span></p>
-            <p><strong>Subject:</strong> <span id="subject"></span></p>
-            <p><strong>Score:</strong> <span id="score"></span>/10</p>
-            <p><strong>Category:</strong> <span id="category"></span></p>
-            <div id="reasons"></div>
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header h5 bg-white border-bottom">
+                        <i class="fas fa-file-upload me-2"></i>Bulk Email Analysis
+                    </div>
+                    <div class="card-body">
+                        <form id="bulkAnalyzeForm" action="/analyze-bulk" method="post" enctype="multipart/form-data">
+                            
+                            <div class="mb-3">
+                                <label for="bulkEmailFiles" class="form-label">Upload multiple `.eml` or `.txt` files:</label>
+                                <input class="form-control" type="file" id="bulkEmailFiles" name="email_files" accept=".eml,.txt" multiple required>
+                                <small class="text-muted">You can select multiple files at once. The analysis will begin upon submission.</small>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-layer-group me-1"></i> Run Bulk Analysis
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="row mb-5" id="analyzer">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header h5 bg-white border-bottom">
+                        <i class="fas fa-search me-2"></i>Analyze Single Email
+                    </div>
+                    <div class="card-body">
+                        <form id="analyzeForm" action="/analyze-single" method="post" enctype="multipart/form-data">
+                            
+                            <div class="mb-3">
+                                <label for="emailFileInput" class="form-label">Upload single `.eml` or `.txt` file:</label>
+                                <input class="form-control" type="file" id="emailFileInput" name="email_file" accept=".eml,.txt">
+                            </div>
+                            
+                            <hr class="my-4">
+                            <p class="text-center text-muted small">OR PASTE RAW CONTENT</p>
+                            
+                            <div class="mb-3">
+                                <label for="emailContent" class="form-label">Paste raw email content:</label>
+                                <textarea class="form-control" id="emailContent" name="email_content" rows="6" placeholder="From: sender@example.com&#10;To: recipient@example.com&#10;Subject: Your Subject Here..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-dark w-100" id="analyzeBtn">
+                                <i class="fas fa-paper-plane me-1"></i> Run Single Analysis
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
-
-    </div>
-
-
-
-
-
-    <script>
-
-//Script for the uploading of email file:
-
- document.getElementById('emailFileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileContent = document.getElementById('fileContent');
-                fileContent.textContent = e.target.result;
-                fileContent.style.display = 'block';
-            };
-            reader.readAsText(file);
-        });
-
-
-
-
-
-
-
-       document.addEventListener('DOMContentLoaded', function() {
-    // Get the button and result elements
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const emailContentTextarea = document.getElementById('emailContent');
-    const analysisResultDiv = document.getElementById('analysisResult');
-    const classificationDescription = document.getElementById('classificationDescription');
-
-    // Add click event listener to the analyze button
-    analyzeBtn.addEventListener('click', function() {
-        // Get the email content from the textarea
-        const emailContent = emailContentTextarea.value.trim();
-
-        // Check if the textarea is empty
-        if (!emailContent) {
-            alert('Please paste some email content to analyze.');
-            return;
-        }
-
-        // Show loading state on the button
-        const originalButtonText = analyzeBtn.innerHTML;
-        analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Analyzing...';
-        analyzeBtn.disabled = true;
-
-        // Send the data to the backend for analysis (using Fetch API)
-        fetch('/analyze', { // This endpoint should match your Flask route
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ emailContent: emailContent })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Check if the analysis was successful
-            if (data.success) {
-                // Update the analysis result div with the received data
-                updateResultsUI(data);
-            } else {
-                // Show error message
-                alert('Analysis failed: ' + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            // Handle any errors
-            console.error('Error:', error);
-            alert('An error occurred during analysis. Please try again.');
-        })
-        .finally(() => {
-            // Restore the button to its original state
-            analyzeBtn.innerHTML = originalButtonText;
-            analyzeBtn.disabled = false;
-        });
-    });
-
-    // Function to update the UI with the analysis results
-    function updateResultsUI(data) {
-        // Destructure the data (adjust these property names to match what your backend sends)
-        const { score, category, reasons } = data;
-
-        // 1. Update the risk score
-        const riskScoreEl = analysisResultDiv.querySelector('.risk-score');
-        if (riskScoreEl) riskScoreEl.textContent = score.toFixed(1); // Show one decimal place
-
-        // 2. Update the risk meter fill width and color
-        const riskMeterFill = analysisResultDiv.querySelector('.risk-meter-fill');
-        if (riskMeterFill) {
-            // Calculate width as a percentage (assuming score is out of 10)
-            const widthPercentage = (score / 10) * 100;
-            riskMeterFill.style.width = `${widthPercentage}%`;
-
-            // Dynamically set the color based on the score/category
-            riskMeterFill.style.backgroundColor = getColorForScore(score);
-        }
-
-        // 3. Update the category title
-        const categoryTitle = analysisResultDiv.querySelector('h6');
-        if (categoryTitle) categoryTitle.textContent = `${category} Email`;
-
-        // 4. Update the reasons list
-        const reasonsList = analysisResultDiv.querySelector('ul');
-        if (reasonsList && reasons && Array.isArray(reasons)) {
-            // Clear any existing list items
-            reasonsList.innerHTML = '';
-
-            // Add new list items for each reason
-            reasons.forEach(reason => {
-                const listItem = document.createElement('li');
-                listItem.textContent = reason;
-                reasonsList.appendChild(listItem);
-            });
-        }
-
-        // 5. Update the classification description
-        if (classificationDescription) {
-            classificationDescription.innerHTML = `
-                Risk score will appear here<br> 
-                Current Score: <strong>${score.toFixed(1)}</strong> - ${category}
-            `;
-        }
-
-        // 6. Show the result div
-        analysisResultDiv.style.display = 'block';
-
-        // 7. (Optional) Update the overall class for styling (e.g., result-safe, result-suspicious, result-phishing)
-        // First, remove any existing category classes
-        analysisResultDiv.classList.remove('result-safe', 'result-suspicious', 'result-phishing');
-        // Add the new class based on the category
-        analysisResultDiv.classList.add(`result-${category.toLowerCase().split(' ')[0]}`); // Gets first word e.g., "suspicious"
-    }
-
-    // Helper function to determine color based on score
-    function getColorForScore(score) {
-        if (score >= 7.0) {
-            return 'var(--danger)'; // Red for phishing
-        } else if (score >= 4.0) {
-            return 'var(--warning)'; // Orange/Yellow for suspicious
-        } else {
-            return 'var(--success)'; // Green for safe
-        }
-    }
-});
-    </script>
-
-
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <script>
+        // Form validation to ensure at least one field is used before submission
+        document.getElementById('analyzeForm').addEventListener('submit', function(event) {
+            const fileInput = document.getElementById('emailFileInput');
+            const contentTextarea = document.getElementById('emailContent');
+            
+            // Prevent submission if both fields are empty
+            if (!fileInput.files.length && !contentTextarea.value.trim()) {
+                alert('Please upload an email file OR paste the raw email content before running analysis.');
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
-
 </html>
