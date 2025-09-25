@@ -1,6 +1,6 @@
 import re
 
-# removes special characters and numbers from text
+# removes special characters that are not letter, digit or spaces from text
 def preprocess_text(text):
     clean_text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
     clean_text = clean_text.lower().strip()
