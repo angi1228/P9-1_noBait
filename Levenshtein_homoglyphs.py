@@ -22,9 +22,9 @@ from typing import List
 
 # List of safe email domains
 SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton.me','protonmail.com','icloud.com','mycompany.com',
-                    'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg','company.com']
+                    'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg']
 SAFE_SENDER_LIST = ['google','microsoft','neo','yahoo','proton','icloud','zoho','aol', 'tuta','tutanota','mailfence',
-                    'sit','company','itsupport']
+                    'sit','mycompany','itsupport']
 
 # Predefined mapping of common homoglyph
 COMMON_HOMOGLYPH_MAP  = {
