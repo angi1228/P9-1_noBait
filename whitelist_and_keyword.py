@@ -37,7 +37,7 @@ def find_suspicious_keywords(text):
 
     risk_score = 50 if count > 0 else 0
 
-    return {"is_suspicious": count > 0, "risk_score": risk_score, "count": count, "found": found}
+    return {"is_suspicious": count > 0, "risk_score": risk_score, "count": count, "Words_found": found}
 
 def check_whitelist(email):
 
@@ -45,17 +45,14 @@ def check_whitelist(email):
         "gmail.com", "outlook.com", "neo.email", "yahoo.com",
         "proton.me", "protonmail.com", "icloud.com", "zohomail.com",
         "aol.com", "tuta.com", "tutanota.com", "mailfence.com",
-        "sit.singaporetech.edu.sg"
+        "sit.singaporetech.edu.sg", "singaporetech.edu.sg", "mycompany.com"
     ]
     
     #Initialize
     is_safe = False
     risk_score = 0
     domain = None
-
-    # Check if email contains @
-    if "@" not in email:
-        return {"is_safe": False, "risk_score": 100, "domain": None, "message": "Invalid email format"}
+    reason = ""
 
     # Extract domain
     domain = email.split("@")[1]
@@ -64,11 +61,13 @@ def check_whitelist(email):
     if domain.lower() in [d.lower() for d in safe_domains]:
         risk_score = 0 
         is_safe = True
+        reason = "Domain is in whitelist"
     else:
         risk_score += 100
         is_safe = False
+        reason = "Domain is not in whitelist"
 
-    return {"is_safe": is_safe, "risk_score": risk_score, "domain": domain.lower()}
+    return {"is_safe": is_safe, "risk_score": risk_score, "domain": domain.lower(), "reason": reason}
 
 
 #Test Codesss
