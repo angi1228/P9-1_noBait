@@ -7,6 +7,7 @@ SUSPICIOUS_KEYWORDS = ['login', 'verify', 'update', 'banking', 'secure', 'accoun
 
 SHORTENING_SERVICES = ['bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly', 't.co', 'is.gd']
 
+# Change to safedomain list for integration
 TRUSTED_DOMAINS = ['gmail.com', 'outlook.com', 'neo.email', 'yahoo.com',
                    'proton.me', 'protonmail.com', 'icloud.com', 'zohomail.com',
                    'aol.com', 'tuta.com', 'tutanota.com', 'mailfence.com',
@@ -14,15 +15,20 @@ TRUSTED_DOMAINS = ['gmail.com', 'outlook.com', 'neo.email', 'yahoo.com',
 
 # Extract URL from body text
 def extract_URL(email_body_text):
+    '''Extract URLs from body string'''
     # URL_REGEX = r'(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?\/[a-zA-Z0-9]{2,}'
     URL_REGEX = r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)'
     found_urls = re.findall(URL_REGEX, email_body_text)
-    print(found_urls)
+    # print(found_urls)
     # output as list
     return found_urls
 
 # Parse URL
 def parse_URL(url_list):
+    '''splits URLS into different parts
+            netloc = domain name eg outlook.com
+            path = page name eg. /login
+    '''
     parsed_list = []
     # loops through every url in url_list
     for i in url_list:                   # for every url in url_list
@@ -35,6 +41,11 @@ def parse_URL(url_list):
 
 # domain check
 def check_domain(parsed_url_list):
+    '''Checks riskscore of URL domain 
+            trusted domain = 0
+            Untrusted domain = 50
+            URL shorteners = 70 
+    '''
     # list for riskscore 
     domain_score = []
     # for every url in list
@@ -62,13 +73,18 @@ def check_domain(parsed_url_list):
     return domain_score
 
 def check_page(parsed_url_list, domain_score):
+    '''
+    Checks risk score of URL page name
+        Use suspicious keywords = 50
+        No suspicious keywords = 0
+    '''
     # run through url again
     count = 0 
     print(f'Score List: {domain_score}')
     for i in parsed_url_list:
         # if page name found in suspicious keywords
-        print(i.path[1:])
-        print(i.path[-1:]) 
+        # print(i.path[1:])
+        # print(i.path[-1:]) 
         # if i.path[-1:] == "/":
         #     print(i.path[1:-1])
         if i.path[1:] in SUSPICIOUS_KEYWORDS or i.path[1:-1] in SUSPICIOUS_KEYWORDS:       #  string sliced to remove /
@@ -83,17 +99,22 @@ def check_page(parsed_url_list, domain_score):
         
 
 def generate_reason(domainscore):
+    '''
+    Appends risk assessment to riskscore
+    Result is stored in dictionary format:
+    {URL number : [riskscore, risk assessment]}
+    '''
     reasonList = []
     for i in domainscore:
-        if i<50:
+        if i==0:
             reason = "URL is not suspicious"
             reasonList.append(reason)
 
-        elif 50<=i and i<70:
+        elif i == 50:
             reason = "URL is from an untrusted domain"
             reasonList.append(reason)
 
-        elif 70<=i and i <100:
+        elif i == 70:
             reason = "URL shortener used"
             reasonList.append(reason)
 
@@ -102,7 +123,7 @@ def generate_reason(domainscore):
             reasonList.append(reason)
     # Dict Format {1: [riskscore,reason], 2:[riskscore,reason]....}
     length = len(domainscore)          # length helps for defines number of loops to append to Dict
-    print(length, len(domainscore))                                     # len-1 to start from 0
+    # print(length, len(domainscore))                                     # len-1 to start from 0
     URL_Check_Dict = {}
     for count in range(length):
         print(count, domainscore[count], reasonList[count])
@@ -117,6 +138,7 @@ def generate_reason(domainscore):
 
 
 def check_url(email_body):
+    '''Checks riskscore of URLs found in a body of text (str)'''
     found_url_list = extract_URL(email_body)
     parsed_list = parse_URL(['http://yahoo.com', 'https://tinyurl.com/utdmmett', 'https://bankscam.net/login'])
     domainscore = check_domain(parsed_list)
