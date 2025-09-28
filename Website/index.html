@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoBait - Email Phishing Detector</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --accent: #3498db;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --light: #f9f9f9;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Account for fixed navbar when scrolling */
+    #resultsContainer {
+      scroll-margin-top: 80px;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: var(--light);
+      color: #333;
+      padding-top: 70px;
+    }
+
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .nav-link {
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    .nav-link:hover {
+      color: var(--accent);
+    }
+
+    h1,
+    h2,
+    h5 {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-card h2 {
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .safe {
+      color: var(--success);
+    }
+
+    .suspicious {
+      color: var(--warning);
+    }
+
+    .phishing {
+      color: var(--danger);
+    }
+
+    .scanned {
+      color: var(--accent);
+    }
+
+    .email-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .risk-badge {
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .analyzer {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border: none;
+      padding: 10px 20px;
+      font-weight: 500;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 25px;
+      border-radius: 16px;
+    }
+
+    #result.safe {
+      background: #eafaf1;
+      color: var(--success);
+    }
+
+    #result.suspicious {
+      background: #fff5e5;
+      color: var(--warning);
+    }
+
+    #result.malicious {
+      background: #fdeaea;
+      color: var(--danger);
+    }
+
+    .analysis-result {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: white;
+    }
+
+    .result-safe {
+      border-left: 4px solid var(--success);
+    }
+
+    .result-suspicious {
+      border-left: 4px solid var(--warning);
+    }
+
+    .result-phishing {
+      border-left: 4px solid var(--danger);
+    }
+
+    .risk-score {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .risk-meter {
+      height: 8px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .risk-meter-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s;
+    }
+
+    .text-small {
+      font-size: 0.85rem;
+    }
+
+    .upload-area {
+      border: 2px dashed #e0e0e0;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      margin: 20px 0;
+      transition: border-color 0.3s;
+      background-color: #fafafa;
+    }
+
+    .upload-area:hover {
+      border-color: var(--secondary);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .upload-text {
+      color: var(--gray);
+      margin-bottom: 15px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .browse-btn {
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      color: var(--dark);
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .browse-btn:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    .selected-file {
+      display: none;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+
+    .analyze-btn {
+      color: white;
+      background: var(--accent);
+      border: none;
+      padding: 10px 20px;
+      font-weight: 500;
+      width: 100%;
+    }
+
+    .analyze-btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .result-area {
+      padding: 20px;
+      border-radius: 8px;
+      background-color: white;
+      border-left: 4px solid var(--gray);
+      margin: 20px 0;
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .analysis-details {
+      margin-top: 20px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .detail-value {
+      font-weight: 600;
+    }
+
+    /* Email body viewer */
+    .email-body-box {
+      white-space: pre-wrap;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow: auto;
+      background: #fafafa;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar fixed-top navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="#"><i class="fas fa-shield-alt me-2"></i>NoBait</a>
+      <ul class="navbar-nav flex-row ms-auto">
+        <li class="nav-item me-3"><a class="nav-link" href="#">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="#analyzer">Analyze</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <!-- Welcome -->
+    <h1 class="mb-3">Welcome to NoBait</h1>
+    <p>NoBait is an email analysis engine that helps you detect phishing attempts in real time. Paste or upload an email
+      and let us analyze it for threats.</p>
+
+    <!-- Stats -->
+    <div class="row my-4 g-3">
+      <div class="col-md-3 col-6">
+        <div class="stat-card"><i class="fas fa-envelope-open-text scanned"></i>
+          <h2>{{sum}}</h2>
+          <p>Scanned</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card"><i class="fas fa-check-circle safe"></i>
+          <h2>{{anothernumber}}</h2>
+          <p>Safe</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card"><i class="fas fa-exclamation-triangle suspicious"></i>
+          <h2>{{sus}}</h2>
+          <p>Suspicious</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card"><i class="fas fa-bug phishing"></i>
+          <h2>{{phishing}}</h2>
+          <p>Phishing</p>
+        </div>
+      </div>
+
+
+      <!-- Results (Flask rendered) -->
+      <!-- {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    {% if email_content %}
+      <div class="result-area {% if category=='Safe' %}result-safe{% elif category=='Suspicious' %}result-suspicious{% else %}result-phishing{% endif %}">
+        <h4>Result: {{ category }} (Score: {{ score }}/10)</h4>
+        <ul>
+          {% for r in reasons %}
+            <li>{{ r }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>Keywords Detected:</strong> {{ keyword_count }}</p>
+        <p><strong>Domain Reputation:</strong> {{ domain_reputation }}</p>
+        <p class="mt-3"><strong>Email Body:</strong></p>
+        <pre class="email-body-box">{{ email_content }}</pre>
+      </div>
+    {% endif %}
+
+    {% if zip_results %}
+      <h3>ZIP Analysis</h3>
+      {% for r in zip_results %}
+        <div class="result-area {% if r.category=='Safe' %}result-safe{% elif r.category=='Suspicious' %}result-suspicious{% else %}result-phishing{% endif %}">
+          <h5>File Name: {{ r.filename }} — {{ r.category }} (Score: {{ r.score }}/10)</h5>
+          {% if r.error %}
+            <p class="text-danger">Error: {{ r.error }}</p>
+          {% else %}
+          <h1>Reasons:</h1>
+            <ul>
+              {% for reason in r.reasons %}
+                <li>{{ reason }}</li>
+              {% endfor %}
+            </ul>
+            <p><strong>Keywords:</strong> {{ r.keyword_count }}</p>
+            <p><strong>Domain Reputation:</strong> {{ r.domain_reputation }}</p>
+            <p class="mt-3"><strong>Email Body:</strong></p>
+            <pre class="email-body-box">{{ r.email_content }}</pre>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %} -->
+
+
+
+
+
+
+      <!-- UUPLOADING OF FILES HTML PART -->
+      <div class="container">
+        <p class="subtitle">Upload an email to check for phishing attempts</p>
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">📧</div>
+          <p class="upload-text">Drag & drop your email file here</p>
+          <input type="file" id="fileInput" class="file-input" accept=".eml,.txt,.html,.zip">
+          <button class="browse-btn" id="browseBtn">Browse Files</button>
+        </div>
+
+        <div class="selected-file" id="selectedFile" style="display:none;">
+          <div class="file-name" id="fileName">File name</div>
+          <div class="file-size" id="fileSize">File size</div>
+        </div>
+
+        <button class="analyze-btn" id="analyzeBtn">Analyze for Phishing</button>
+
+        <div class="result-area" id="resultArea" style="display:none;">
+          <div class="result-title" id="resultTitle">Result will be shown here</div>
+          <div class="result-details" id="resultDetails">Details will appear here after analysis</div>
+
+          <div class="analysis-details" id="analysisDetails">
+            <div class="detail-item">
+              <span>Suspicious Keywords:</span>
+              <span class="detail-value" id="keywordCount">0</span>
+            </div>
+            <div class="detail-item">
+              <span>Whitelist Check:</span>
+              <span class="detail-value" id="whitelistStatus">Not checked</span>
+            </div>
+            <div class="detail-item">
+              <span>Domain Reputation:</span>
+              <span class="detail-value" id="domainReputation">Unknown</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <div id="analyzer" class="analyzer">
+      <h2>Email Analyzer</h2>
+      <textarea id="emailContent" placeholder="Paste email headers and body here..."></textarea>
+      <button class="btn btn-primary w-100 mt-3" onclick="analyzeEmail()">Analyze Email</button>
+
+      <!-- Results Section for pasted content -->
+      <div id="result" style="display:none; margin-top:20px;">
+        <p><strong>Score:</strong> <span id="score"></span></p>
+        <p><strong>Category:</strong> <span id="category"></span></p>
+        <div id="reasons"></div>
+        <div class="mt-3">
+          <p class="mb-1"><strong>Body:</strong></p>
+          <pre class="email-body-box" id="pastedBody"></pre>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultsContainer">
+      <!-- Analysis Results -->
+      {% if email_content %}
+      <div class="card mb-4">
+        <div class="card-header">Email Analysis Result</div>
+        <div class="card-body p-0">
+          <div class="email-item d-flex justify-content-between">
+            <div>
+              <h6>{{ category }} — Score: {{ score }}/10</h6>
+              <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
+            </div>
+            <span class="risk-badge 
+        {% if category=='Phishing' %}phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
+              {{ category }}
+            </span>
+          </div>
+          <div class="p-3">
+            <p class="mb-1"><strong>Reasons:</strong></p>
+            <ul>
+              {% for r in reasons %}
+              <li>{{ r }}</li>
+              {% endfor %}
+            </ul>
+            <p class="mb-1"><strong>Email Body:</strong></p>
+            <pre class="email-body-box">{{ email_content }}</pre>
+
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+    </div>
+    
+    <div id="resultsContainer">
+      <!-- ZIP Results -->
+      {% if zip_results %} <!-- Only show if there are ZIP results -->
+      <div class="card mb-4">
+        <div class="card-header">ZIP File Analysis</div> <!-- Card title -->
+        <div class="card-body p-0">
+          {% for r in zip_results %} <!-- Loop through each ZIP result -->
+
+          <!-- File header with score and category badge -->
+          <div class="email-item d-flex justify-content-between">
+            <div>
+              <h6>{{ r.filename }} — Score: {{ r.score }}/10</h6> <!-- Filename and score -->
+              <p class="text-muted small">{{ r.domain_reputation }} | {{ r.keyword_count }} keywords</p>
+            </div>
+            <!-- Risk category badge with color coding -->
+            <span class="risk-badge 
+        {% if r.category=='Phishing' %}phishing{% elif r.category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
+              {{ r.category }}
+            </span>
+          </div>
+
+          <!-- Detailed analysis content -->
+          <div class="p-3 border-bottom">
+            {% if r.error %}
+            <p class="text-danger">Error: {{ r.error }}</p> <!-- Show error if any -->
+            {% else %}
+            <!-- List reasons for the score -->
+            <p class="mb-1"><strong>Reasons:</strong></p>
+            <ul>
+              {% for reason in r.reasons %}
+              <li>{{ reason }}</li>
+              {% endfor %}
+            </ul>
+            <!-- Show email content found in ZIP -->
+            <p class="mb-1"><strong>Email Body:</strong></p>
+            <pre class="email-body-box">{{ r.email_content }}</pre>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+
+
+
+    <!-- Recent Emails -->
+    <!-- <div class="card mb-4">
+      <div class="card-header">Recent Email Analysis</div>
+      <div class="card-body p-0">
+        <div class="email-item d-flex justify-content-between">
+          <div><h6>Your account needs verification</h6><p class="text-muted small">security@bank-support.com</p></div>
+          <span class="risk-badge suspicious">Suspicious</span>
+        </div>
+        <div class="email-item d-flex justify-content-between">
+          <div><h6>URGENT: Your password has expired</h6><p class="text-muted small">no-reply@it-department.net</p></div>
+          <span class="risk-badge phishing">Phishing</span>
+        </div>
+        <div class="email-item d-flex justify-content-between">
+          <div><h6>Project Review Meeting</h6><p class="text-muted small">sarah.jones@company.com</p></div>
+          <span class="risk-badge safe">Safe</span>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Analyzer -->
+
+
+    <!-- <div>{{category}}</div>
+    <div>{{reasons}}</div>
+    <div>{{result}}</div>
+    <div>{{keyword_count}}</div>
+    <div>{{domain_reputation}}</div>
+    <div>{{email_content}}</div> -->
+
+
+
+
+    <script>
+      // Show filename + size
+      const fileInput = document.getElementById("fileInput");
+      const browseBtn = document.getElementById("browseBtn");
+      const selectedFile = document.getElementById("selectedFile");
+      const fileName = document.getElementById("fileName");
+      const fileSize = document.getElementById("fileSize");
+
+      browseBtn.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          fileName.textContent = file.name;
+          fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+          selectedFile.style.display = "block";
+        }
+      });
+
+      // Submit pasted email
+      function analyzeEmail() {
+        const emailContent = document.getElementById('emailContent').value;
+        if (!emailContent.trim()) {
+          alert("Paste email first");
+          return;
+        }
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/analyze#resultsContainer";  // Add anchor to URL
+
+        const textarea = document.createElement("textarea");
+        textarea.name = "emailContent";
+        textarea.value = emailContent;
+        form.appendChild(textarea);
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      // Submit uploaded file
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      analyzeBtn.addEventListener("click", () => {
+        if (fileInput.files.length === 0) {
+          alert("Please select a file first");
+          return;
+        }
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/analyze-file#resultsContainer";  // Add anchor to URL
+        form.enctype = "multipart/form-data";
+
+        const clone = fileInput.cloneNode();
+        clone.files = fileInput.files;
+        clone.name = "file";
+        form.appendChild(clone);
+        document.body.appendChild(form);
+        form.submit();
+      });
+    </script>
+</body>
+
+</html>
