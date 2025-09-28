@@ -410,18 +410,23 @@
         <div class="upload-area" id="uploadArea">
           <div class="upload-icon">📧</div>
           <p class="upload-text">Drag & drop your email file here</p>
+
+          <!-- accept only certain files type -->
           <input type="file" id="fileInput" class="file-input" accept=".eml,.txt,.html,.zip">
           <button class="browse-btn" id="browseBtn">Browse Files</button>
         </div>
-
+        
+        <!-- this will display the filename and size on the website when a zipped file is uploaded -->
         <div class="selected-file" id="selectedFile" style="display:none;">
           <div class="file-name" id="fileName">File name</div>
           <div class="file-size" id="fileSize">File size</div>
         </div>
 
+
         <button class="analyze-btn" id="analyzeBtn">Analyze for Phishing</button>
 
-        <div class="result-area" id="resultArea" style="display:none;">
+        
+        <!-- <div class="result-area" id="resultArea" style="display:none;">
           <div class="result-title" id="resultTitle">Result will be shown here</div>
           <div class="result-details" id="resultDetails">Details will appear here after analysis</div>
 
@@ -439,65 +444,11 @@
               <span class="detail-value" id="domainReputation">Unknown</span>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
-
-
-
-
-    <div id="analyzer" class="analyzer">
-      <h2>Email Analyzer</h2>
-      <textarea id="emailContent" placeholder="Paste email headers and body here..."></textarea>
-      <button class="btn btn-primary w-100 mt-3" onclick="analyzeEmail()">Analyze Email</button>
-
-      <!-- Results Section for pasted content -->
-      <div id="result" style="display:none; margin-top:20px;">
-        <p><strong>Score:</strong> <span id="score"></span></p>
-        <p><strong>Category:</strong> <span id="category"></span></p>
-        <div id="reasons"></div>
-        <div class="mt-3">
-          <p class="mb-1"><strong>Body:</strong></p>
-          <pre class="email-body-box" id="pastedBody"></pre>
-        </div>
-      </div>
-    </div>
-
-    <div id="resultsContainer">
-      <!-- Analysis Results -->
-      {% if email_content %}
-      <div class="card mb-4">
-        <div class="card-header">Email Analysis Result</div>
-        <div class="card-body p-0">
-          <div class="email-item d-flex justify-content-between">
-            <div>
-              <h6>{{ category }} — Score: {{ score }}/10</h6>
-              <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
-            </div>
-            <span class="risk-badge 
-        {% if category=='Phishing' %}phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
-              {{ category }}
-            </span>
-          </div>
-          <div class="p-3">
-            <p class="mb-1"><strong>Reasons:</strong></p>
-            <ul>
-              {% for r in reasons %}
-              <li>{{ r }}</li>
-              {% endfor %}
-            </ul>
-            <p class="mb-1"><strong>Email Body:</strong></p>
-            <pre class="email-body-box">{{ email_content }}</pre>
-
-          </div>
-        </div>
-      </div>
-
-      {% endif %}
-    </div>
-    
-    <div id="resultsContainer">
+ <div id="resultsContainer">
       <!-- ZIP Results -->
       {% if zip_results %} <!-- Only show if there are ZIP results -->
       <div class="card mb-4">
@@ -542,6 +493,63 @@
 
     </div>
 
+
+
+    
+    <!-- this is the anaylse email section, where user have to manually paste the email content  -->
+    <div id="analyzer" class="analyzer">
+      <h2>Email Analyzer</h2>
+      <textarea id="emailContent" placeholder="Paste email headers and body here..."></textarea>
+      <button class="btn btn-primary w-100 mt-3" onclick="analyzeEmail()">Analyze Email</button>
+
+      <!-- Results Section for pasted content -->
+      <div id="result" style="display:none; margin-top:20px;">
+        <p><strong>Score:</strong> <span id="score"></span></p>
+        <p><strong>Category:</strong> <span id="category"></span></p>
+        <div id="reasons"></div>
+        <div class="mt-3">
+          <p class="mb-1"><strong>Body:</strong></p>
+          <pre class="email-body-box" id="pastedBody"></pre>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- this part will display the results for single file or txt file, and display the manually pasted email content -->
+    <div id="resultsContainer">
+      <!-- Analysis Results -->
+      {% if email_content %}
+      <div class="card mb-4">
+        <div class="card-header">Email Analysis Result</div>
+        <div class="card-body p-0">
+          <div class="email-item d-flex justify-content-between">
+            <div>
+              <h6>{{ category }} — Score: {{ score }}/10</h6>
+              <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
+            </div>
+            <span class="risk-badge 
+        {% if category=='Phishing' %}phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
+              {{ category }}
+            </span>
+          </div>
+          <div class="p-3">
+            <p class="mb-1"><strong>Reasons:</strong></p>
+            <ul>
+              {% for r in reasons %}
+              <li>{{ r }}</li>
+              {% endfor %}
+            </ul>
+            <p class="mb-1"><strong>Email Body:</strong></p>
+            <pre class="email-body-box">{{ email_content }}</pre>
+
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+    </div>
+    
+   
 
 
 
