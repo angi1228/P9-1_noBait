@@ -9,6 +9,8 @@ from emailchecking_functions.urgency import check_urgency
 from emailchecking_functions.punctuation import check_punctuation
 from emailchecking_functions.personalinfo import check_personal_info
 from emailchecking_functions.test import testingfunction
+from emailchecking_functions.financedetect import check_financial_request
+
 
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
@@ -52,6 +54,7 @@ def analyze_email():
         domain_reputation=result['domain_reputation'],
         email_content=email_content,
         anothernumber=2000, sum=5, sus=5000
+       
     )
 
 # ----------------------------
@@ -110,7 +113,7 @@ def analyze_file():
 def analyze_email_content_detailed(content: str):
     score, reasons = 0.0, []  # total score and reasons list
     keyword_count, domain_reputation = 0, "Good"
-
+    
     # Run keyword checker
     kw_score, kw_reasons, keyword_count = check_keywords(content)
     score += kw_score; reasons += kw_reasons
@@ -133,7 +136,11 @@ def analyze_email_content_detailed(content: str):
 
     # Run personal info checker
     pi_score, pi_reasons = check_personal_info(content)
-    score += pi_score; reasons += pi_reasons
+    score += pi_score; reasons += pi_reasons;reasons 
+
+    fi_score, fi_reasons = check_financial_request(content)
+    score += fi_score; reasons += fi_reasons
+
 
     # Run test function (custom rules)
     test1, test2 = testingfunction(content)
