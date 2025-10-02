@@ -58,7 +58,7 @@ def analyze_email():
     # Pass results back to the template to display ## NOTE: YX To link from here
     return render_template(
         "index.html",
-        score=result['risk_score'],
+        score=result['f_risk_score'],
         category=result['category_risk'],
         reasons=result['reasons'],
         keyword_count=result['keyword_count'],
@@ -110,11 +110,12 @@ def analyze_file():
                 # Pass results back to the template to display ## NOTE: YX To link from here
             return render_template(
                 "index.html",
-                score=result['risk_score'],
-                category=result['category_risk'],
-                reasons=result['reasons'],
-                keyword_count=result['keyword_count'],
-                domain_reputation=result['domain_reputation'],
+                zip_results=results,
+                # score=result['risk_score'],
+                # category=result['category_risk'],
+                # reasons=result['reasons'],
+                # keyword_count=result['keyword_count'],
+                # domain_reputation=result['domain_reputation'],
                 email_content=content,
                 phishing=c_cmf_phsihing,
                 anothernumber=c_safe_emails,
@@ -127,18 +128,19 @@ def analyze_file():
             # If uploaded file is just a single email file (not zip)
             content = file.read().decode('utf-8', errors='ignore')
             result = analyze_email_content_detailed(content)
-            # return render_template("index.html",
-            #                        filename=file.filename,
-            #                        email_content=content,
-            #                        **result)
-                # Pass results back to the template to display ## NOTE: YX To link from here
+            return render_template("index.html",
+                                   filename=file.filename,
+                                   email_content=content,
+                                   **result)
+            #    Pass results back to the template to display ## NOTE: YX To link from here
             return render_template(
                 "index.html",
-                score=result['risk_score'],
-                category=result['category_risk'],
+                
+                score=result['f_risk_score'],
+                category=result['conclusion'],
                 reasons=result['combined_reasons'],
-                keyword_count=result['keyword_count'],
-                domain_reputation=result['domain_reputation'],
+                keyword_count="N/A (Reverted to New Analyzer)",
+                domain_reputation="N/A (Reverted to New Analyzer)",
                 email_content=content,
                 phishing=c_cmf_phsihing,
                 anothernumber=c_safe_emails,
@@ -189,53 +191,6 @@ def analyze_email_content_detailed(content: str):
     # Calculate total risk score
     f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
     combined_analysis['f_risk_score'].update(f_risk_score)
-
-    ''' TO AMEND THE FOLLOWING'''
-    # score, reasons = 0.0, []  # total score and reasons list
-    # keyword_count, domain_reputation = 0, "Good"
-    
-    # # Run keyword checker
-    # kw_score, kw_reasons, keyword_count = check_keywords(content)
-    # score += kw_score; reasons += kw_reasons
-
-    # # Run link checker
-    # link_score, link_reasons, domain_reputation = check_links(content)
-    # score += link_score; reasons += link_reasons
-
-    # # Run greetings checker
-    # g_score, g_reasons = check_greetings(content)
-    # score += g_score; reasons += g_reasons
-
-    # # Run urgency checker
-    # u_score, u_reasons = check_urgency(content)
-    # score += u_score; reasons += u_reasons
-
-    # # Run punctuation checker
-    # p_score, p_reasons = check_punctuation(content)
-    # score += p_score; reasons += p_reasons
-
-    # # Run personal info checker
-    # pi_score, pi_reasons = check_personal_info(content)
-    # score += pi_score; reasons += pi_reasons;reasons 
-
-    # fi_score, fi_reasons = check_financial_request(content)
-    # score += fi_score; reasons += fi_reasons
-
-
-    # # Run test function (custom rules)
-    # test1, test2 = testingfunction(content)
-    # score += test1; reasons += test2
-
-    
-    # Return all results as dictionary
-    # return {
-    #     "score": round(score, 1),
-    #     "category": category,
-    #     "reasons": reasons,
-    #     "keyword_count": keyword_count,
-    #     "domain_reputation": domain_reputation
-    # }
-    ''' STOP AMENDING HERE '''
 
     # Map the risk score to a conclusion and risk level. 
     if f_risk_score >= 81:
@@ -292,3 +247,4 @@ def analyze_email_content_detailed(content: str):
 # ----------------------------
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
+    
