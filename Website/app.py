@@ -58,12 +58,14 @@ def analyze_email():
     # Pass results back to the template to display ## NOTE: YX To link from here
     return render_template(
         "index.html",
-        score=result['f_risk_score'],
-        category=result['category_risk'],
-        reasons=result['reasons'],
-        keyword_count=result['keyword_count'],
-        domain_reputation=result['domain_reputation'],
-        email_content=email_content,
+        "index.html",
+        score=result.get('score', 0),                  # Matches {{ score }}
+        category=result.get('category', 'Error'),      # Matches {{ category }}
+        reasons=result.get('reasons', []),             # Matches {{ reasons }}
+        keyword_count=result.get('keyword_count', 'N/A'), # Matches {{ keyword_count }}
+        domain_reputation=result.get('domain_reputation', 'N/A'), # Matches {{ domain_reputation }}
+        email_content=email_content,                   # Matches {{ email_content }} (and acts as display trigger)
+        # ... (Global Counters) ...
         phishing=c_cmf_phsihing,
         anothernumber=c_safe_emails,
         sum=c_emails_analyse,
@@ -129,24 +131,33 @@ def analyze_file():
             content = file.read().decode('utf-8', errors='ignore')
             result = analyze_email_content_detailed(content)
             return render_template("index.html",
-                                   filename=file.filename,
-                                   email_content=content,
-                                   **result)
-            #    Pass results back to the template to display ## NOTE: YX To link from here
-            return render_template(
-                "index.html",
+                                   filename=file.filename, # Pass filename for display
+                                    score=result.get('score', 0),                  # Matches {{ score }}
+                                    category=result.get('category', 'Error'),      # Matches {{ category }}
+                                    reasons=result.get('reasons', []),             # Matches {{ reasons }},
+                                    keyword_count=result.get('keyword_count', 'N/A'),
+                                    domain_reputation=result.get('domain_reputation', 'N/A'),
+                                    email_content=content,
+                                    phishing=c_cmf_phsihing,
+                                    anothernumber=c_safe_emails,
+                                    sum=c_emails_analyse,
+                                    sus=c_suspicious_email,
+                                   )
+            # #    Pass results back to the template to display ## NOTE: YX To link from here
+            # return render_template(
+            #     "index.html",
                 
-                score=result['f_risk_score'],
-                category=result['conclusion'],
-                reasons=result['combined_reasons'],
-                keyword_count="N/A (Reverted to New Analyzer)",
-                domain_reputation="N/A (Reverted to New Analyzer)",
-                email_content=content,
-                phishing=c_cmf_phsihing,
-                anothernumber=c_safe_emails,
-                sum=c_emails_analyse,
-                sus=c_suspicious_email
-            )
+            #     score=result['f_risk_score'],
+            #     category=result['conclusion'],
+            #     reasons=result['combined_reasons'],
+            #     keyword_count="N/A (Reverted to New Analyzer)",
+            #     domain_reputation="N/A (Reverted to New Analyzer)",
+            #     email_content=content,
+            #     phishing=c_cmf_phsihing,
+            #     anothernumber=c_safe_emails,
+            #     sum=c_emails_analyse,
+            #     sus=c_suspicious_email
+            # )
 
 
     except Exception as e:
@@ -160,6 +171,10 @@ def analyze_file():
 
 
 def analyze_email_content_detailed(content: str):
+    global c_cmf_phsihing # MUST be declared global to be modified
+    global c_suspicious_email # MUST be declared global to be modified
+    global c_safe_emails # MUST be declared global to be modified
+    global c_emails_analyse # MUST be declared global to be modified
 
     # 1. Get Constants before running the analysis
     email_parts = extract_email_parts(content) # Returns the email parts 
@@ -189,13 +204,14 @@ def analyze_email_content_detailed(content: str):
     n_analysis += 1; 
 
     # Calculate total risk score
-    f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
-    combined_analysis['f_risk_score'].update(f_risk_score)
+    if t_risk_score !=0:
+        f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
+        combined_analysis['f_risk_score'] = f_risk_score
 
     # Map the risk score to a conclusion and risk level. 
     if f_risk_score >= 81:
         c_suspicious_email += 1 # Consider as suspicious email
-        cmf_phsihing += 1 # Add count to the number of confimred phsihing emails
+        c_cmf_phsihing += 1 # Add count to the number of confimred phsihing emails
         conclusion, risk_level = "Phishing", "High"
     elif f_risk_score >= 65:
         c_suspicious_email += 1 # Consider as suspicious email
@@ -212,24 +228,31 @@ def analyze_email_content_detailed(content: str):
      
     combined_analysis['conclusion'] = conclusion
     combined_analysis['risk_level'] = risk_level
+    combined_analysis['title'] = email_parts.get('email_address', 'N/A')
+    combined_analysis['sender_email'] = email_parts.get('email_address', 'N/A')
+    combined_analysis['sender_name'] = email_parts.get('display_name', 'N/A')
+    combined_analysis['time_of_scan'] = datetime.now().strftime("%I:%M %p, %b %d")
 
-    combined_analysis.append['title'] = email_parts.get('email_address', 'N/A')
-    combined_analysis.append['sender_email'] = email_parts.get('email_address', 'N/A')
-    combined_analysis.append['sender_name'] = email_parts.get('display_name', 'N/A')
-    combined_analysis.append['time_of_scan'] = datetime.now().strftime("%I:%M %p, %b %d")
     # print(combined_analysis) #NOTE: TO TEST ONI
 
-    return combined_analysis 
-    # {
+    # return {
     #     'title': email_parts.get('email_address', 'N/A'),
     #     'sender_email': f"{email_parts.get('email_address', 'N/A')} (File Scan)",
     #     'sender_name': email_parts.get('display_name', 'N/A'),
     #     'risk_score': combined_analysis['f_risk_score'],
-    #     'reason': prelim_data['prelim_reason'] + f" | Domain Score: {domain_check_result}",
+    #     'reason':  + f" | Domain Score: NA",
     #     'category_risk': conclusion,
     #     'time_of_scan': datetime.now().strftime("%I:%M %p, %b %d"),
-    #     'risk_level': risk_level # For internal tracking/CSS
+    #     'risk_level': risk_level 
     # }
+    return {
+        "score": round(f_risk_score, 1),
+        "category": conclusion,
+        "reasons": combined_analysis['combined_reasons'],
+        "keyword_count": 'NA',
+        "domain_reputation": 'NA'
+
+    }
 
         # "index.html",
         # score=result['score'],
