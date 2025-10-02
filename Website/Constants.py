@@ -53,6 +53,9 @@ def extract_email_parts(eml_file_path):
     # 1.3 Extract Email Address
     email_parts['email_address'] = email_address
 
+    # 1.4 Extract Email Title
+    email_parts['subject'] = msg.get('Subject', '').strip() 
+    
     # 2. Extract body
     body = ""
     if msg.is_multipart():

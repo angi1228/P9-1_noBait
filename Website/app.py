@@ -20,6 +20,12 @@ from Levenshtein_homoglyphs import Levenshtein_homoglyphs_domains
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
 
+# NOTE: TEMPORARY PLACEMENT - TO MOVE
+c_cmf_phsihing = 0 # Count the number of confirmed phishing emails. Inital value: 0
+c_suspicious_email=0 # Count the number of suspicious emails. Inital value: 0
+c_safe_emails=0 # Count the number of safe emails. Initial value: 0
+c_emails_analyse=0 # Count the number of emails scanned. Initial value: 0
+
 # ----------------------------
 # Home Page
 # ----------------------------
@@ -29,10 +35,10 @@ def home():
     # Some sample values (phishing, anothernumber, etc.) are sent to template
     return render_template(
         "index.html",
-        phishing=0,
-        anothernumber=0,
-        sum=0,
-        sus=0
+        phishing=c_cmf_phsihing,
+        anothernumber=c_safe_emails,
+        sum=c_emails_analyse,
+        sus=c_suspicious_email
     )
 
 # ----------------------------
@@ -52,14 +58,16 @@ def analyze_email():
     # Pass results back to the template to display ## NOTE: YX To link from here
     return render_template(
         "index.html",
-        score=result['score'],
-        category=result['category'],
+        score=result['risk_score'],
+        category=result['category_risk'],
         reasons=result['reasons'],
         keyword_count=result['keyword_count'],
         domain_reputation=result['domain_reputation'],
         email_content=email_content,
-        anothernumber=2000, sum=5, sus=5000
-       
+        phishing=c_cmf_phsihing,
+        anothernumber=c_safe_emails,
+        sum=c_emails_analyse,
+        sus=c_suspicious_email
     )
 
 # ----------------------------
@@ -96,17 +104,48 @@ def analyze_file():
                             # If one file fails, still continue and log error
                             results.append({'filename': name, 'error': str(e)})
             # Show results for all files inside the zip
-            return render_template("index.html", zip_results=results,
-                                   phishing=24, anothernumber=2000, sum=5, sus=5000)
+            # return render_template("index.html", zip_results=results,
+            #                        phishing=c_cmf_phsihing, anothernumber=c_safe_emails,
+            #                        sum=c_emails_analyse, sus=c_suspicious_email)
+                # Pass results back to the template to display ## NOTE: YX To link from here
+            return render_template(
+                "index.html",
+                score=result['risk_score'],
+                category=result['category_risk'],
+                reasons=result['reasons'],
+                keyword_count=result['keyword_count'],
+                domain_reputation=result['domain_reputation'],
+                email_content=content,
+                phishing=c_cmf_phsihing,
+                anothernumber=c_safe_emails,
+                sum=c_emails_analyse,
+                sus=c_suspicious_email
+            )
+
 
         else:
             # If uploaded file is just a single email file (not zip)
             content = file.read().decode('utf-8', errors='ignore')
             result = analyze_email_content_detailed(content)
-            return render_template("index.html",
-                                   filename=file.filename,
-                                   email_content=content,
-                                   **result)
+            # return render_template("index.html",
+            #                        filename=file.filename,
+            #                        email_content=content,
+            #                        **result)
+                # Pass results back to the template to display ## NOTE: YX To link from here
+            return render_template(
+                "index.html",
+                score=result['risk_score'],
+                category=result['category_risk'],
+                reasons=result['combined_reasons'],
+                keyword_count=result['keyword_count'],
+                domain_reputation=result['domain_reputation'],
+                email_content=content,
+                phishing=c_cmf_phsihing,
+                anothernumber=c_safe_emails,
+                sum=c_emails_analyse,
+                sus=c_suspicious_email
+            )
+
 
     except Exception as e:
         # If something goes wrong, show error
@@ -115,17 +154,16 @@ def analyze_file():
 # ----------------------------
 # Main Analyzer - combines all checks
 # ----------------------------
+
+
+
 def analyze_email_content_detailed(content: str):
 
     # 1. Get Constants before running the analysis
     email_parts = extract_email_parts(content) # Returns the email parts 
     
-    combined_analysis = {"risk_score":t_risk_score, "reaons":[]}
+    combined_analysis = {"f_risk_score":0, "combined_reasons":[]}
     t_risk_score = 0
-    ## {
-    #   "score": 89,
-    #   "reasons": ["A", "B", "C"]
-    #   } 
     n_analysis = 0 # Calulate the number of analysis
 
     # Function 1: Suspicious Keyword Checks????
@@ -143,15 +181,16 @@ def analyze_email_content_detailed(content: str):
 
     # Function 6: Domain Name check    
     normmalised_sender_domain = email_address.split("@")[-1].lower()
-    score, reasons = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
-    t_risk_score += score; n_analysis += 1
-    combined_analysis.append(reasons)
+    score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
+    # Calculate total risk score
+    f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
+    combined_analysis['f_risk_score'].update(f_risk_score)
 
     ''' TO AMEND THE FOLLOWING'''
-    # ## Final result (Combine all scores and reasons)
-    # #1: score, 2>: reasons
-
     # score, reasons = 0.0, []  # total score and reasons list
     # keyword_count, domain_reputation = 0, "Good"
     
@@ -187,19 +226,7 @@ def analyze_email_content_detailed(content: str):
     # test1, test2 = testingfunction(content)
     # score += test1; reasons += test2
 
-    ''' STOP AMENDING HERE '''
-
-
-    # Map the risk score to a conclusion and risk level. 
-    if score >= 81:
-        conclusion, risk_level = "Phishing", "High"
-    elif score >= 65:
-        conclusion, risk_level = "Moderately Suspicious", "Medium"
-    elif score >= 50:
-        conclusion, risk_level = "Low Suspicious", "Low"
-    else:
-        conclusion, risk_level = "Safe", "Safe"
-
+    
     # Return all results as dictionary
     # return {
     #     "score": round(score, 1),
@@ -208,17 +235,57 @@ def analyze_email_content_detailed(content: str):
     #     "keyword_count": keyword_count,
     #     "domain_reputation": domain_reputation
     # }
+    ''' STOP AMENDING HERE '''
 
-    return {
-        'title': "Phishing Alert: File Scan Result", # Replace with actual subject
-        'sender_email': f"{sender_name} (File Scan)",
-        'sender_name': sender_name,
-        'risk_score': final_score,
-        'reason': prelim_data['prelim_reason'] + f" | Domain Score: {domain_check_result}",
-        'conclusion': conclusion,
-        'time_of_scan': datetime.now().strftime("%I:%M %p, %b %d"),
-        'risk_level': risk_level # For internal tracking/CSS
-    }
+    # Map the risk score to a conclusion and risk level. 
+    if f_risk_score >= 81:
+        c_suspicious_email += 1 # Consider as suspicious email
+        cmf_phsihing += 1 # Add count to the number of confimred phsihing emails
+        conclusion, risk_level = "Phishing", "High"
+    elif f_risk_score >= 65:
+        c_suspicious_email += 1 # Consider as suspicious email
+        conclusion, risk_level = "Moderately Suspicious", "Medium"
+    elif f_risk_score >= 50:
+        c_suspicious_email += 1 # Consider as suspicious email
+        conclusion, risk_level = "Low Suspicious", "Low"
+    else:
+        c_safe_emails += 1 # Consider as safe email
+        conclusion, risk_level = "Safe", "Safe"
+    
+    # Successfully scanned 1 email
+    c_emails_analyse += 1 
+     
+    combined_analysis['conclusion'] = conclusion
+    combined_analysis['risk_level'] = risk_level
+
+    combined_analysis.append['title'] = email_parts.get('email_address', 'N/A')
+    combined_analysis.append['sender_email'] = email_parts.get('email_address', 'N/A')
+    combined_analysis.append['sender_name'] = email_parts.get('display_name', 'N/A')
+    combined_analysis.append['time_of_scan'] = datetime.now().strftime("%I:%M %p, %b %d")
+    # print(combined_analysis) #NOTE: TO TEST ONI
+
+    return combined_analysis 
+    # {
+    #     'title': email_parts.get('email_address', 'N/A'),
+    #     'sender_email': f"{email_parts.get('email_address', 'N/A')} (File Scan)",
+    #     'sender_name': email_parts.get('display_name', 'N/A'),
+    #     'risk_score': combined_analysis['f_risk_score'],
+    #     'reason': prelim_data['prelim_reason'] + f" | Domain Score: {domain_check_result}",
+    #     'category_risk': conclusion,
+    #     'time_of_scan': datetime.now().strftime("%I:%M %p, %b %d"),
+    #     'risk_level': risk_level # For internal tracking/CSS
+    # }
+
+        # "index.html",
+        # score=result['score'],
+        # category=result['category'],
+        # reasons=result['reasons'],
+        # keyword_count=result['keyword_count'],
+        # domain_reputation=result['domain_reputation'],
+        # email_content=email_content,
+        # anothernumber=2000, 
+        # sum=5, 
+        # sus=5000
 
 # ----------------------------
 # Run the app
