@@ -1,6 +1,7 @@
 import re
 from email import policy
 from email.parser import BytesParser
+from email.utils import parseaddr
 
 # common constants
 
@@ -42,6 +43,16 @@ def extract_email_parts(eml_file_path):
     # 1. Extract headers
     email_parts['headers'] = dict(msg.items())
 
+    # 1.0 Extract Display Name and Email Address
+    sender_header = msg.get('From', '')
+    display_name, email_address = parseaddr(sender_header)
+    
+    # 1.2 Extract Display Name
+    email_parts['display_name'] = display_name
+    
+    # 1.3 Extract Email Address
+    email_parts['email_address'] = email_address
+
     # 2. Extract body
     body = ""
     if msg.is_multipart():
@@ -74,3 +85,11 @@ if __name__ == '__main__':
     print("\n--- URLs ---")
     for url in extracted_data['urls']:
         print(url)
+
+    # Print the Display Name
+    display_name = extracted_data.get('display_name', 'N/A')
+    print(f"Display Name: {display_name}")
+
+    # Print the Email Address
+    email_address = extracted_data.get('email_address', 'N/A')
+    print(f"Email Address: {email_address}")

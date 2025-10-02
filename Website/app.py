@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import zipfile, io
+from datetime import datetime
 
 # Import different functions that check for phishing signs in the email
 from emailchecking_functions.keywords import check_keywords
@@ -10,6 +11,10 @@ from emailchecking_functions.punctuation import check_punctuation
 from emailchecking_functions.personalinfo import check_personal_info
 from emailchecking_functions.test import testingfunction
 from emailchecking_functions.financedetect import check_financial_request
+
+### Connecting the files together
+from Constants import extract_email_parts
+from Levenshtein_homoglyphs import Levenshtein_homoglyphs_domains 
 
 
 # Create a Flask app
@@ -24,10 +29,10 @@ def home():
     # Some sample values (phishing, anothernumber, etc.) are sent to template
     return render_template(
         "index.html",
-        phishing=24,
-        anothernumber=2000,
-        sum=5,
-        sus=5000
+        phishing=0,
+        anothernumber=0,
+        sum=0,
+        sus=0
     )
 
 # ----------------------------
@@ -44,7 +49,7 @@ def analyze_email():
     # Run the analyzer function on the email content
     result = analyze_email_content_detailed(email_content)
 
-    # Pass results back to the template to display
+    # Pass results back to the template to display ## NOTE: YX To link from here
     return render_template(
         "index.html",
         score=result['score'],
@@ -111,59 +116,108 @@ def analyze_file():
 # Main Analyzer - combines all checks
 # ----------------------------
 def analyze_email_content_detailed(content: str):
-    score, reasons = 0.0, []  # total score and reasons list
-    keyword_count, domain_reputation = 0, "Good"
+
+    # 1. Get Constants before running the analysis
+    email_parts = extract_email_parts(content) # Returns the email parts 
     
-    # Run keyword checker
-    kw_score, kw_reasons, keyword_count = check_keywords(content)
-    score += kw_score; reasons += kw_reasons
+    combined_analysis = {"risk_score":t_risk_score, "reaons":[]}
+    t_risk_score = 0
+    ## {
+    #   "score": 89,
+    #   "reasons": ["A", "B", "C"]
+    #   } 
+    n_analysis = 0 # Calulate the number of analysis
 
-    # Run link checker
-    link_score, link_reasons, domain_reputation = check_links(content)
-    score += link_score; reasons += link_reasons
+    # Function 1: Suspicious Keyword Checks????
+    
+    # Function 2: Verify domain
+    
+    # Function 3: URL Check
+    
+    # Function 4: keyword check????
+    
+    # Function 5: Sender Name/Display Name Check
+    email_address = email_parts.get('email_address', 'N/A')
+    normalised_display_name = email_parts.get('display_name', 'N/A').lower() # normalised
+    normalised_sender_name = email_address.split("@")[0].lower()
 
-    # Run greetings checker
-    g_score, g_reasons = check_greetings(content)
-    score += g_score; reasons += g_reasons
-
-    # Run urgency checker
-    u_score, u_reasons = check_urgency(content)
-    score += u_score; reasons += u_reasons
-
-    # Run punctuation checker
-    p_score, p_reasons = check_punctuation(content)
-    score += p_score; reasons += p_reasons
-
-    # Run personal info checker
-    pi_score, pi_reasons = check_personal_info(content)
-    score += pi_score; reasons += pi_reasons;reasons 
-
-    fi_score, fi_reasons = check_financial_request(content)
-    score += fi_score; reasons += fi_reasons
+    # Function 6: Domain Name check    
+    normmalised_sender_domain = email_address.split("@")[-1].lower()
+    score, reasons = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
+    t_risk_score += score; n_analysis += 1
+    combined_analysis.append(reasons)
 
 
-    # Run test function (custom rules)
-    test1, test2 = testingfunction(content)
-    score += test1; reasons += test2
+    ''' TO AMEND THE FOLLOWING'''
+    # ## Final result (Combine all scores and reasons)
+    # #1: score, 2>: reasons
 
-    # Make sure score does not exceed 10
-    score = min(score, 10)
+    # score, reasons = 0.0, []  # total score and reasons list
+    # keyword_count, domain_reputation = 0, "Good"
+    
+    # # Run keyword checker
+    # kw_score, kw_reasons, keyword_count = check_keywords(content)
+    # score += kw_score; reasons += kw_reasons
 
-    # Decide category based on score
-    if score < 3:
-        category = "Safe"
-    elif score < 6:
-        category = "Suspicious"
+    # # Run link checker
+    # link_score, link_reasons, domain_reputation = check_links(content)
+    # score += link_score; reasons += link_reasons
+
+    # # Run greetings checker
+    # g_score, g_reasons = check_greetings(content)
+    # score += g_score; reasons += g_reasons
+
+    # # Run urgency checker
+    # u_score, u_reasons = check_urgency(content)
+    # score += u_score; reasons += u_reasons
+
+    # # Run punctuation checker
+    # p_score, p_reasons = check_punctuation(content)
+    # score += p_score; reasons += p_reasons
+
+    # # Run personal info checker
+    # pi_score, pi_reasons = check_personal_info(content)
+    # score += pi_score; reasons += pi_reasons;reasons 
+
+    # fi_score, fi_reasons = check_financial_request(content)
+    # score += fi_score; reasons += fi_reasons
+
+
+    # # Run test function (custom rules)
+    # test1, test2 = testingfunction(content)
+    # score += test1; reasons += test2
+
+    ''' STOP AMENDING HERE '''
+
+
+    # Map the risk score to a conclusion and risk level. 
+    if score >= 81:
+        conclusion, risk_level = "Phishing", "High"
+    elif score >= 65:
+        conclusion, risk_level = "Moderately Suspicious", "Medium"
+    elif score >= 50:
+        conclusion, risk_level = "Low Suspicious", "Low"
     else:
-        category = "Phishing"
+        conclusion, risk_level = "Safe", "Safe"
 
     # Return all results as dictionary
+    # return {
+    #     "score": round(score, 1),
+    #     "category": category,
+    #     "reasons": reasons,
+    #     "keyword_count": keyword_count,
+    #     "domain_reputation": domain_reputation
+    # }
+
     return {
-        "score": round(score, 1),
-        "category": category,
-        "reasons": reasons,
-        "keyword_count": keyword_count,
-        "domain_reputation": domain_reputation
+        'title': "Phishing Alert: File Scan Result", # Replace with actual subject
+        'sender_email': f"{sender_name} (File Scan)",
+        'sender_name': sender_name,
+        'risk_score': final_score,
+        'reason': prelim_data['prelim_reason'] + f" | Domain Score: {domain_check_result}",
+        'conclusion': conclusion,
+        'time_of_scan': datetime.now().strftime("%I:%M %p, %b %d"),
+        'risk_level': risk_level # For internal tracking/CSS
     }
 
 # ----------------------------
