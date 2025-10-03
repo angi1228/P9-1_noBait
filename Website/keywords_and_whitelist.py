@@ -1,0 +1,83 @@
+import re
+
+# removes special characters that are not letter, digit or spaces from text
+def preprocess_text(text):
+    clean_text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
+    clean_text = clean_text.lower().strip()
+    return clean_text
+
+
+def find_suspicious_keywords(text):
+    suspicious_keywords = [
+        "urgent", "immediately", "limited time", "account", "terminated", "suspended", "compromised", "on hold",
+        "violation", "verify", "last warning", "final notice", "final call", "last call", "last chance",
+        "important notice", "login", "password", "security", "locked", "pay", "overdue", "action required",
+        "transfer", "claim your refund", "download", "click", "won", "winner", "free", "gift", "prize",
+        "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
+        "no cost", "guaranteed", "dear customer", "favour", "sexy", "hot", "single", "near you", "meet singles",
+        "dating", "babes", "babe", "nude", "naked", "money", "cash", "payment", "payments", "credit card", "loan",
+        "offer", "deal", "sales", "earn", "membership", "bank"
+    ]
+        
+    count = 0
+    found = []
+    reasons = []
+
+    # Extract words
+    plain_text = preprocess_text(text)
+    plain_text_list = plain_text.split(" ")
+
+    # Count suspicious keywords
+    for word in plain_text_list:
+        if word in suspicious_keywords:
+            count += 1
+            if word not in found:
+                found.append(word)
+
+    risk_score = 50 if count > 0 else 0
+
+    if count > 0:
+        reasons.append(f"Suspicious keywords found: {', '.join(found)}")
+    else:
+        reasons.append("No suspicious keywords found")
+
+    # return score (int), reasons (list)
+    return risk_score, reasons
+
+def check_whitelist(email):
+    safe_domains = [
+        "gmail.com", "outlook.com", "neo.email", "yahoo.com",
+        "proton.me", "protonmail.com", "icloud.com", "zohomail.com",
+        "aol.com", "tuta.com", "tutanota.com", "mailfence.com",
+        "sit.singaporetech.edu.sg", "singaporetech.edu.sg", "mycompany.com"
+    ]
+    
+    risk_score = 0
+    reasons = []
+
+    # ✅ Always return something if email is invalid
+    # if "@" not in email:
+    #     risk_score = 100
+    #     reasons.append("Invalid email format (missing @)")
+    #     return risk_score, reasons
+
+    # Extract domain safely
+    parts = email.split("@")
+    if len(parts) < 2:
+        risk_score = 100
+        reasons.append("Invalid email format (bad domain part)")
+        return risk_score, reasons
+
+    domain = parts[1].lower()
+
+    # Check whitelist
+    if domain in [d.lower() for d in safe_domains]:
+        reasons.append("Domain is in whitelist")
+    else:
+        risk_score += 100
+        reasons.append(f"Domain '{domain}' is not in whitelist")
+
+    # ✅ Always end with return
+    return risk_score, reasons
+
+

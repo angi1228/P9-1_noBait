@@ -6,7 +6,7 @@ from datetime import datetime
 from Constants import extract_email_parts
 from Levenshtein_homoglyphs import Levenshtein_homoglyphs_domains 
 from url_check import check_url
-
+from keywords_and_whitelist import find_suspicious_keywords
 
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
@@ -150,8 +150,11 @@ def analyze_email_content_detailed(content: str):
     n_analysis = 0 # Calulate the number of analysis
 
     # Function 1: Suspicious Keyword Checks on body
-    # email_body = email_parts.get('body', 'N/A')
+    email_body = email_parts.get('body', 'N/A')
     # suspicious_body(email_body)
+
+    find_suspicious_keywords(email_body)
+    
     
     #1) Score & Reason
     #2) I need to call your function -> give me whats your intital function
@@ -175,11 +178,11 @@ def analyze_email_content_detailed(content: str):
     normalised_sender_name = email_address.split("@")[0].lower()
 
     # Function 6: Domain Name check    
-    # normmalised_sender_domain = email_address.split("@")[-1].lower()
-    # score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    normmalised_sender_domain = email_address.split("@")[-1].lower()
+    score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
     # Calculate total risk score
     if t_risk_score !=0:

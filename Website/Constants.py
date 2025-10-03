@@ -74,6 +74,9 @@ def extract_email_parts(file_content):
     url_pattern = r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)'
     email_parts['urls'] = re.findall(url_pattern, body)
 
+    # 4. Combine the subject and the body of the email
+    email_parts['subject_and_body'] = email_parts['body'] + email_parts['subject']
+
     return email_parts
 
 
