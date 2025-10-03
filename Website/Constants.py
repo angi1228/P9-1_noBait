@@ -55,7 +55,7 @@ def extract_email_parts(eml_file_path):
 
     # 1.4 Extract Email Title
     email_parts['subject'] = msg.get('Subject', '').strip() 
-    
+
     # 2. Extract body
     body = ""
     if msg.is_multipart():
@@ -77,22 +77,22 @@ def extract_email_parts(eml_file_path):
 
 extracted_data = extract_email_parts('test_email.eml')
 
-if __name__ == '__main__':
-    print("--- Headers ---")
-    for key, value in extracted_data['headers'].items():
-        print(f"{key}: {value}")
+# if __name__ == '__main__':
+#     print("--- Headers ---")
+#     for key, value in extracted_data['headers'].items():
+#         print(f"{key}: {value}")
 
-    print("\n--- Body ---")
-    print(extracted_data['body'].strip())
+#     print("\n--- Body ---")
+#     print(extracted_data['body'].strip())
 
-    print("\n--- URLs ---")
-    for url in extracted_data['urls']:
-        print(url)
+#     print("\n--- URLs ---")
+#     for url in extracted_data['urls']:
+#         print(url)
 
-    # Print the Display Name
-    display_name = extracted_data.get('display_name', 'N/A')
-    print(f"Display Name: {display_name}")
+#     # Print the Display Name
+#     display_name = extracted_data.get('display_name', 'N/A')
+#     print(f"Display Name: {display_name}")
 
-    # Print the Email Address
-    email_address = extracted_data.get('email_address', 'N/A')
-    print(f"Email Address: {email_address}")
+#     # Print the Email Address
+#     email_address = extracted_data.get('email_address', 'N/A')
+#     print(f"Email Address: {email_address}")
