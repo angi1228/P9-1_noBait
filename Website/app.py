@@ -10,7 +10,7 @@ from emailchecking_functions.punctuation import check_punctuation
 from emailchecking_functions.personalinfo import check_personal_info
 from emailchecking_functions.test import testingfunction
 from emailchecking_functions.financedetect import check_financial_request
-from emailchecking_functions.testing import find_suspicious_keywords, check_whitelist
+from Website.emailchecking_functions.keywords_and_whitelist import find_suspicious_keywords, check_whitelist
 
 
 

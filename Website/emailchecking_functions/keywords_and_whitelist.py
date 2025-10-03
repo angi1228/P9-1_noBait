@@ -16,7 +16,7 @@ def find_suspicious_keywords(text):
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "money", "cash", "payment", "payments", "credit card", "loan",
-        "offer", "deal", "sales", "earn", "membership","bank"
+        "offer", "deal", "sales", "earn", "membership", "bank"
     ]
         
     count = 0
@@ -41,38 +41,10 @@ def find_suspicious_keywords(text):
     else:
         reasons.append("No suspicious keywords found")
 
-    # ✅ return score (int), reasons (list)
+    # return score (int), reasons (list)
     return risk_score, reasons
 
-
 def check_whitelist(email):
-    safe_domains = [
-        "gmail.com", "outlook.com", "neo.email", "yahoo.com",
-        "proton.me", "protonmail.com", "icloud.com", "zohomail.com",
-        "aol.com", "tuta.com", "tutanota.com", "mailfence.com",
-        "sit.singaporetech.edu.sg", "singaporetech.edu.sg", "mycompany.com"
-    ]
-    
-    risk_score = 0
-    reasons = []
-    try:
-    # Extract domain
-        domain = email.split("@")[1].lower()
-
-        # Check whitelist
-        if domain in [d.lower() for d in safe_domains]:
-            reasons.append("Domain is in whitelist")
-        else:
-            risk_score += 100
-            reasons.append(f"Domain '{domain}' is not in whitelist")
-
-        # ✅ return score (int), reasons (list)
-        return risk_score, reasons
-
-    except( IndexError,TypeError):
-        print("Invalid email format")
-
-# def check_whitelist(email):
     safe_domains = [
         "gmail.com", "outlook.com", "neo.email", "yahoo.com",
         "proton.me", "protonmail.com", "icloud.com", "zohomail.com",
@@ -109,22 +81,3 @@ def check_whitelist(email):
     return risk_score, reasons
 
 
-# Test Cases
-if __name__ == "__main__":
-    text1 = "Urgent! Please verify your account immediately to avoid suspension."
-    text2 = "Hello friend, just checking in. How are you doing?"
-
-    score1, reasons1 = find_suspicious_keywords(text1)
-    print(score1, reasons1)
-
-    score2, reasons2 = find_suspicious_keywords(text2)
-    print(score2, reasons2)
-
-    email1 = "user@gmail.com"
-    email2 = "scammer@phishy.com"
-
-    score3, reasons3 = check_whitelist(email1)
-    print(score3, reasons3)
-
-    score4, reasons4 = check_whitelist(email2)
-    print(score4, reasons4)
