@@ -179,11 +179,11 @@ def analyze_email_content_detailed(content: str):
     normalised_sender_name = email_address.split("@")[0].lower()
 
     # Function 6: Domain Name check    
-    normmalised_sender_domain = email_address.split("@")[-1].lower()
-    score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
-    t_risk_score += score
-    combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
+    # normmalised_sender_domain = email_address.split("@")[-1].lower()
+    # score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
+    # t_risk_score += score
+    # combined_analysis['combined_reasons'].append(reason)
+    # n_analysis += 1; 
 
     # Calculate total risk score
     if t_risk_score !=0:
