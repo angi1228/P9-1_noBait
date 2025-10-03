@@ -150,23 +150,23 @@ def analyze_email_content_detailed(content: str):
     n_analysis = 0 # Calulate the number of analysis
 
     # Function 1: Suspicious Keyword Checks on body
-    email_body = email_parts.get('body', 'N/A')
-    suspicious_body(email_body)
+    # email_body = email_parts.get('body', 'N/A')
+    # suspicious_body(email_body)
     
     #1) Score & Reason
     #2) I need to call your function -> give me whats your intital function
     #3) tell me what you need e.g., URL
-    URL_list = email_parts.get(' ', 'N/A')
-    call_function()
-    t_risk_score += score
-    combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
     
     
     # Function 2: Verify domain
     
     # Function 3: URL Check
-    
+    URL_list = email_parts.get('url', 'N/A')
+    call_function(URL_list)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
+
     # Function 4: keyword check????
     
     # Function 5: Sender Name/Display Name Check
