@@ -17,10 +17,6 @@ from Levenshtein import distance as levenshtein_distance
 import homoglyphs as hg
 from typing import List
 
-# List of safe email domains and sender names
-from Constants import SAFE_SENDER_LIST
-from Constants import SAFE_DOMAIN_LIST
-
 # --- Data Setup --- 
 
 # Predefined mapping of common homoglyph
@@ -46,79 +42,6 @@ COMMON_HOMOGLYPH_MAP  = {
     'і': 'i',      # Latin 'i' with dotless
 }
 
-
-''' --- Core Logic Functions --- '''
-
-# Function to check if an email domain is safe
-
-def check_display_name_vs_domain(display_name, sender_name, sender_domain):
-    """
-    Check if the sender's display name suggests a brand/org but the email domain does not match the official domain of that brand/org.
-    """
-    suspicious_result = []
-    
-    # If domain is in SAFE list, then the sender is safe
-    if sender_domain in SAFE_DOMAIN_LIST:
-        score, reason = 0, None
-        return score, reason
-    else:
-        # Check if sender_name or display_name contains any safe senders in the SAFE_SENDER_LIST, return true. Else, return None.
-        check_suspicious = next(
-                            (safe_sender for safe_sender in SAFE_SENDER_LIST if safe_sender in display_name or safe_sender in sender_name),
-                            None
-                            )
-        
-        suspicious_reason = None
-        if check_suspicious == None:
-            # Check for Levenshtein and homoglyphs
-            ## Check whether sender name and display name are similar to the safe senders and whether they contains any homoglyphs
-            while True:
-                sender_name_result = check_Levenshtein_homoglyphs(sender_name, SAFE_SENDER_LIST)
-                if sender_name_result['suspicious']:
-                    check_suspicious = True
-                    suspicious_reason = "The sender's name in their email address \"" + sender_name + "\" is in the safe sender list but is not the official domain"
-                    break
-                display_name_result = check_Levenshtein_homoglyphs(display_name, SAFE_SENDER_LIST)
-                if display_name_result['suspicious']:
-                    check_suspicious = True
-                    suspicious_reason = "The sender's display name \"" + sender_name + "\" is in the safe sender list but is not the official domain"
-                break
-            print(sender_name_result, display_name_result, suspicious_reason)
-
-        # If True (the normalised sender or display name contains any of the safe senders in the SAFE_SENDER_LIST)
-        if check_suspicious:
-            if suspicious_reason == None:
-                # suspcious as it's not in the safe domain but yet have the safe sender name
-                suspicious_reason = "The email's display or sender name claims to be from the legitimate sender, but it is not"
-            score, reason = 100, suspicious_reason             
-        else: 
-            score, reason = 0, suspicious_reason
-        print(score, reason)
-        return score, reason 
-    
-    {score: 0, reason: "nidufhefe"}
-
-def Levenshtein_homoglyphs_domains(email_domain):
-    '''
-    To check whether the domain contains a homoglyphs that suggest a phishing attempt
-    '''
-    suspicious_result = check_Levenshtein_homoglyphs(email_domain, SAFE_DOMAIN_LIST)  
-
-    if suspicious_result['suspicious']:
-        suspicious_reason = "The sender's domain \"" + suspicious_result['input'] + "\" is similar to a legitimate domain \"" + suspicious_result['similar_string'] + "\""
-    elif suspicious_result['suspicious'] == 'Unknown':
-        suspicious_reason = "The sender's domain is unknown"
-    else:
-        suspicious_reason =''
-
-    # Format to return back to the function
-    score, reason = suspicious_result['risk_score'], suspicious_reason
-
-    # NOTE Optional: pretty print
-    print("\n--- Final Results Summary ---")
-    print(score, reason)
-
-    return score, reason # Return the score and reason (if any) 
 
 def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str], threshold: int = 2):
     """
@@ -168,7 +91,6 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
         
         # Replaces common homoglyphs 
         normalised_string = None
-        input_item = input_item.replace('-','') # Cleanup 
         for homoglyph, standard in COMMON_HOMOGLYPH_MAP.items():
             if homoglyph in input_item:
                 normalised_string = input_item.replace(homoglyph, standard)
@@ -186,7 +108,7 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
             distance_homoglyph = levenshtein_distance(normalised_string, safe_string)
             if distance_homoglyph <= threshold:
                 # Found a close match after homoglyph normalization 
-                # print(f"6. [{input_item, normalised_string}] 🚨 Flagged (Homoglyph Check, Dist={distance_homoglyph}) vs {safe_string}")
+                print(f"6. [{input_item, normalised_string}] 🚨 Flagged (Homoglyph Check, Dist={distance_homoglyph}) vs {safe_string}")
                 return result_suspicious
             # else:
             #     # If the loop finishes without finding a close match of homoglyph
@@ -195,7 +117,6 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
         else:
             return result_unknown
 
-# # # Check if the email domain is safe
 # if __name__ == "__main__":
     
 #     # Test cases
@@ -209,13 +130,13 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
 
 #     # Levenshtein_homoglyphs_domains(email_domain)
 #     display_name_1 = 'g00ogle'
-#     display_name = display_name_2 = 'micros0ft'
+#     display_name = display_name_2 = 'ITSupport Micr0soft'
 #     display_name_3 = 'Comppany'
 #     display_name_4 = 'YAh00'
 #     display_name_5 = 'Outlook'
 #     display_name_6 = 'ITsupp0rt'
 
-#     sender_name = 'microsoft'
+#     sender_name = 'test'
 
 #     sender_email_1 = 'amazonsupport@gmai1l.com'
 #     sender_email = sender_email_2 = 'support@m1soft.com'
@@ -223,5 +144,5 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
 #     sender_email_4 = 'Google@g0ogle.com'
 #     sender_email_5 = 'Outlook-support@outlook.com'
 #     sender_email_6 = 'mycompany@comppany.com'
-#     check_display_name_vs_domain(display_name, sender_name, email_domain)
+#     check_Levenshtein_homoglyphs(display_name, sender_name, email_domain)
 

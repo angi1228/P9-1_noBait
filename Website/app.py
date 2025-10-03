@@ -4,10 +4,11 @@ from datetime import datetime
 
 # Import different functions that check for phishing signs in the email
 from Constants import extract_email_parts
-from Levenshtein_homoglyphs import Levenshtein_homoglyphs_domains 
+from check_sender_display_domain import check_domain
+from check_sender_display_domain import check_sender_and_display_name
 from url_check import check_url
 from keywords_check import find_suspicious_keywords
-
+from whitelist_check import check_whitelist
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
 
@@ -150,20 +151,23 @@ def analyze_email_content_detailed(content: str):
     t_risk_score = 0
     n_analysis = 0 # Calulate the number of analysis
 
-    # Function 1: Suspicious Keyword Checks on body
-    email_body = email_parts.get('subjet_and_body', 'N/A')
-    score, reason = find_suspicious_keywords(email_body)
-    t_risk_score += score
-    combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
-    
     #1) Score & Reason
     #2) I need to call your function -> give me whats your intital function
     #3) tell me what you need e.g., URL
-    
+
+    # Function 1: Suspicious Keyword Checks on body
+    # score, reason = find_suspicious_keywords(text=email_parts.get('subject_and_body', 'N/A'))
+    # t_risk_score += score
+    # combined_analysis['combined_reasons'].append(reason)
+    # n_analysis += 1; 
     
     # Function 2: Verify domain
+    # score, reason = check_whitelist(email=email_parts.get('sender_name','NA'), domain=email_parts.get('sender_domain','NA'))
+    # t_risk_score += score
+    # combined_analysis['combined_reasons'].append(reason)
+    # n_analysis += 1; 
     
+
     # Function 3: URL Check
     # URL_list = email_parts.get('url', 'N/A')
     # score, reason = check_url(URL_list)
@@ -174,13 +178,15 @@ def analyze_email_content_detailed(content: str):
     # Function 4: keyword check????
     
     # Function 5: Sender Name/Display Name Check
-    email_address = email_parts.get('email_address', 'N/A')
-    normalised_display_name = email_parts.get('display_name', 'N/A').lower() # normalised
-    normalised_sender_name = email_address.split("@")[0].lower()
+    # score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
+    #                                                sender_name=email_parts.get('sender_name', 'N/A'), 
+    #                                                sender_domain=email_parts.get('sender_domain', 'N/A'))
+    # t_risk_score += score
+    # combined_analysis['combined_reasons'].append(reason)
+    # n_analysis += 1; 
 
     # Function 6: Domain Name check    
-    # normmalised_sender_domain = email_address.split("@")[-1].lower()
-    # score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
+    # score, reason = check_domain(email_domain=email_parts.get('sender_domain', 'N/A'))
     # t_risk_score += score
     # combined_analysis['combined_reasons'].append(reason)
     # n_analysis += 1; 
@@ -209,43 +215,14 @@ def analyze_email_content_detailed(content: str):
     c_emails_analyse += 1 
      
     combined_analysis['conclusion'] = conclusion
-    # combined_analysis['title'] = email_parts.get('email_address', 'N/A')
-    # combined_analysis['sender_email'] = email_parts.get('email_address', 'N/A')
-    # combined_analysis['sender_name'] = email_parts.get('display_name', 'N/A')
-    # combined_analysis['time_of_scan'] = datetime.now().strftime("%I:%M %p, %b %d")
 
-    # print(combined_analysis) #NOTE: TO TEST ONI
-
-    # return {
-    #     'title': email_parts.get('email_address', 'N/A'),
-    #     'sender_email': f"{email_parts.get('email_address', 'N/A')} (File Scan)",
-    #     'sender_name': email_parts.get('display_name', 'N/A'),
-    #     'risk_score': combined_analysis['f_risk_score'],
-    #     'reason':  + f" | Domain Score: NA",
-    #     'category_risk': conclusion,
-    #     'time_of_scan': datetime.now().strftime("%I:%M %p, %b %d"),
-    #     'risk_level': risk_level 
-    # }
     return {
         "score": round(f_risk_score, 1),
         "category": conclusion,
         "reasons": combined_analysis['combined_reasons'],
         "keyword_count": 'NA',
         "domain_reputation": 'NA'
-
     }
-
-        # "index.html",
-        # score=result['score'],
-        # category=result['category'],
-        # reasons=result['reasons'],
-        # keyword_count=result['keyword_count'],
-        # domain_reputation=result['domain_reputation'],
-        # email_content=email_content,
-        # anothernumber=2000, 
-        # sum=5, 
-        # sus=5000
-
 # ----------------------------
 # Run the app
 # ----------------------------
