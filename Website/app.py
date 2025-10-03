@@ -10,6 +10,7 @@ from emailchecking_functions.punctuation import check_punctuation
 from emailchecking_functions.personalinfo import check_personal_info
 from emailchecking_functions.test import testingfunction
 from emailchecking_functions.financedetect import check_financial_request
+from emailchecking_functions.url_check_copy import check_url
 
 
 # Create a Flask app
@@ -140,6 +141,11 @@ def analyze_email_content_detailed(content: str):
 
     fi_score, fi_reasons = check_financial_request(content)
     score += fi_score; reasons += fi_reasons
+
+    # angirena's URL check
+    url_score, url_reasons = check_url(content)
+    score += url_score; reasons += url_reasons 
+
 
 
     # Run test function (custom rules)
