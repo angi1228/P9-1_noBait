@@ -10,6 +10,8 @@ from emailchecking_functions.punctuation import check_punctuation
 from emailchecking_functions.personalinfo import check_personal_info
 from emailchecking_functions.test import testingfunction
 from emailchecking_functions.financedetect import check_financial_request
+from emailchecking_functions.testing import find_suspicious_keywords, check_whitelist
+
 
 
 # Create a Flask app
@@ -145,6 +147,14 @@ def analyze_email_content_detailed(content: str):
     # Run test function (custom rules)
     test1, test2 = testingfunction(content)
     score += test1; reasons += test2
+
+    zyscore, zyreason = find_suspicious_keywords(content)
+    score += zyscore; reasons += zyreason
+
+    zyscore2, zyreason2 = check_whitelist(content)
+    score += zyscore2; reasons += zyreason2
+
+    
 
     # Make sure score does not exceed 10
     score = min(score, 10)
