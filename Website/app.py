@@ -5,6 +5,7 @@ from datetime import datetime
 # Import different functions that check for phishing signs in the email
 from Constants import extract_email_parts
 from Levenshtein_homoglyphs import Levenshtein_homoglyphs_domains 
+from url_check import check_url
 
 
 # Create a Flask app
@@ -101,7 +102,7 @@ def analyze_file():
                 score=result.get('score', 0),                  # Matches {{ score }}
                 category=result.get('category', 'Error'),      # Matches {{ category }}
                 reasons=result.get('reasons', []),             # Matches {{ reasons }}
-                email_content=email_content,                   # Matches {{ email_content }} (and acts as display trigger)
+                email_content=content,                   # Matches {{ email_content }} (and acts as display trigger)
                 # ... (Global Counters) ...
                 phishing=c_cmf_phsihing,
                 anothernumber=c_safe_emails,
@@ -120,6 +121,7 @@ def analyze_file():
                                     category=result.get('category', 'Error'),      # Matches {{ category }}
                                     reasons=result.get('reasons', []),             # Matches {{ reasons }},
                                     email_content=content,
+                                    # ... (Global Counters) ...
                                     phishing=c_cmf_phsihing,
                                     anothernumber=c_safe_emails,
                                     sum=c_emails_analyse,
@@ -133,8 +135,6 @@ def analyze_file():
 # ----------------------------
 # Main Analyzer - combines all checks
 # ----------------------------
-
-
 
 def analyze_email_content_detailed(content: str):
     global c_cmf_phsihing # MUST be declared global to be modified
@@ -161,11 +161,11 @@ def analyze_email_content_detailed(content: str):
     # Function 2: Verify domain
     
     # Function 3: URL Check
-    URL_list = email_parts.get('url', 'N/A')
-    call_function(URL_list)
-    t_risk_score += score
-    combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
+    # URL_list = email_parts.get('url', 'N/A')
+    # score, reason = check_url(URL_list)
+    # t_risk_score += score
+    # combined_analysis['combined_reasons'].append(reason)
+    # n_analysis += 1; 
 
     # Function 4: keyword check????
     
@@ -175,11 +175,11 @@ def analyze_email_content_detailed(content: str):
     normalised_sender_name = email_address.split("@")[0].lower()
 
     # Function 6: Domain Name check    
-    normmalised_sender_domain = email_address.split("@")[-1].lower()
-    score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
-    t_risk_score += score
-    combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
+    # normmalised_sender_domain = email_address.split("@")[-1].lower()
+    # score, reason = Levenshtein_homoglyphs_domains(normmalised_sender_domain)
+    # t_risk_score += score
+    # combined_analysis['combined_reasons'].append(reason)
+    # n_analysis += 1; 
 
     # Calculate total risk score
     if t_risk_score !=0:
@@ -196,10 +196,10 @@ def analyze_email_content_detailed(content: str):
         conclusion = "Moderately Suspicious"
     elif f_risk_score >= 50:
         c_suspicious_email += 1 # Consider as suspicious email
-        conclusion = "Low Suspicious", "Low"
+        conclusion = "Low Suspicious"
     else:
         c_safe_emails += 1 # Consider as safe email
-        conclusion = "Safe", "Safe"
+        conclusion = "Safe"
     
     # Successfully scanned 1 email
     c_emails_analyse += 1 

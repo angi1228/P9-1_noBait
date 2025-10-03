@@ -1,17 +1,21 @@
 import re
 from urllib.parse import urlparse
 
-body = "Click Below For Accessories On All NOKIA, MOTOROLA LG, NEXTEL, SAMSUNG, QUALCOMM, ERICSSON, AUDIOVOX PHONES At Below WHOLESALE PRICES! http://www.chinaniconline.com/sales/"
+from Constants import SUSPICIOUS_KEYWORDS
+from Constants import SAFE_DOMAIN_LIST
 
-SUSPICIOUS_KEYWORDS = ['login', 'verify', 'update', 'banking', 'secure', 'account', 'password', 'sales', 'action','download', 'win', 'prize' ]
+
+# body = "Click Below For Accessories On All NOKIA, MOTOROLA LG, NEXTEL, SAMSUNG, QUALCOMM, ERICSSON, AUDIOVOX PHONES At Below WHOLESALE PRICES! http://www.chinaniconline.com/sales/"
+
+# SUSPICIOUS_KEYWORDS = ['login', 'verify', 'update', 'banking', 'secure', 'account', 'password', 'sales', 'action','download', 'win', 'prize' ]
 
 SHORTENING_SERVICES = ['bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly', 't.co', 'is.gd']
 
 # Change to safedomain list for integration
-TRUSTED_DOMAINS = ['gmail.com', 'outlook.com', 'neo.email', 'yahoo.com',
-                   'proton.me', 'protonmail.com', 'icloud.com', 'zohomail.com',
-                   'aol.com', 'tuta.com', 'tutanota.com', 'mailfence.com',
-                   'sit.singaporetech.edu.sg']
+# TRUSTED_DOMAINS = ['gmail.com', 'outlook.com', 'neo.email', 'yahoo.com',
+#                    'proton.me', 'protonmail.com', 'icloud.com', 'zohomail.com',
+#                    'aol.com', 'tuta.com', 'tutanota.com', 'mailfence.com',
+#                    'sit.singaporetech.edu.sg']
 
 # Extract URL from body text
 def extract_URL(email_body_text):
@@ -51,7 +55,7 @@ def check_domain(parsed_url_list):
     # for every url in list
     for i in parsed_url_list:
         riskscore = 0
-        if i.netloc not in TRUSTED_DOMAINS:     # if domain name not in trusted domains
+        if i.netloc not in SAFE_DOMAIN_LIST:     # if domain name not in trusted domains
             # print("UNTRUSTED")
             if i.netloc in SHORTENING_SERVICES: # if domain name is url shortener
                 print("URL_SHORTENER USED")
@@ -145,10 +149,10 @@ def generate_reason(domainscore):
 
 
 
-def check_url(email_body):
+def check_url(found_url_list):
     '''Checks riskscore of URLs found in a body of text (str)'''
     
-    found_url_list = extract_URL(email_body)
+    # found_url_list = extract_URL(email_body)
     
     parsed_list = parse_URL(found_url_list)
     
@@ -162,7 +166,7 @@ def check_url(email_body):
     # URL_Check_Dict = generate_reason(Finaldomainscore)
     
     max_score, score_reason = generate_reason(Finaldomainscore)
-    url_reason = [score_reason]
+    url_reason = score_reason
     return int(max_score), url_reason 
 
     #domain score is a list 
@@ -172,4 +176,4 @@ def check_url(email_body):
     # check_page(parsed_list, domainscore)
 
 
-check_url(body)
+# check_url(found_url_list)
