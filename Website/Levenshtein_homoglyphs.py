@@ -51,7 +51,7 @@ COMMON_HOMOGLYPH_MAP  = {
 
 # Function to check if an email domain is safe
 
-def check_display_name_vs_domain(display_name, sender_name, sender_domain, sender_email):
+def check_display_name_vs_domain(display_name, sender_name, sender_domain):
     """
     Check if the sender's display name suggests a brand/org but the email domain does not match the official domain of that brand/org.
     """
@@ -95,7 +95,8 @@ def check_display_name_vs_domain(display_name, sender_name, sender_domain, sende
             score, reason = 0, suspicious_reason
         print(score, reason)
         return score, reason 
-
+    
+    {score: 0, reason: "nidufhefe"}
 
 def Levenshtein_homoglyphs_domains(email_domain):
     '''
@@ -108,7 +109,7 @@ def Levenshtein_homoglyphs_domains(email_domain):
     elif suspicious_result['suspicious'] == 'Unknown':
         suspicious_reason = "The sender's domain is unknown"
     else:
-        suspicious_reason = None
+        suspicious_reason =''
 
     # Format to return back to the function
     score, reason = suspicious_result['risk_score'], suspicious_reason
@@ -121,7 +122,7 @@ def Levenshtein_homoglyphs_domains(email_domain):
 
 def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str], threshold: int = 2):
     """
-    Orchestrates the two-stage check for a single suspicious domain against a list of safe domains or senders.
+    Orchestrates the two-stage check for a single suspicious domain against a list of safe list.
     """
     result_safe = {
         'input': input_item,
@@ -222,5 +223,5 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
 #     sender_email_4 = 'Google@g0ogle.com'
 #     sender_email_5 = 'Outlook-support@outlook.com'
 #     sender_email_6 = 'mycompany@comppany.com'
-#     check_display_name_vs_domain(display_name, sender_name, email_domain, sender_email)
+#     check_display_name_vs_domain(display_name, sender_name, email_domain)
 

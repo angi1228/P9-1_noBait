@@ -1,6 +1,6 @@
 import re
 from email import policy
-from email.parser import BytesParser
+from email.parser import Parser
 from email.utils import parseaddr
 
 # common constants
@@ -32,11 +32,12 @@ SUSPICIOUS_KEYWORDS = [
 WORD_CLEANER = re.compile(r'[^A-Za-z0-9 \n]+')
 
 
-def extract_email_parts(eml_file_path):
+def extract_email_parts(file_content):
     """Parses a file to extract headers, body, and URLs."""
 
-    with open(eml_file_path, 'rb') as fp:
-        msg = BytesParser(policy=policy.default).parse(fp)
+    # with open(eml_file_path, 'rb') as fp:
+    parser = Parser()
+    msg = parser.parsestr(file_content)
 
     email_parts = {}
 
@@ -75,24 +76,33 @@ def extract_email_parts(eml_file_path):
 
     return email_parts
 
-extracted_data = extract_email_parts('test_email.eml')
 
-# if __name__ == '__main__':
-#     print("--- Headers ---")
-#     for key, value in extracted_data['headers'].items():
-#         print(f"{key}: {value}")
+if __name__ == '__main__':
+    file_content = """\
+From: sender@exampe.xom
+To: example@gmail.com
+Subject: TEst
 
-#     print("\n--- Body ---")
-#     print(extracted_data['body'].strip())
 
-#     print("\n--- URLs ---")
-#     for url in extracted_data['urls']:
-#         print(url)
+THis is the body of the tmeial
 
-#     # Print the Display Name
-#     display_name = extracted_data.get('display_name', 'N/A')
-#     print(f"Display Name: {display_name}")
+"""
+    extracted_data = extract_email_parts(file_content)
+    print("--- Headers ---")
+    for key, value in extracted_data['headers'].items():
+        print(f"{key}: {value}")
 
-#     # Print the Email Address
-#     email_address = extracted_data.get('email_address', 'N/A')
-#     print(f"Email Address: {email_address}")
+    print("\n--- Body ---")
+    print(extracted_data['body'].strip())
+
+    print("\n--- URLs ---")
+    for url in extracted_data['urls']:
+        print(url)
+
+    # Print the Display Name
+    display_name = extracted_data.get('display_name', 'N/A')
+    print(f"Display Name: {display_name}")
+
+    # Print the Email Address
+    email_address = extracted_data.get('email_address', 'N/A')
+    print(f"Email Address: {email_address}")
