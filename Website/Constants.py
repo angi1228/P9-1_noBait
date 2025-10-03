@@ -1,6 +1,7 @@
 import re
 from email import policy
-from email.parser import BytesParser
+from email.parser import Parser
+from email.utils import parseaddr
 
 # common constants
 
@@ -31,16 +32,30 @@ SUSPICIOUS_KEYWORDS = [
 WORD_CLEANER = re.compile(r'[^A-Za-z0-9 \n]+')
 
 
-def extract_email_parts(eml_file_path):
+def extract_email_parts(file_content):
     """Parses a file to extract headers, body, and URLs."""
 
-    with open(eml_file_path, 'rb') as fp:
-        msg = BytesParser(policy=policy.default).parse(fp)
+    # with open(eml_file_path, 'rb') as fp:
+    parser = Parser()
+    msg = parser.parsestr(file_content)
 
     email_parts = {}
 
     # 1. Extract headers
     email_parts['headers'] = dict(msg.items())
+
+    # 1.0 Extract Display Name and Email Address
+    sender_header = msg.get('From', '')
+    display_name, email_address = parseaddr(sender_header)
+    
+    # 1.2 Extract Display Name
+    email_parts['display_name'] = display_name
+    
+    # 1.3 Extract Email Address
+    email_parts['email_address'] = email_address
+
+    # 1.4 Extract Email Title
+    email_parts['subject'] = msg.get('Subject', '').strip() 
 
     # 2. Extract body
     body = ""
@@ -56,14 +71,23 @@ def extract_email_parts(eml_file_path):
     email_parts['body'] = body
 
     # 3. Extract URLs from the body using regex
-    url_pattern = r'https?://[^\s<>"]+|www\.[^\s<>"]+'
+    url_pattern = r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)'
     email_parts['urls'] = re.findall(url_pattern, body)
 
     return email_parts
 
-extracted_data = extract_email_parts('test_email.eml')
 
 if __name__ == '__main__':
+    file_content = """\
+From: sender@exampe.xom
+To: example@gmail.com
+Subject: TEst
+
+
+THis is the body of the tmeial
+
+"""
+    extracted_data = extract_email_parts(file_content)
     print("--- Headers ---")
     for key, value in extracted_data['headers'].items():
         print(f"{key}: {value}")
@@ -74,3 +98,11 @@ if __name__ == '__main__':
     print("\n--- URLs ---")
     for url in extracted_data['urls']:
         print(url)
+
+    # Print the Display Name
+    display_name = extracted_data.get('display_name', 'N/A')
+    print(f"Display Name: {display_name}")
+
+    # Print the Email Address
+    email_address = extracted_data.get('email_address', 'N/A')
+    print(f"Email Address: {email_address}")
