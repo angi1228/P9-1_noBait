@@ -6,7 +6,7 @@ from datetime import datetime
 from Constants import extract_email_parts
 from Levenshtein_homoglyphs import Levenshtein_homoglyphs_domains 
 from url_check import check_url
-from keywords_and_whitelist import find_suspicious_keywords
+from keywords_check import find_suspicious_keywords
 
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
@@ -145,16 +145,17 @@ def analyze_email_content_detailed(content: str):
     # 1. Get Constants before running the analysis
     email_parts = extract_email_parts(content) # Returns the email parts 
     
+    # Set Initial values
     combined_analysis = {"f_risk_score":0, "combined_reasons":[]}
     t_risk_score = 0
     n_analysis = 0 # Calulate the number of analysis
 
     # Function 1: Suspicious Keyword Checks on body
-    email_body = email_parts.get('body', 'N/A')
-    # suspicious_body(email_body)
-
-    find_suspicious_keywords(email_body)
-    
+    email_body = email_parts.get('subjet_and_body', 'N/A')
+    score, reason = find_suspicious_keywords(email_body)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
     #1) Score & Reason
     #2) I need to call your function -> give me whats your intital function
