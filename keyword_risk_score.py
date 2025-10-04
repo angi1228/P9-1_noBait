@@ -4,6 +4,7 @@ import Constants
 early_count = {}
 later_count = {}
 
+
 def suspicious_subject(subject):
     """
     this function counts the number of each suspicious keyword found in the subject of the email
@@ -47,6 +48,7 @@ def suspicious_body(email_body):
         if word in Constants.SUSPICIOUS_KEYWORDS:
             later_count[word] = later_count.get(word, 0) + 1
     return body_cleaned
+
 
 def count_capitals(clean_subject, clean_body):
     """
@@ -118,5 +120,8 @@ def assign_risk_score(subject, body):
 
 # subject = Constants.extracted_data['Subject']
 # body = Constants.extracted_data['Body']
-print(assign_risk_score(subject, body))
+# print(assign_risk_score(subject, body))
+
+if __name__ == "__main__":
+    print(assign_risk_score(subject, body))
 
