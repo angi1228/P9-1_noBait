@@ -9,6 +9,9 @@ from check_sender_display_domain import check_sender_and_display_name
 from url_check import check_url
 from keywords_check import find_suspicious_keywords
 from whitelist_check import check_whitelist
+from financedetect import check_financial_request
+from keyword_riskscore import assign_risk_score
+
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
 
@@ -65,12 +68,15 @@ def analyze_email():
 # ----------------------------
 @app.route('/analyze-file', methods=['POST'])
 def analyze_file():
+    
     # Check if a file was uploaded
     if 'file' not in request.files:
         return render_template("index.html", error="No file uploaded")
 
     file = request.files['file']
+    print("DEBUG -- filename:", file.filename)
     if file.filename == '':
+        print('122222')
         return render_template("index.html", error="No file selected")
 
     try:
@@ -100,6 +106,7 @@ def analyze_file():
                 # Pass results back to the template to display ## NOTE: YX To link from here
             return render_template(
                 "index.html",
+                zip_results=results,
                 score=result.get('score', 0),                  # Matches {{ score }}
                 category=result.get('category', 'Error'),      # Matches {{ category }}
                 reasons=result.get('reasons', []),             # Matches {{ reasons }}
@@ -113,9 +120,14 @@ def analyze_file():
 
 
         else:
+            print("334343")
             # If uploaded file is just a single email file (not zip)
             content = file.read().decode('utf-8', errors='ignore')
+            print("DEBUG -- content length:", len(content))
             result = analyze_email_content_detailed(content)
+            print("DEBUG -- result:", result)
+            print("DEBUG -- content length:", len(content))
+
             return render_template("index.html",
                                    filename=file.filename, # Pass filename for display
                                     score=result.get('score', 0),                  # Matches {{ score }}
@@ -145,52 +157,67 @@ def analyze_email_content_detailed(content: str):
 
     # 1. Get Constants before running the analysis
     email_parts = extract_email_parts(content) # Returns the email parts 
-    
+    print("DEBUG -- content length:", len(content))
+    print("DEBUG -- email_parts:", email_parts)
+
     # Set Initial values
     combined_analysis = {"f_risk_score":0, "combined_reasons":[]}
     t_risk_score = 0
     n_analysis = 0 # Calulate the number of analysis
+    f_risk_score = 0
 
     #1) Score & Reason
     #2) I need to call your function -> give me whats your intital function
     #3) tell me what you need e.g., URL
 
     # Function 1: Suspicious Keyword Checks on body
-    # score, reason = find_suspicious_keywords(text=email_parts.get('subject_and_body', 'N/A'))
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    subject_and_body = email_parts.get('subject', 'N/A') + '\n' + email_parts.get('body', 'N/A')
+    score, reason = find_suspicious_keywords(subject_and_body)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
+
+    score, reason = assign_risk_score(subject=email_parts.get('subject', 'N/A'), body=email_parts.get('body', 'N/A'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
     # Function 2: Verify domain
-    # score, reason = check_whitelist(email=email_parts.get('sender_name','NA'), domain=email_parts.get('sender_domain','NA'))
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    score, reason = check_whitelist(email=email_parts.get('sender_name','NA'), domain=email_parts.get('sender_domain','NA'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
-
     # Function 3: URL Check
-    # URL_list = email_parts.get('url', 'N/A')
-    # score, reason = check_url(URL_list)
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
-
-    # Function 4: keyword check????
+    URL_list = email_parts.get('url', 'N/A')
+    score, reason = check_url(URL_list)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
-    # Function 5: Sender Name/Display Name Check
-    # score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
-    #                                                sender_name=email_parts.get('sender_name', 'N/A'), 
-    #                                                sender_domain=email_parts.get('sender_domain', 'N/A'))
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    # Function 4: Sender Name/Display Name Check
+    score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
+                                                   sender_name=email_parts.get('sender_name', 'N/A'), 
+                                                   sender_domain=email_parts.get('sender_domain', 'N/A'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
-    # Function 6: Domain Name check    
-    # score, reason = check_domain(email_domain=email_parts.get('sender_domain', 'N/A'))
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    # Function 5: Domain Name check    
+    score, reason = check_domain(email_domain=email_parts.get('sender_domain', 'N/A'))
+    print("DEBUG -- score:", score)
+    print("DEBUG -- reason:", reason)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
+    # Function 6: Finance detect
+    score, reason = check_financial_request(content=email_parts.get('body', 'N/A'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
+    
+    
     # Calculate total risk score
     if t_risk_score !=0:
         f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
