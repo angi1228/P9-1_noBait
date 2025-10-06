@@ -12,7 +12,7 @@ def find_suspicious_keywords(text):
        
     count = 0
     found = []
-    reasons = ""
+    reasons = []
 
     # Extract words
     plain_text = preprocess_text(text)
@@ -28,9 +28,9 @@ def find_suspicious_keywords(text):
     risk_score = 50 if count > 0 else 0
 
     if count > 0:
-        reasons += (f"Suspicious keywords found: {', '.join(found)}")
+        reasons.append(f"Suspicious keywords found: {', '.join(found)}")
     else:
-        reasons += ("No suspicious keywords found")
+        reasons.append("No suspicious keywords found")
 
     # return score (int), reasons (list)
     return risk_score, reasons

@@ -13,7 +13,7 @@ SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton
 
 
 # for sender domain check
-SAFE_SENDER_LIST = ['microsoft','neo','yahoo','proton','icloud','zoho','aol', 'tuta','tutanota','mailfence', 'sit','mycompany','google']
+SAFE_SENDER_LIST = ['google','microsoft','neo','yahoo','proton','icloud','zoho','aol', 'tuta','tutanota','mailfence', 'sit','mycompany','itsupport']
 
 
 # For keyword check, url check
@@ -48,19 +48,13 @@ def extract_email_parts(file_content):
     sender_header = msg.get('From', '')
     display_name, email_address = parseaddr(sender_header)
     
-    # 1.2 Extract Display Name and normalised
-    email_parts['display_name'] = display_name.lower()
+    # 1.2 Extract Display Name
+    email_parts['display_name'] = display_name
     
     # 1.3 Extract Email Address
     email_parts['email_address'] = email_address
 
-    # 1.4 Extract Domain Name and normalised
-    email_parts['sender_domain'] = email_parts['email_address'].split("@")[-1].lower()
-    
-    # 1.5 Extract sender name and normalised
-    email_parts['sender_name'] = email_parts['email_address'].split("@")[0].lower()
-
-    # 1.6 Extract Email Title
+    # 1.4 Extract Email Title
     email_parts['subject'] = msg.get('Subject', '').strip() 
 
     # 2. Extract body
@@ -80,36 +74,35 @@ def extract_email_parts(file_content):
     url_pattern = r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)'
     email_parts['urls'] = re.findall(url_pattern, body)
 
-
     return email_parts
 
 
-# if __name__ == '__main__':
-#     file_content = """\
-# From: sender@exampe.xom
-# To: example@gmail.com
-# Subject: TEst
+if __name__ == '__main__':
+    file_content = """\
+From: sender@exampe.xom
+To: example@gmail.com
+Subject: TEst
 
 
-# THis is the body of the tmeial
+THis is the body of the tmeial
 
-# """
-#     extracted_data = extract_email_parts(file_content)
-#     print("--- Headers ---")
-#     for key, value in extracted_data['headers'].items():
-#         print(f"{key}: {value}")
+"""
+    extracted_data = extract_email_parts(file_content)
+    print("--- Headers ---")
+    for key, value in extracted_data['headers'].items():
+        print(f"{key}: {value}")
 
-#     print("\n--- Body ---")
-#     print(extracted_data['body'].strip())
+    print("\n--- Body ---")
+    print(extracted_data['body'].strip())
 
-#     print("\n--- URLs ---")
-#     for url in extracted_data['urls']:
-#         print(url)
+    print("\n--- URLs ---")
+    for url in extracted_data['urls']:
+        print(url)
 
-#     # Print the Display Name
-#     display_name = extracted_data.get('display_name', 'N/A')
-#     print(f"Display Name: {display_name}")
+    # Print the Display Name
+    display_name = extracted_data.get('display_name', 'N/A')
+    print(f"Display Name: {display_name}")
 
-#     # Print the Email Address
-#     email_address = extracted_data.get('email_address', 'N/A')
-#     print(f"Email Address: {email_address}")
+    # Print the Email Address
+    email_address = extracted_data.get('email_address', 'N/A')
+    print(f"Email Address: {email_address}")
