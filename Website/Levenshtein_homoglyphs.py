@@ -5,8 +5,7 @@ r'''
         input2 = "google"
         dist_calc = Levenshtein.distance(input1, input2)
         print(f"The Levenshtein distance between {input1} and {input2} is : {dist_calc}")
-        The Levenshtein distance between gooogle and google is : 2
-    Will need further checks if used -> e.g., Cooking and Looking is   similar but doesn't mean its a phishing email
+        ## Output: The Levenshtein distance between gooogle and google is : 2
 
 2. Homoglyphs detection will perform a check for characters that look visually similar but have different unicode values. 
     It uses a predefined mapping of common homoglyph substitutions to flag suspicious email. 
@@ -14,7 +13,6 @@ r'''
 '''
 
 from Levenshtein import distance as levenshtein_distance
-import homoglyphs as hg
 from typing import List
 
 # --- Data Setup --- 

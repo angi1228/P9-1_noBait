@@ -468,6 +468,7 @@
         {% elif r.category=='Suspicious' %}suspicious
         {% else %}safe
         {% endif %}">
+
               {{ r.category }}
             </span>
           </div>
@@ -479,11 +480,19 @@
             {% else %}
             <!-- List reasons for the score -->
             <p class="mb-1"><strong>Reasons:</strong></p>
+            {% set valid_reasons = r.reasons | select | list %}
+            {% if valid_reasons | length > 0 %}
             <ul>
-              {% for reason in r.reasons %}
-              <li>{{ reason }}</li>
+              {% for r in valid_reasons %}
+              <li>{{ r }}</li>
               {% endfor %}
             </ul>
+            {% else %}
+            <!-- Optional: Print a positive message if the list is empty and the email is safe -->
+            {% if category == 'Safe' %}
+            <p class="mb-1 text-success"><strong>Analysis complete: No suspicious traits detected.</strong></p>
+            {% endif %}
+            {% endif %}
             <!-- Show email content found in ZIP -->
             <p class="mb-1"><strong>Email Body:</strong></p>
             <pre class="email-body-box">{{ r.email_content }}</pre>
@@ -528,7 +537,7 @@
               <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
             </div>
             <span class="risk-badge 
-        {% if category=='Phishing' %}phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
+        {% if category=='Phishing' %}Phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
               {{ category }}
             </span>
           </div>

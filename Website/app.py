@@ -15,7 +15,6 @@ from keyword_riskscore import assign_risk_score
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
 
-# NOTE: TEMPORARY PLACEMENT - TO MOVE
 c_cmf_phsihing = 0 # Count the number of confirmed phishing emails. Inital value: 0
 c_suspicious_email=0 # Count the number of suspicious emails. Inital value: 0
 c_safe_emails=0 # Count the number of safe emails. Initial value: 0
@@ -50,12 +49,12 @@ def analyze_email():
     # Run the analyzer function on the email content
     result = analyze_email_content_detailed(email_content)
 
-    # Pass results back to the template to display ## NOTE: YX To link from here
+    # Pass results back to the template to display 
     return render_template("index.html",
                             score=result.get('score', 0),                  # Matches {{ score }}
                             category=result.get('category', 'Error'),      # Matches {{ category }}
                             reasons=result.get('reasons', []),             # Matches {{ reasons }}
-                            email_content=email_content,                   # Matches {{ email_content }} (and acts as display trigger)
+                            email_content=email_content,                   # Matches {{ email_content }} 
                             # ... (Global Counters) ...
                             phishing=c_cmf_phsihing,
                             anothernumber=c_safe_emails,
@@ -99,18 +98,11 @@ def analyze_file():
                         except Exception as e:
                             # If one file fails, still continue and log error
                             results.append({'filename': name, 'error': str(e)})
-            # Show results for all files inside the zip
-            # return render_template("index.html", zip_results=results,
-            #                        phishing=c_cmf_phsihing, anothernumber=c_safe_emails,
-            #                        sum=c_emails_analyse, sus=c_suspicious_email)
-                # Pass results back to the template to display ## NOTE: YX To link from here
+
+        # Pass results back to the template to display 
             return render_template(
                 "index.html",
-                zip_results=results,
-                score=result.get('score', 0),                  # Matches {{ score }}
-                category=result.get('category', 'Error'),      # Matches {{ category }}
-                reasons=result.get('reasons', []),             # Matches {{ reasons }}
-                email_content=content,                   # Matches {{ email_content }} (and acts as display trigger)
+                zip_results=results, # For parsing of zip files
                 # ... (Global Counters) ...
                 phishing=c_cmf_phsihing,
                 anothernumber=c_safe_emails,
@@ -120,7 +112,6 @@ def analyze_file():
 
 
         else:
-            print("334343")
             # If uploaded file is just a single email file (not zip)
             content = file.read().decode('utf-8', errors='ignore')
             print("DEBUG -- content length:", len(content))
@@ -129,7 +120,7 @@ def analyze_file():
             print("DEBUG -- content length:", len(content))
 
             return render_template("index.html",
-                                   filename=file.filename, # Pass filename for display
+                                   filename=file.filename,                         # Pass filename for display
                                     score=result.get('score', 0),                  # Matches {{ score }}
                                     category=result.get('category', 'Error'),      # Matches {{ category }}
                                     reasons=result.get('reasons', []),             # Matches {{ reasons }},
@@ -166,17 +157,14 @@ def analyze_email_content_detailed(content: str):
     n_analysis = 0 # Calulate the number of analysis
     f_risk_score = 0
 
-    #1) Score & Reason
-    #2) I need to call your function -> give me whats your intital function
-    #3) tell me what you need e.g., URL
-
-    # Function 1: Suspicious Keyword Checks on body
+    # Function 1: Suspicious Keyword checks on body
     subject_and_body = email_parts.get('subject', 'N/A') + '\n' + email_parts.get('body', 'N/A')
+    ## Get suspicious keywords
     score, reason = find_suspicious_keywords(subject_and_body)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
-
+    ## Assign risk score
     score, reason = assign_risk_score(subject=email_parts.get('subject', 'N/A'), body=email_parts.get('body', 'N/A'))
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
