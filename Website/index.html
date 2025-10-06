@@ -475,29 +475,35 @@
 
           <!-- Detailed analysis content -->
           <div class="p-3 border-bottom">
-            {% if r.error %}
-            <p class="text-danger">Error: {{ r.error }}</p> <!-- Show error if any -->
-            {% else %}
-            <!-- List reasons for the score -->
-            <p class="mb-1"><strong>Reasons:</strong></p>
-            {% set valid_reasons = r.reasons | select | list %}
-            {% if valid_reasons | length > 0 %}
-            <ul>
-              {% for r in valid_reasons %}
-              <li>{{ r }}</li>
-              {% endfor %}
-            </ul>
-            {% else %}
-            <!-- Optional: Print a positive message if the list is empty and the email is safe -->
-            {% if category == 'Safe' %}
-            <p class="mb-1 text-success"><strong>Analysis complete: No suspicious traits detected.</strong></p>
-            {% endif %}
-            {% endif %}
-            <!-- Show email content found in ZIP -->
-            <p class="mb-1"><strong>Email Body:</strong></p>
-            <pre class="email-body-box">{{ r.email_content }}</pre>
-            {% endif %}
-          </div>
+              {% if r.error %}
+              <p class="text-danger">Error: {{ r.error }}</p> {% else %}
+
+                  <!-- List reasons for the score -->
+                  {% set valid_reasons = r.reasons | select | list %}
+
+                  <!--  Print a positive message if the list is empty and the email is safe -->
+                  {% if r.category == 'Safe' %}
+                  <p class="mb-1 text-success"><strong>Analysis complete: No suspicious traits detected.</strong></p>
+                  
+                  <!-- Print the reasons for suspicious email -->
+                  {% elif valid_reasons | length > 0 %}
+                  <p class="mb-1"><strong>Reasons:</strong></p>
+                  <ul>
+                      {% for reason in valid_reasons %}
+                      <li>{{ reason }}</li>
+                      {% endfor %}
+                  </ul>
+                  
+                  {% else %}
+                  <p class="mb-1 text-warning"><strong>Warning: Analysis detected a risk ({{ r.category }}), but no specific reasons were recorded.</strong></p>
+                  {% endif %}
+
+                  <!-- Show email content found in ZIP -->
+                  <p class="mb-1 mt-3"><strong>Email Body:</strong></p>
+                  <pre class="email-body-box">{{ r.email_content }}</pre>
+                  
+              {% endif %}
+</div>
           {% endfor %}
         </div>
       </div>

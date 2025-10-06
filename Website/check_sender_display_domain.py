@@ -75,7 +75,7 @@ def check_domain(email_domain):
     To check whether the domain is similar to the safe domain list by checking for any homoglyphs and similarity to the safe domains (using Levenshtein distance) that suggest a phishing attempt. 
     '''
 
-    # Get a list of result from the function
+    # Get a dictionary of the result from the function
     suspicious_result = check_Levenshtein_homoglyphs(email_domain, SAFE_DOMAIN_LIST)  
 
     # Check whether the result returns whether the sender's domain is suspicious

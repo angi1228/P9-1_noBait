@@ -15,7 +15,7 @@ from keyword_riskscore import assign_risk_score
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
 
-c_cmf_phsihing = 0 # Count the number of confirmed phishing emails. Inital value: 0
+c_cmf_phishing = 0 # Count the number of confirmed phishing emails. Inital value: 0
 c_suspicious_email=0 # Count the number of suspicious emails. Inital value: 0
 c_safe_emails=0 # Count the number of safe emails. Initial value: 0
 c_emails_analyse=0 # Count the number of emails scanned. Initial value: 0
@@ -29,7 +29,7 @@ def home():
     # Some sample values (phishing, anothernumber, etc.) are sent to template
     return render_template(
         "index.html",
-        phishing=c_cmf_phsihing,
+        phishing=c_cmf_phishing,
         anothernumber=c_safe_emails,
         sum=c_emails_analyse,
         sus=c_suspicious_email
@@ -56,7 +56,7 @@ def analyze_email():
                             reasons=result.get('reasons', []),             # Matches {{ reasons }}
                             email_content=email_content,                   # Matches {{ email_content }} 
                             # ... (Global Counters) ...
-                            phishing=c_cmf_phsihing,
+                            phishing=c_cmf_phishing,
                             anothernumber=c_safe_emails,
                             sum=c_emails_analyse,
                             sus=c_suspicious_email
@@ -104,7 +104,7 @@ def analyze_file():
                 "index.html",
                 zip_results=results, # For parsing of zip files
                 # ... (Global Counters) ...
-                phishing=c_cmf_phsihing,
+                phishing=c_cmf_phishing,
                 anothernumber=c_safe_emails,
                 sum=c_emails_analyse,
                 sus=c_suspicious_email
@@ -126,7 +126,7 @@ def analyze_file():
                                     reasons=result.get('reasons', []),             # Matches {{ reasons }},
                                     email_content=content,
                                     # ... (Global Counters) ...
-                                    phishing=c_cmf_phsihing,
+                                    phishing=c_cmf_phishing,
                                     anothernumber=c_safe_emails,
                                     sum=c_emails_analyse,
                                     sus=c_suspicious_email,
@@ -141,10 +141,16 @@ def analyze_file():
 # ----------------------------
 
 def analyze_email_content_detailed(content: str):
-    global c_cmf_phsihing # MUST be declared global to be modified
-    global c_suspicious_email # MUST be declared global to be modified
-    global c_safe_emails # MUST be declared global to be modified
-    global c_emails_analyse # MUST be declared global to be modified
+    """
+    Run all the analysis functions.
+    Update the global variables.
+    Calculate the final result and parse it to the webpage.
+    """
+
+    global c_cmf_phishing       # Declared global to modify
+    global c_suspicious_email   # Declared global to modify
+    global c_safe_emails        # Declared global to modify
+    global c_emails_analyse     # Declared global to modify
 
     # 1. Get Constants before running the analysis
     email_parts = extract_email_parts(content) # Returns the email parts 
@@ -152,61 +158,65 @@ def analyze_email_content_detailed(content: str):
     print("DEBUG -- email_parts:", email_parts)
 
     # Set Initial values
-    combined_analysis = {"f_risk_score":0, "combined_reasons":[]}
-    t_risk_score = 0
-    n_analysis = 0 # Calulate the number of analysis
-    f_risk_score = 0
+    combined_analysis = {"f_risk_score":0, "combined_reasons":[]} # To store key-pairs in a dictionary to parse to the webpage
+    t_risk_score = 0    # Store the total risk score from all analysis
+    n_analysis = 0      # Calulate the number of analysis
+    f_risk_score = 0    # Store the final risk score after calculating overall risk
 
-    # Function 1: Suspicious Keyword checks on body
-    subject_and_body = email_parts.get('subject', 'N/A') + '\n' + email_parts.get('body', 'N/A')
+    # Retrieve email parts from the Constants.py
+    email_subject = email_parts.get('subject', 'N/A')
+    email_body = email_parts.get('body', 'N/A')
+    email_sender_name = email_parts.get('sender_name','NA')
+    email_domain_name = email_parts.get('sender_domain','NA')
+    
+    
+    # Function 1: Suspicious Keyword checks on subject and body
+    subject_and_body = email_subject + '\n' + email_body
     ## Get suspicious keywords
     score, reason = find_suspicious_keywords(subject_and_body)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     ## Assign risk score
-    score, reason = assign_risk_score(subject=email_parts.get('subject', 'N/A'), body=email_parts.get('body', 'N/A'))
+    score, reason = assign_risk_score(email_subject, email_body)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
-    # Function 2: Verify domain
-    score, reason = check_whitelist(email=email_parts.get('sender_name','NA'), domain=email_parts.get('sender_domain','NA'))
+    # Function 2: Verify whether domain is valid and in the whitelist
+    score, reason = check_whitelist(email_sender_name , email_domain_name)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
-    # Function 3: URL Check
-    URL_list = email_parts.get('url', 'N/A')
-    score, reason = check_url(URL_list)
+    # Function 3: Check URL
+    score, reason = check_url(found_url_list=email_parts.get('url', 'N/A'))
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
-    # Function 4: Sender Name/Display Name Check
+    # Function 4: Check the Sender Name/Display Name for spoofing
     score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
-                                                   sender_name=email_parts.get('sender_name', 'N/A'), 
-                                                   sender_domain=email_parts.get('sender_domain', 'N/A'))
+                                                   sender_name=email_sender_name, 
+                                                   sender_domain=email_domain_name)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
 
-    # Function 5: Domain Name check    
-    score, reason = check_domain(email_domain=email_parts.get('sender_domain', 'N/A'))
-    print("DEBUG -- score:", score)
-    print("DEBUG -- reason:", reason)
+    # Function 5: Check Domain Name for spoofing     
+    score, reason = check_domain(email_domain_name)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
 
-    # Function 6: Finance detect
-    score, reason = check_financial_request(content=email_parts.get('body', 'N/A'))
+    # Function 6: Detect for any financial request
+    score, reason = check_financial_request(email_body)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
     
-    # Calculate total risk score
+    # Calculate te final risk score 
     if t_risk_score !=0:
         f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
         combined_analysis['f_risk_score'] = f_risk_score
@@ -214,7 +224,7 @@ def analyze_email_content_detailed(content: str):
     # Map the risk score to a conclusion and risk level. 
     if f_risk_score >= 81:
         c_suspicious_email += 1 # Consider as suspicious email
-        c_cmf_phsihing += 1 # Add count to the number of confimred phsihing emails
+        c_cmf_phishing += 1 # Add count to the number of confimred phsihing emails
         conclusion = "Phishing"
     elif f_risk_score >= 65:
         c_suspicious_email += 1 # Consider as suspicious email
@@ -228,9 +238,11 @@ def analyze_email_content_detailed(content: str):
     
     # Successfully scanned 1 email
     c_emails_analyse += 1 
-     
+    
+    # Add conclusion to the dictionary for parsing to webpage
     combined_analysis['conclusion'] = conclusion
 
+    # Return to parse to the webpage
     return {
         "score": round(f_risk_score, 1),
         "category": conclusion,
@@ -238,6 +250,7 @@ def analyze_email_content_detailed(content: str):
         "keyword_count": 'NA',
         "domain_reputation": 'NA'
     }
+
 # ----------------------------
 # Run the app
 # ----------------------------
