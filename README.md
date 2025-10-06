@@ -29,5 +29,4 @@ Open terminal in IDE and type
 python app.py
 ```` 
 
-#test comment
 

@@ -1,22 +1,25 @@
 from flask import Flask, render_template, request
 import zipfile, io
+from datetime import datetime
 
 # Import different functions that check for phishing signs in the email
-from emailchecking_functions.keywords import check_keywords
-from emailchecking_functions.links import check_links
-from emailchecking_functions.greetings import check_greetings
-from emailchecking_functions.urgency import check_urgency
-from emailchecking_functions.punctuation import check_punctuation
-from emailchecking_functions.personalinfo import check_personal_info
-from emailchecking_functions.test import testingfunction
-from emailchecking_functions.financedetect import check_financial_request
-from emailchecking_functions.keywords_and_whitelist import find_suspicious_keywords, check_whitelist
-
-from emailchecking_functions.url_check_copy import check_url
-
+from Constants import extract_email_parts
+from check_sender_display_domain import check_domain
+from check_sender_display_domain import check_sender_and_display_name
+from url_check import check_url
+from keywords_check import find_suspicious_keywords
+from whitelist_check import check_whitelist
+from financedetect import check_financial_request
+from keyword_riskscore import assign_risk_score
 
 # Create a Flask app
 app = Flask(__name__, template_folder='.')
+
+# NOTE: TEMPORARY PLACEMENT - TO MOVE
+c_cmf_phsihing = 0 # Count the number of confirmed phishing emails. Inital value: 0
+c_suspicious_email=0 # Count the number of suspicious emails. Inital value: 0
+c_safe_emails=0 # Count the number of safe emails. Initial value: 0
+c_emails_analyse=0 # Count the number of emails scanned. Initial value: 0
 
 # ----------------------------
 # Home Page
@@ -27,10 +30,10 @@ def home():
     # Some sample values (phishing, anothernumber, etc.) are sent to template
     return render_template(
         "index.html",
-        phishing=24,
-        anothernumber=2000,
-        sum=5,
-        sus=5000
+        phishing=c_cmf_phsihing,
+        anothernumber=c_safe_emails,
+        sum=c_emails_analyse,
+        sus=c_suspicious_email
     )
 
 # ----------------------------
@@ -47,30 +50,33 @@ def analyze_email():
     # Run the analyzer function on the email content
     result = analyze_email_content_detailed(email_content)
 
-    # Pass results back to the template to display
-    return render_template(
-        "index.html",
-        score=result['score'],
-        category=result['category'],
-        reasons=result['reasons'],
-        keyword_count=result['keyword_count'],
-        domain_reputation=result['domain_reputation'],
-        email_content=email_content,
-        anothernumber=2000, sum=5, sus=5000
-       
-    )
+    # Pass results back to the template to display ## NOTE: YX To link from here
+    return render_template("index.html",
+                            score=result.get('score', 0),                  # Matches {{ score }}
+                            category=result.get('category', 'Error'),      # Matches {{ category }}
+                            reasons=result.get('reasons', []),             # Matches {{ reasons }}
+                            email_content=email_content,                   # Matches {{ email_content }} (and acts as display trigger)
+                            # ... (Global Counters) ...
+                            phishing=c_cmf_phsihing,
+                            anothernumber=c_safe_emails,
+                            sum=c_emails_analyse,
+                            sus=c_suspicious_email
+                        )
 
 # ----------------------------
 # Analyze uploaded file (single email file or zip file)
 # ----------------------------
 @app.route('/analyze-file', methods=['POST'])
 def analyze_file():
+    
     # Check if a file was uploaded
     if 'file' not in request.files:
         return render_template("index.html", error="No file uploaded")
 
     file = request.files['file']
+    print("DEBUG -- filename:", file.filename)
     if file.filename == '':
+        print('122222')
         return render_template("index.html", error="No file selected")
 
     try:
@@ -94,17 +100,46 @@ def analyze_file():
                             # If one file fails, still continue and log error
                             results.append({'filename': name, 'error': str(e)})
             # Show results for all files inside the zip
-            return render_template("index.html", zip_results=results,
-                                   phishing=24, anothernumber=2000, sum=5, sus=5000)
+            # return render_template("index.html", zip_results=results,
+            #                        phishing=c_cmf_phsihing, anothernumber=c_safe_emails,
+            #                        sum=c_emails_analyse, sus=c_suspicious_email)
+                # Pass results back to the template to display ## NOTE: YX To link from here
+            return render_template(
+                "index.html",
+                zip_results=results,
+                score=result.get('score', 0),                  # Matches {{ score }}
+                category=result.get('category', 'Error'),      # Matches {{ category }}
+                reasons=result.get('reasons', []),             # Matches {{ reasons }}
+                email_content=content,                   # Matches {{ email_content }} (and acts as display trigger)
+                # ... (Global Counters) ...
+                phishing=c_cmf_phsihing,
+                anothernumber=c_safe_emails,
+                sum=c_emails_analyse,
+                sus=c_suspicious_email
+            )
+
 
         else:
+            print("334343")
             # If uploaded file is just a single email file (not zip)
             content = file.read().decode('utf-8', errors='ignore')
+            print("DEBUG -- content length:", len(content))
             result = analyze_email_content_detailed(content)
+            print("DEBUG -- result:", result)
+            print("DEBUG -- content length:", len(content))
+
             return render_template("index.html",
-                                   filename=file.filename,
-                                   email_content=content,
-                                   **result)
+                                   filename=file.filename, # Pass filename for display
+                                    score=result.get('score', 0),                  # Matches {{ score }}
+                                    category=result.get('category', 'Error'),      # Matches {{ category }}
+                                    reasons=result.get('reasons', []),             # Matches {{ reasons }},
+                                    email_content=content,
+                                    # ... (Global Counters) ...
+                                    phishing=c_cmf_phsihing,
+                                    anothernumber=c_safe_emails,
+                                    sum=c_emails_analyse,
+                                    sus=c_suspicious_email,
+                                   )
 
     except Exception as e:
         # If something goes wrong, show error
@@ -113,77 +148,111 @@ def analyze_file():
 # ----------------------------
 # Main Analyzer - combines all checks
 # ----------------------------
+
 def analyze_email_content_detailed(content: str):
-    score, reasons = 0.0, []  # total score and reasons list
-    keyword_count, domain_reputation = 0, "Good"
+    global c_cmf_phsihing # MUST be declared global to be modified
+    global c_suspicious_email # MUST be declared global to be modified
+    global c_safe_emails # MUST be declared global to be modified
+    global c_emails_analyse # MUST be declared global to be modified
+
+    # 1. Get Constants before running the analysis
+    email_parts = extract_email_parts(content) # Returns the email parts 
+    print("DEBUG -- content length:", len(content))
+    print("DEBUG -- email_parts:", email_parts)
+
+    # Set Initial values
+    combined_analysis = {"f_risk_score":0, "combined_reasons":[]}
+    t_risk_score = 0
+    n_analysis = 0 # Calulate the number of analysis
+    f_risk_score = 0
+
+    #1) Score & Reason
+    #2) I need to call your function -> give me whats your intital function
+    #3) tell me what you need e.g., URL
+
+    # Function 1: Suspicious Keyword Checks on body
+    subject_and_body = email_parts.get('subject', 'N/A') + '\n' + email_parts.get('body', 'N/A')
+    score, reason = find_suspicious_keywords(subject_and_body)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
+
+    score, reason = assign_risk_score(subject=email_parts.get('subject', 'N/A'), body=email_parts.get('body', 'N/A'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
-    # Run keyword checker
-    kw_score, kw_reasons, keyword_count = check_keywords(content)
-    score += kw_score; reasons += kw_reasons
-
-    # Run link checker
-    link_score, link_reasons, domain_reputation = check_links(content)
-    score += link_score; reasons += link_reasons
-
-    # Run greetings checker
-    g_score, g_reasons = check_greetings(content)
-    score += g_score; reasons += g_reasons
-
-    # Run urgency checker
-    u_score, u_reasons = check_urgency(content)
-    score += u_score; reasons += u_reasons
-
-    # Run punctuation checker
-    p_score, p_reasons = check_punctuation(content)
-    score += p_score; reasons += p_reasons
-
-    # Run personal info checker
-    pi_score, pi_reasons = check_personal_info(content)
-    score += pi_score; reasons += pi_reasons;reasons 
-
-    fi_score, fi_reasons = check_financial_request(content)
-    score += fi_score; reasons += fi_reasons
-
-    # angirena's URL check
-    url_score, url_reasons = check_url(content)
-    score += url_score; reasons += url_reasons 
-
-
-
-    # Run test function (custom rules)
-    test1, test2 = testingfunction(content)
-    score += test1; reasons += test2
-
-    zyscore, zyreason = find_suspicious_keywords(content)
-    score += zyscore; reasons += zyreason
-
-    zyscore2, zyreason2 = check_whitelist(content)
-    score += zyscore2; reasons += zyreason2
-
+    # Function 2: Verify domain
+    score, reason = check_whitelist(email=email_parts.get('sender_name','NA'), domain=email_parts.get('sender_domain','NA'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
+    # Function 3: URL Check
+    URL_list = email_parts.get('url', 'N/A')
+    score, reason = check_url(URL_list)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
+    
+    # Function 4: Sender Name/Display Name Check
+    score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
+                                                   sender_name=email_parts.get('sender_name', 'N/A'), 
+                                                   sender_domain=email_parts.get('sender_domain', 'N/A'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
-    # Make sure score does not exceed 10
-    score = min(score, 10)
+    # Function 5: Domain Name check    
+    score, reason = check_domain(email_domain=email_parts.get('sender_domain', 'N/A'))
+    print("DEBUG -- score:", score)
+    print("DEBUG -- reason:", reason)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
-    # Decide category based on score
-    if score < 3:
-        category = "Safe"
-    elif score < 6:
-        category = "Suspicious"
+    # Function 6: Finance detect
+    score, reason = check_financial_request(content=email_parts.get('body', 'N/A'))
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
+    
+    
+    # Calculate total risk score
+    if t_risk_score !=0:
+        f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
+        combined_analysis['f_risk_score'] = f_risk_score
+
+    # Map the risk score to a conclusion and risk level. 
+    if f_risk_score >= 81:
+        c_suspicious_email += 1 # Consider as suspicious email
+        c_cmf_phsihing += 1 # Add count to the number of confimred phsihing emails
+        conclusion = "Phishing"
+    elif f_risk_score >= 65:
+        c_suspicious_email += 1 # Consider as suspicious email
+        conclusion = "Moderately Suspicious"
+    elif f_risk_score >= 50:
+        c_suspicious_email += 1 # Consider as suspicious email
+        conclusion = "Low Suspicious"
     else:
-        category = "Phishing"
+        c_safe_emails += 1 # Consider as safe email
+        conclusion = "Safe"
+    
+    # Successfully scanned 1 email
+    c_emails_analyse += 1 
+     
+    combined_analysis['conclusion'] = conclusion
 
-    # Return all results as dictionary
     return {
-        "score": round(score, 1),
-        "category": category,
-        "reasons": reasons,
-        "keyword_count": keyword_count,
-        "domain_reputation": domain_reputation
+        "score": round(f_risk_score, 1),
+        "category": conclusion,
+        "reasons": combined_analysis['combined_reasons'],
+        "keyword_count": 'NA',
+        "domain_reputation": 'NA'
     }
-
 # ----------------------------
 # Run the app
 # ----------------------------
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
+    

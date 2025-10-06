@@ -459,12 +459,15 @@
           <!-- File header with score and category badge -->
           <div class="email-item d-flex justify-content-between">
             <div>
-              <h6>{{ r.filename }} — Score: {{ r.score }}/10</h6> <!-- Filename and score -->
+              <h6>{{ r.filename }} — Score: {{ r.score }}/100</h6> <!-- Filename and score -->
               <p class="text-muted small">{{ r.domain_reputation }} | {{ r.keyword_count }} keywords</p>
             </div>
             <!-- Risk category badge with color coding -->
             <span class="risk-badge 
-        {% if r.category=='Phishing' %}phishing{% elif r.category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
+        {% if 'Phishing' in r.category %}phishing
+        {% elif r.category=='Suspicious' %}suspicious
+        {% else %}safe
+        {% endif %}">
               {{ r.category }}
             </span>
           </div>
@@ -493,9 +496,6 @@
 
     </div>
 
-
-
-    
     <!-- this is the anaylse email section, where user have to manually paste the email content  -->
     <div id="analyzer" class="analyzer">
       <h2>Email Analyzer</h2>
@@ -524,7 +524,7 @@
         <div class="card-body p-0">
           <div class="email-item d-flex justify-content-between">
             <div>
-              <h6>{{ category }} — Score: {{ score }}/10</h6>
+              <h6>{{ category }} — Score: {{ score }}/100</h6>
               <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
             </div>
             <span class="risk-badge 
@@ -533,12 +533,21 @@
             </span>
           </div>
           <div class="p-3">
+            {% set valid_reasons = reasons | select | list %}
+            {% if valid_reasons | length > 0 %}
             <p class="mb-1"><strong>Reasons:</strong></p>
             <ul>
-              {% for r in reasons %}
+              {% for r in valid_reasons %}
               <li>{{ r }}</li>
               {% endfor %}
             </ul>
+            {% else %}
+            <!-- Optional: Print a positive message if the list is empty and the email is safe -->
+            {% if category == 'Safe' %}
+            <p class="mb-1 text-success"><strong>Analysis complete: No suspicious traits detected.</strong></p>
+            {% endif %}
+            {% endif %}
+
             <p class="mb-1"><strong>Email Body:</strong></p>
             <pre class="email-body-box">{{ email_content }}</pre>
 
