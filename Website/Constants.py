@@ -13,7 +13,7 @@ SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton
 
 
 # for sender domain check
-SAFE_SENDER_LIST = ['google','microsoft','neo','yahoo','proton','icloud','zoho','aol', 'tuta','tutanota','mailfence', 'sit','mycompany','itsupport']
+SAFE_SENDER_LIST = ['google','microsoft','yahoo','proton','icloud','zoho','aol', 'tuta','tutanota','mailfence', 'singaporetech','mycompany']
 
 
 # For keyword check, url check

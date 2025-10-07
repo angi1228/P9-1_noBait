@@ -1,9 +1,5 @@
 import Constants
 
-# Initialise dictionary to count suspicious words
-early_count = {}
-later_count = {}
-
 
 def suspicious_subject(subject):
     """
@@ -11,23 +7,26 @@ def suspicious_subject(subject):
     :param subject: subject of email to check
     :return: cleaned subject without special characters
     """
+    early_count = {}
     # removes special characters and whitespaces from the subject
     subject_cleaned = Constants.WORD_CLEANER.sub('', subject)
     # split the words in the subject into elements of a list and ensure they are all in lowercase
     subject_words = subject_cleaned.lower().split()
+    # loop through the words in the subject and count number of suspicious words found in a dict
     for word in subject_words:
         if word in Constants.SUSPICIOUS_KEYWORDS:
             early_count[word] = early_count.get(word, 0) + 1
-    return subject_cleaned
+    return subject_cleaned, early_count
 
 
-def suspicious_body(email_body):
+def suspicious_body(email_body, early_count):
     """
     this function counts the number of each suspicious keyword found in the first 10 lines of the body of the email, and in the rest of the body
     :param email_body: body of the email to check
+    :param early_count: dictionary of keyword counts in subject and early in the body
     :return: cleaned body without special characters
     """
-    # removes special characters from the body
+    # removes special characters and whitespaces from the body
     body_cleaned = Constants.WORD_CLEANER.sub('', email_body)
     body_lower = body_cleaned.lower()
     # split the cleaned body into its respective lines
@@ -36,18 +35,20 @@ def suspicious_body(email_body):
     priority_body = []
     for line in body_lines[:11]:
         priority_body.extend(line.split())
-    # rest as secondary
+    # rest of the body as secondary
     secondary_body = []
     for line in body_lines[11:]:
         secondary_body.extend(line.split())
-    # count suspicious words in priority body
+    # count suspicious words in priority body and add to the early_count dict
     for word in priority_body:
             if word in Constants.SUSPICIOUS_KEYWORDS:
                 early_count[word] = early_count.get(word, 0) + 1
+    later_count = {}
+    # count suspicious words in secondary body and add to the later_count dict
     for word in secondary_body:
         if word in Constants.SUSPICIOUS_KEYWORDS:
             later_count[word] = later_count.get(word, 0) + 1
-    return body_cleaned
+    return body_cleaned, early_count, later_count
 
 
 def count_capitals(clean_subject, clean_body):
@@ -58,6 +59,7 @@ def count_capitals(clean_subject, clean_body):
     :return: dictionary of the count of each capital keyword
     """
     capital_words = {}
+    # add suspicious words found fully capitalised to the capital_words dict
     for word in clean_subject.split():
         if word.isupper() and word.lower() in Constants.SUSPICIOUS_KEYWORDS:
             capital_words[word] = capital_words.get(word, 0) + 1
@@ -69,58 +71,41 @@ def count_capitals(clean_subject, clean_body):
 
 def assign_risk_score(subject, body):
     """
-    :param subject: subject of email to checK
+    :param subject: subject of email to check
     :param body: body of email to check
     :return: risk_score assigned to the email based on number and location of suspicious keywords found, reason for the risk_score assigned
     """
-    clean_subject = suspicious_subject(subject)
-    clean_body = suspicious_body(body)
-    
+    clean_subject, early_count = suspicious_subject(subject)
+    clean_body, early_count, later_count = suspicious_body(body, early_count)
+
     # sum the number of occurrences of suspicious words found in the subject + first 10 lines
     sum_count_early = sum(early_count.values())
     # sum the number of occurrences of suspicious words found in the rest of the body
     sum_count_later = sum(later_count.values())
     # sum the number of occurrences of capital letter words found in the email
     sum_count_capital = sum(count_capitals(clean_subject, clean_body).values())
+    # assign a risk score and reason based on where the bulk of suspicious keywords are found
     if sum_count_early >= 5:
         risk_score = 100.0
-        verdict = "Highly Suspicious"
         reason = f"{sum_count_early} suspicious keywords found in subject or early in the body"
     elif sum_count_early > 0:
         risk_score = 75.0
-        verdict = "Suspicious"
         reason = f"{sum_count_early} suspicious keywords found in subject or early in the body"
     elif sum_count_later >= 5:
         risk_score = 65.0
-        verdict = "Suspicious"
         reason = f"{sum_count_later} suspicious keywords found in the body"
     elif sum_count_later > 0:
         risk_score = 50.0
-        verdict = "Suspicious"
         reason = f"{sum_count_later} suspicious keywords found in the body"
     else:
         risk_score = 0.0
-        verdict = "Safe"
-        reason = "No suspicious keywords found"
+        reason = ""
     if sum_count_capital > 0:
-        risk_score += sum_count_capital * 5  # tweak the multiplier (5) as needed
-        reason += f",{sum_count_capital} suspicious keywords in capital letters"
-        # cap at 100 so it doesn’t overflow
-        if risk_score > 100:
-            risk_score = 100
-            verdict = "Highly Suspicious"
+        risk_score += sum_count_capital * 5
+        reason += f", {sum_count_capital} suspicious keywords in capital letters"
+        # cap at 100 so it does not overflow
+        risk_score = min(risk_score, 100)
     return risk_score, reason
 
-# subject = "WIN a FREE iPhone!!!"
-# body = """
-# Hello,
-# This is your LAST chance to CLAIM your PRIZE.
-# Click HERE NOW.
-# """
 
-# subject = Constants.extracted_data['Subject']
-# body = Constants.extracted_data['Body']
-# print(assign_risk_score(subject, body))
 
-# if name == "main":
-#     print(assign_risk_score(subject, body))
