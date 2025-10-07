@@ -49,11 +49,23 @@ def extract_email_parts(file_content):
     display_name, email_address = parseaddr(sender_header)
     
     # 1.2 Extract Display Name
-    email_parts['display_name'] = display_name
+    email_parts['display_name'] = display_name or "NA"
     
     # 1.3 Extract Email Address
-    email_parts['email_address'] = email_address
+    email_parts['email_address'] = email_address or "NA"
 
+    """ 
+    Add sender_name and sender_domain for app.py compatibility
+    sender_name: full email address (used in spoofing/whitelist check)
+    sender_domain: domain part of email address (used in whitelist check)
+    """
+    email_parts['sender_name'] = email_address or "NA"
+    if "@" in email_address:
+        email_parts['sender_domain'] = email_address.split("@")[-1].lower()
+    else:
+        email_parts['sender_domain'] = "NA"
+    
+    
     # 1.4 Extract Email Title
     email_parts['subject'] = msg.get('Subject', '').strip() 
 

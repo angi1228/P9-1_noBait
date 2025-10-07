@@ -17,6 +17,7 @@ def find_suspicious_keywords(text):
     # Initialize 
     count = 0
     found = []
+    reason = ""
     
     # Check through every word in the extracted email components
     for word in plain_text_list:
@@ -37,25 +38,10 @@ def find_suspicious_keywords(text):
     risk_score = 50 if count > 0 else 0
 
     # return score, list of found keywords 
-    return risk_score, found
+    if found:
+        reason = f"Suspicious keywords found: {', '.join(sorted(found))}"
+    else:
+        reason = ""
 
-def analyze_email(email_parts):
-    
-    # Combine header and body
-    header_text = "".join(email_parts["headers"].values())
-    body_text = email_parts.get("body", "")
-
-    # Run keyword check on headers and body
-    header_score, header_found = find_suspicious_keywords(header_text)
-    body_score, body_found = find_suspicious_keywords(body_text)
-
-    # Merge all found keywords and remove duplicates
-    all_found = set(header_found + body_found)
-
-    # Final risk score (maximum 50 if any keywords found)
-    total_score = 50 if all_found else 0
-
-    # Combine all reasons into one line
-    reasons = f"Suspicious keywords found: {', '.join(sorted(all_found))}" if all_found else ""
-    return total_score, reasons
+    return risk_score, reason
 
