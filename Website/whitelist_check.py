@@ -2,6 +2,11 @@ from Constants import SAFE_DOMAIN_LIST
 
 
 def check_whitelist(email, domain):
+    """
+    Checks if sender's domain is part of trusted whitelist by 
+    first validating the email address and domain then compare 
+    against SAFE_DOMAIN_LIST to return risk score
+    """
 
     risk_score = 0
     reason = ""

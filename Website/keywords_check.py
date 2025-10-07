@@ -1,14 +1,19 @@
 import Constants
 from Constants import SUSPICIOUS_KEYWORDS
 
-# removes special characters, whitespaces from text, converts to lowercase
 def preprocess_text(text):
+    # removes special characters, whitespaces from text, converts to lowercase
     clean_text = Constants.WORD_CLEANER.sub(' ', text)
     clean_text = clean_text.lower().strip()
     return clean_text
 
 
 def find_suspicious_keywords(text):
+    """This function runs through the extracted email text for any terms or phrases defined in the SUSPICIOUS_KEYWORDS list. It identifies both single 
+    words (e.g., "urgent", "password") and multi-word phrases 
+    (e.g., "limited time", "claim your refund") that are commonly used 
+    in phishing or scam emails.
+    """
 
     # Extract every word in the extracted email components
     plain_text = preprocess_text(text)

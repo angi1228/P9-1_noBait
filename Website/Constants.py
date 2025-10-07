@@ -56,8 +56,8 @@ def extract_email_parts(file_content):
 
     """ 
     Add sender_name and sender_domain for app.py compatibility
-    sender_name: full email address (used in spoofing/whitelist check)
-    sender_domain: domain part of email address (used in whitelist check)
+    sender_name: full email address (used in whitelist/display-name spoofing check)
+    sender_domain: domain part of email address (used in whitelist/ domain verification check)
     """
     email_parts['sender_name'] = email_address or "NA"
     if "@" in email_address:
