@@ -1,37 +1,47 @@
-import re
+import Constants
 from Constants import SUSPICIOUS_KEYWORDS
 
-# removes special characters that are not letter, digit or spaces from text
+# removes special characters, whitespaces from text, converts to lowercase
 def preprocess_text(text):
-    clean_text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
+    clean_text = Constants.WORD_CLEANER.sub(' ', text)
     clean_text = clean_text.lower().strip()
     return clean_text
 
 
 def find_suspicious_keywords(text):
-       
-    count = 0
-    found = []
-    reasons = ""
 
-    # Extract words
+    # Extract every word in the extracted email components
     plain_text = preprocess_text(text)
     plain_text_list = plain_text.split(" ")
 
-    # Count suspicious keywords
+    # Initialize 
+    count = 0
+    found = []
+    reason = ""
+    
+    # Check through every word in the extracted email components
     for word in plain_text_list:
         if word in SUSPICIOUS_KEYWORDS:
             count += 1
             if word not in found:
                 found.append(word)
 
+    # Also check for suspicious phrases (multiple words)
+    for phrase in SUSPICIOUS_KEYWORDS:
+        if " " in phrase and phrase in plain_text:
+            count += 1
+            if phrase not in found:
+                found.append(phrase)
+                count += 1
+
+    # Risk Scoring, maximum 50 if any found
     risk_score = 50 if count > 0 else 0
 
-    if count > 0:
-        reasons = (f"Suspicious keywords found: {', '.join(found)}")
+    # return score, list of found keywords 
+    if found:
+        reason = f"Suspicious keywords found: {', '.join(sorted(found))}"
     else:
-        reasons = "No suspicious keywords found"
+        reason = ""
 
-    # return score (int), reasons (list)
-    return risk_score, reasons
+    return risk_score, reason
 

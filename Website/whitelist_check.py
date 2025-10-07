@@ -4,27 +4,22 @@ from Constants import SAFE_DOMAIN_LIST
 def check_whitelist(email, domain):
 
     risk_score = 0
-    reasons = []
+    reason = ""
 
-    # ✅ Always return something if email is invalid
-    # if "@" not in email:
-    #     risk_score = 100
-    #     reasons.append("Invalid email format (missing @)")
-    #     return risk_score, reasons
-
-    # Extract domain safely
-    parts = email.split("@")
-    if len(parts) < 2:
+    # Validate the email format and domain value
+    if "@" not in email or not domain or domain == "NA":
         risk_score = 100
-        reasons.append("Invalid email format (bad domain part)")
-        return risk_score, reasons
+        reason = "Invalid email format or missing domain"
+        return risk_score, reason
 
-    # Check whitelist
-    if domain in [d.lower() for d in SAFE_DOMAIN_LIST]:
-        reasons.append("Domain is in whitelist")
+    # Check if domain is in whitelist 
+    normalized_domain = domain.lower().strip()
+    whitelist = [d.lower() for d in SAFE_DOMAIN_LIST]
+
+    if normalized_domain in whitelist:
+        reason = ""
     else:
-        risk_score += 100
-        reasons.append(f"Domain '{domain}' is not in whitelist")
-
-    # ✅ Always end with return
-    return risk_score, reasons
+        risk_score = 100
+        reason = f"Domain '{domain}' is not in whitelist"
+    
+    return risk_score, reason

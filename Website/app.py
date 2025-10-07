@@ -190,7 +190,7 @@ def analyze_email_content_detailed(content: str):
     n_analysis += 1; 
     
     # Function 3: Check URL
-    score, reason = check_url(found_url_list=email_parts.get('url', 'N/A'))
+    score, reason = check_url(found_url_list=email_parts.get('urls', 'NA'))
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
