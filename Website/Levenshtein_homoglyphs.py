@@ -27,19 +27,23 @@ COMMON_HOMOGLYPH_MAP  = {
 
 def check_Levenshtein_homoglyphs(input_string: str, SAFE_REFERENCE_LIST: List[str], threshold: int = 2): # Define a threshold for similarity in the last argument
     """
-    Orchestrates the two-stage check for a single suspicious domain against a list of safe list.
-    Stage 1: Fast Levenshtein Check (Standard Typos)
-        Calculates the Levenshtein Distance of two strings this defines how many operations where needed to turn one string into another by inserting, removing or replacing a character
-        input1 = "gooogle"
-        input2 = "google"
-        dist_calc = Levenshtein.distance(input1, input2)
-        print(f"The Levenshtein distance between {input1} and {input2} is : {dist_calc}")
-        ## Output: The Levenshtein distance between gooogle and google is : 2
+    Orchestrates a two-stage check for a single input string (domain or sender name) against a list of safe reference strings to detect typosquatting and homoglyph attacks.
+    
+    The function first performs a fast Levenshtein check for common typos, then performs 
+    an intensive check involving character normalization (homoglyph replacement) followed by a second Levenshtein/substring check.
 
-    Stage 2: Intensive Homoglyph Check (Normalization + Levenshtein)
-        Homoglyphs detection will perform a check for characters that look visually similar but have different unicode values. 
-        It uses a predefined mapping of common homoglyph substitutions to flag suspicious email. 
-        For example, if the domain address is “g00gle.com” when the legitimate domain is “google.com”, it will flag the domain as a suspicious domain when '0' are replaced with 'o'.
+    :param input_string: The string to be checked (e.g., 'micr0soft' or 'microsfot.com').
+    :type input_string: str
+    :param SAFE_REFERENCE_LIST: A list of known safe strings (domains or sender names).
+    :type SAFE_REFERENCE_LIST: list[str]
+    :param threshold: The maximum allowed Levenshtein distance to be considered a suspicious match. Defaults to 2.
+    :type threshold: int
+    :return: A dictionary containing the analysis results:
+             - 'input': The original input string.
+             - 'suspicious': Boolean or "Unknown". True if suspicious, False if safe, "Unknown" if not in the list and no similarity found.
+             - 'risk_score': The score associated with the finding (0, 15, or 100).
+             - 'similar_string': The specific string from the SAFE_REFERENCE_LIST that caused the match, or None.
+    :rtype: dict
     """
 
     # Initialise return dictionary for when the domain is not suspicious

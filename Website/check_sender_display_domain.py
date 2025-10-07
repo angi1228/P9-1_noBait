@@ -6,8 +6,24 @@ from Constants import SAFE_DOMAIN_LIST
 
 def check_sender_and_display_name(display_name, sender_name, sender_domain):
     """
-    Check if the sender and display name suggests a brand or organisation but the email domain does not match the official domain of that brand or organisation. 
-    Note that Gmail and Office/Hotmail is not considered as a whitelisted email domain due to common use by the public.
+    Checks for sender identity spoofing by comparing the sender's name and display name against a list of known safe senders/brands, 
+    specifically when the email domain does not belong to the official safe list.
+
+    The check is performed in two parts:
+    1. Direct match: If the `sender_domain` is in `SAFE_DOMAIN_LIST`, the sender is immediately marked as safe.
+    2. Fuzzy match: If the domain is *not* safe, it checks if the normalized sender name or display name is suspiciously similar to 
+                    any known safe sender using Levenshtein distance and homoglyph checks (via `check_Levenshtein_homoglyphs`).
+
+    :param display_name: The display name associated with the sender (e.g., 'Microsoft Support').
+    :type display_name: str
+    :param sender_name: The 'local part' of the sender's email address (e.g., 'security').
+    :type sender_name: str
+    :param sender_domain: The domain of the sender's email address (e.g., 'micr0soft.com').
+    :type sender_domain: str
+    :raises: No explicit exceptions, but relies on proper functioning of 'check_Levenshtein_homoglyphs'.
+    :return: A tuple containing the risk score (0 or 100) and the reason string.
+    :rtype: tuple[int, str]
+
     """
     
     # If domain is safe list, then the sender is safe
@@ -72,7 +88,14 @@ def check_sender_and_display_name(display_name, sender_name, sender_domain):
 
 def check_domain(email_domain):
     '''
-    To check whether the domain is similar to the safe domain list by checking for any homoglyphs and similarity to the safe domains (using Levenshtein distance) that suggest a phishing attempt. 
+    Analyzes the provided email domain for similarity to known safe domains, specifically checking for typosquatting (Levenshtein distance) and homoglyph attacks.
+
+    This function relies entirely on the two-stage process defined in `check_Levenshtein_homoglyphs` against the `SAFE_DOMAIN_LIST`.
+
+    :param email_domain: The domain part of the email address (e.g., 'apple.c0m').
+    :type email_domain: str
+    :return: A tuple containing the risk score (e.g., 0, 15, or 100) and the reason for the classification (e.g., "The sender's domain is similar to...").
+    :rtype: tuple[int, str]
     '''
 
     # Get a dictionary of the result from the function
