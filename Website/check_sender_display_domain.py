@@ -26,14 +26,19 @@ def check_sender_and_display_name(display_name, sender_name, sender_domain):
             # normalised the display and sender name
             norm_display_name = display_name.replace(' ', '').replace('-', '').lower()
             norm_sender_name = sender_name.replace(' ', '').replace('-', '').lower()
+            print("Normalized Display Name:", norm_display_name)
+            print("Normalized Sender Name:", norm_sender_name)
 
-            # Check for Levenshtein and homoglyphs
+            # Check for Levenshtein and homoglyphs  
             while True:
                 ## Check whether sender name and display name are similar to the safe senders and whether they contains any homoglyphs
-                sender_name_result = check_Levenshtein_homoglyphs(norm_sender_name, SAFE_SENDER_LIST)
                 display_name_result = check_Levenshtein_homoglyphs(norm_display_name, SAFE_SENDER_LIST)
+                sender_name_result = check_Levenshtein_homoglyphs(norm_sender_name, SAFE_SENDER_LIST)
+
+
                 print("1")
-                print(sender_name_result)
+                print("Display Name Check Result:", display_name_result)
+                print("Sender Name Check Result:", sender_name_result)
                 print(display_name_result)
                 # Check the result of the output
                 if sender_name_result['suspicious'] == 'Unknown' and display_name_result['suspicious'] == "Unknown":

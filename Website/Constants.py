@@ -8,8 +8,7 @@ from email.utils import parseaddr
 EMAIL_BODY = []
 
 # For whitelist, sender domain check, url check
-SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton.me','protonmail.com','icloud.com','mycompany.com',
-                    'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg']
+SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton.me','protonmail.com','icloud.com','mycompany.com','aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg']
 
 
 # for sender domain check
@@ -93,7 +92,7 @@ THis is the body of the tmeial
         print(f"{key}: {value}")
 
     print("\n--- Body ---")
-    print(extracted_data['body'].strip())
+    #print(extracted_data['body'].strip())
 
     print("\n--- URLs ---")
     for url in extracted_data['urls']:

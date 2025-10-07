@@ -87,8 +87,8 @@ def analyze_file():
             with zipfile.ZipFile(io.BytesIO(file.read())) as z:
                 # Loop through each file inside the zip
                 for name in z.namelist():
-                    # Only process email-like files
-                    if name.lower().endswith(('.eml', '.txt', '.html')):
+                    # Only process email-like files and non attachment
+                    if name.lower().endswith(('.eml', '.txt', '.html', '')):
                         try:
                             # Read the content of the file inside zip
                             content = z.read(name).decode('utf-8', errors='ignore')

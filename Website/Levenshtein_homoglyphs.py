@@ -53,8 +53,11 @@ def check_Levenshtein_homoglyphs(input_item: str, SAFE_REFERENCE_LIST: List[str]
         'risk_score': 0,
         'similar_string': None
     }
+    print("intput item", input_item)
 
     if input_item in SAFE_REFERENCE_LIST: # Check if domain or sender is safe
+        print(f"3. [{input_item}] ✅ Found in safe list.")
+        print("result safe", result_safe)
         return result_safe
             
     # If not safe, continue checks
