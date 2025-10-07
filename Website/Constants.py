@@ -25,7 +25,7 @@ SUSPICIOUS_KEYWORDS = [
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "money", "cash", "payment", "payments", "credit card", "loan",
-        "offer", "deal", "sales", "earn", "membership"
+        "offer", "deal", "sales", "earn", "membership", "bank", "details"
     ]
 
 #regex to remove special characters from email
