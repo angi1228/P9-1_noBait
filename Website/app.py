@@ -31,11 +31,11 @@ def home():
     return render_template(
         "index.html",
         phishing=c_cmf_phsihing,
-        anothernumber=c_safe_emails,
-        sum=c_emails_analyse,
-        sus=c_suspicious_email
+        safe_email_scanned=c_safe_emails,
+        email_to_anaylse=c_emails_analyse,
+        suspicious_email_scanned=c_suspicious_email
     )
-
+#testing
 # ----------------------------
 # Analyze raw email content (text)
 # ----------------------------
@@ -58,9 +58,9 @@ def analyze_email():
                             email_content=email_content,                   # Matches {{ email_content }} (and acts as display trigger)
                             # ... (Global Counters) ...
                             phishing=c_cmf_phsihing,
-                            anothernumber=c_safe_emails,
-                            sum=c_emails_analyse,
-                            sus=c_suspicious_email
+                            safe_email_scanned=c_safe_emails,
+                             email_to_anaylse=c_emails_analyse,
+                            suspicious_email_scanned=c_suspicious_email
                         )
 
 # ----------------------------
@@ -113,9 +113,9 @@ def analyze_file():
                 email_content=content,                   # Matches {{ email_content }} (and acts as display trigger)
                 # ... (Global Counters) ...
                 phishing=c_cmf_phsihing,
-                anothernumber=c_safe_emails,
-                sum=c_emails_analyse,
-                sus=c_suspicious_email
+                safe_email_scanned=c_safe_emails,
+                 email_to_anaylse=c_emails_analyse,
+                suspicious_email_scanned=c_suspicious_email
             )
 
 
@@ -136,9 +136,9 @@ def analyze_file():
                                     email_content=content,
                                     # ... (Global Counters) ...
                                     phishing=c_cmf_phsihing,
-                                    anothernumber=c_safe_emails,
-                                    sum=c_emails_analyse,
-                                    sus=c_suspicious_email,
+                                    safe_email_scanned=c_safe_emails,
+                                     email_to_anaylse=c_emails_analyse,
+                                    suspicious_email_scanned=c_suspicious_email,
                                    )
 
     except Exception as e:

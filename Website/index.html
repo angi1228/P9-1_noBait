@@ -332,19 +332,19 @@
     <div class="row my-4 g-3">
       <div class="col-md-3 col-6">
         <div class="stat-card"><i class="fas fa-envelope-open-text scanned"></i>
-          <h2>{{sum}}</h2>
+          <h2>{{email_to_anaylse}}</h2>
           <p>Scanned</p>
         </div>
       </div>
       <div class="col-md-3 col-6">
         <div class="stat-card"><i class="fas fa-check-circle safe"></i>
-          <h2>{{anothernumber}}</h2>
+          <h2>{{safe_email_scanned}}</h2>
           <p>Safe</p>
         </div>
       </div>
       <div class="col-md-3 col-6">
         <div class="stat-card"><i class="fas fa-exclamation-triangle suspicious"></i>
-          <h2>{{sus}}</h2>
+          <h2>{{suspicious_email_scanned}}</h2>
           <p>Suspicious</p>
         </div>
       </div>
@@ -460,7 +460,7 @@
           <div class="email-item d-flex justify-content-between">
             <div>
               <h6>{{ r.filename }} — Score: {{ r.score }}/100</h6> <!-- Filename and score -->
-              <p class="text-muted small">{{ r.domain_reputation }} | {{ r.keyword_count }} keywords</p>
+              <p class="text-muted small"></p>
             </div>
             <!-- Risk category badge with color coding -->
             <span class="risk-badge 
@@ -525,7 +525,7 @@
           <div class="email-item d-flex justify-content-between">
             <div>
               <h6>{{ category }} — Score: {{ score }}/100</h6>
-              <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
+              <p class="text-muted small"></p>
             </div>
             <span class="risk-badge 
         {% if category=='Phishing' %}phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
