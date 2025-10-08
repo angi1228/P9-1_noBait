@@ -174,13 +174,16 @@ def analyze_email_content_detailed(content: str):
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
+
+    print(f"============\n!!!Function 1 (1st: Get list of sus keyword) - Score: ({score}), Reason: ({reason})")
+
     ## Assign risk score
     score, reason = assign_risk_score(email_subject, email_body)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
-    print(f"============\n!!!Function 1 (2 functions) - Score: ({score}), Reason: ({reason})")
+    print(f"============\n!!!Function 1 (2nd get risk score oni) - Score: ({score}), Reason: ({reason})")
 
     # Function 2: Verify whether domain is valid and in the whitelist
     score, reason = check_whitelist(email_address, email_domain_name)
