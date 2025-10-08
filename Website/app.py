@@ -231,7 +231,7 @@ def analyze_email_content_detailed(content: str):
     elif f_risk_score >= 50:
         c_suspicious_email += 1 # Consider as suspicious email
         conclusion = "Moderately Suspicious"
-    elif f_risk_score >= 30:
+    elif f_risk_score >= 40:
         c_suspicious_email += 1 # Consider as suspicious email
         conclusion = "Low Suspicious"
     else:
