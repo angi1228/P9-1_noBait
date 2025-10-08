@@ -9,7 +9,7 @@ EMAIL_BODY = []
 
 # For whitelist, sender domain check, url check
 SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton.me','protonmail.com','icloud.com','mycompany.com',
-                    'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg']
+                    'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 'xsite.singaporetech.edu.sg']
 
 
 # for sender domain check
