@@ -12,9 +12,9 @@ def check_whitelist(email, domain):
     reason = ""
 
     # Validate the email format and domain value
-    if "@" not in email or not domain or domain == "NA":
+    if "@" not in email:
         risk_score = 100
-        reason = "Invalid email format or missing domain"
+        reason = "Invalid email format"
         return risk_score, reason
 
     # Check if domain is in whitelist 
