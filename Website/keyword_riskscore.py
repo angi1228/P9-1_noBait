@@ -102,7 +102,7 @@ def assign_risk_score(subject, body):
         reason = ""
     if sum_count_capital > 0:
         risk_score += sum_count_capital * 5
-        reason += f"Capitalised Keyword Emphasis: {sum_count_capital} suspicious keywords in capital letters"
+        reason += f", Capitalised Keyword Emphasis: {sum_count_capital} suspicious keywords in capital letters"
         # cap at 100 so it does not overflow
         risk_score = min(risk_score, 100)
     return risk_score, reason
