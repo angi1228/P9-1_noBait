@@ -128,7 +128,7 @@ def check_url(found_url_list):
     '''Checks riskscore of URLs found in a body of text (str)'''
 
     if not found_url_list or found_url_list=='NA':
-        return ''
+        return 0, ''
     
     parsed_list = parse_URL(found_url_list)
     

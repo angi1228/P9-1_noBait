@@ -184,6 +184,8 @@ def analyze_email_content_detailed(content: str):
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
+    print(score, reason)
+
     # Function 2: Verify whether domain is valid and in the whitelist
     score, reason = check_whitelist(email_address, email_domain_name)
     t_risk_score += score
@@ -196,25 +198,25 @@ def analyze_email_content_detailed(content: str):
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     
-    # # Function 4: Check the Sender Name/Display Name for spoofing
-    # score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
-    #                                                sender_name=email_sender_name, 
-    #                                                sender_domain=email_domain_name)
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    # Function 4: Check the Sender Name/Display Name for spoofing
+    score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
+                                                   sender_name=email_sender_name, 
+                                                   sender_domain=email_domain_name)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
-    # # Function 5: Check Domain Name for spoofing     
-    # score, reason = check_domain(email_domain_name)
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    # Function 5: Check Domain Name for spoofing     
+    score, reason = check_domain(email_domain_name)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
 
-    # # Function 6: Detect for any financial request
-    # score, reason = check_financial_request(email_body)
-    # t_risk_score += score
-    # combined_analysis['combined_reasons'].append(reason)
-    # n_analysis += 1; 
+    # Function 6: Detect for any financial request
+    score, reason = check_financial_request(email_body)
+    t_risk_score += score
+    combined_analysis['combined_reasons'].append(reason)
+    n_analysis += 1; 
     
     
     # Calculate te final risk score 
