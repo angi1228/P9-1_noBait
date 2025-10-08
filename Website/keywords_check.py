@@ -44,7 +44,7 @@ def find_suspicious_keywords(text):
 
     # return score, list of found keywords 
     if found:
-        reason = f"Suspicious keywords found: {', '.join(sorted(found))}"
+        reason = f"Quick keyword scan: {', '.join(sorted(found))}"
     else:
         reason = ""
 

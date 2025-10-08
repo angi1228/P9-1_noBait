@@ -87,25 +87,26 @@ def assign_risk_score(subject, body):
     # assign a risk score and reason based on where the bulk of suspicious keywords are found
     if sum_count_early >= 5:
         risk_score = 100.0
-        reason = f"{sum_count_early} suspicious keywords found in subject or early in the body"
+        reason = f"Early Keyword Analysis: {sum_count_early} suspicious keywords found in subject or early in the body"
     elif sum_count_early > 0:
         risk_score = 75.0
-        reason = f"{sum_count_early} suspicious keywords found in subject or early in the body"
+        reason = f"Early Keyword Analysis: {sum_count_early} suspicious keywords found in subject or early in the body"
     elif sum_count_later >= 5:
         risk_score = 65.0
-        reason = f"{sum_count_later} suspicious keywords found in the body"
+        reason = f"Body Keyword Analysis: {sum_count_later} suspicious keywords found in the body"
     elif sum_count_later > 0:
         risk_score = 50.0
-        reason = f"{sum_count_later} suspicious keywords found in the body"
+        reason = f"Body Keyword Analysis: {sum_count_later} suspicious keywords found in the body"
     else:
         risk_score = 0.0
         reason = ""
     if sum_count_capital > 0:
         risk_score += sum_count_capital * 5
-        reason += f", {sum_count_capital} suspicious keywords in capital letters"
+        reason += f", Capitalised Keyword Emphasis: {sum_count_capital} suspicious keywords in capital letters"
         # cap at 100 so it does not overflow
         risk_score = min(risk_score, 100)
     return risk_score, reason
+
 
 
 
