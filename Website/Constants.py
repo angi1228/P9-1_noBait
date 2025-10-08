@@ -54,19 +54,13 @@ def extract_email_parts(file_content):
     # 1.3 Extract Email Address
     email_parts['email_address'] = email_address or "NA"
 
-    """ 
-    Add sender_name and sender_domain for app.py compatibility
-    sender_name: full email address (used in whitelist/display-name spoofing check)
-    sender_domain: domain part of email address (used in whitelist/ domain verification check)
-    """
-    email_parts['sender_name'] = email_address or "NA"
-    if "@" in email_address:
-        email_parts['sender_domain'] = email_address.split("@")[-1].lower()
-    else:
-        email_parts['sender_domain'] = "NA"
+    # 1.4 Extract email sender name
+    email_parts['sender_name'] = email_address.split("@")[0].lower()
     
+    # 1.5 Extract email domain name
+    email_parts['sender_domain'] = email_address.split("@")[-1].lower()
     
-    # 1.4 Extract Email Title
+    # 1.6 Extract Email Title
     email_parts['subject'] = msg.get('Subject', '').strip() 
 
     # 2. Extract body

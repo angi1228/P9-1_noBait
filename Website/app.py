@@ -168,6 +168,7 @@ def analyze_email_content_detailed(content: str):
     email_body = email_parts.get('body', 'N/A')
     email_sender_name = email_parts.get('sender_name','NA')
     email_domain_name = email_parts.get('sender_domain','NA')
+    email_address = email_parts.get('email_address', "NA")
     
     
     # Function 1: Suspicious Keyword checks on subject and body
@@ -184,7 +185,7 @@ def analyze_email_content_detailed(content: str):
     n_analysis += 1; 
     
     # Function 2: Verify whether domain is valid and in the whitelist
-    score, reason = check_whitelist(email_sender_name , email_domain_name)
+    score, reason = check_whitelist(email_address, email_domain_name)
     t_risk_score += score
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
