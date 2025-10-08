@@ -95,16 +95,24 @@
 
     .email-item {
       padding: 15px;
+      font-weight: 700;
+      font-weight: 700;
       border-bottom: 1px solid #eee;
+    }
+
+    .email-item h6 {
+      font-size: 1.5rem; /* increase as needed (default is around 1rem) */
+      font-weight: 700;
     }
 
     .risk-badge {
       font-size: 0.8rem;
+      font-size: 20px;
       padding: 4px 8px;
       border-radius: 20px;
       font-weight: 500;
     }
-
+    
     .analyzer {
       background: #fff;
       padding: 20px;
@@ -355,55 +363,6 @@
         </div>
       </div>
 
-
-      <!-- Results (Flask rendered) -->
-      <!-- {% if error %}
-      <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
-
-    {% if email_content %}
-      <div class="result-area {% if category=='Safe' %}result-safe{% elif category=='Suspicious' %}result-suspicious{% else %}result-phishing{% endif %}">
-        <h4>Result: {{ category }} (Score: {{ score }}/10)</h4>
-        <ul>
-          {% for r in reasons %}
-            <li>{{ r }}</li>
-          {% endfor %}
-        </ul>
-        <p><strong>Keywords Detected:</strong> {{ keyword_count }}</p>
-        <p><strong>Domain Reputation:</strong> {{ domain_reputation }}</p>
-        <p class="mt-3"><strong>Email Body:</strong></p>
-        <pre class="email-body-box">{{ email_content }}</pre>
-      </div>
-    {% endif %}
-
-    {% if zip_results %}
-      <h3>ZIP Analysis</h3>
-      {% for r in zip_results %}
-        <div class="result-area {% if r.category=='Safe' %}result-safe{% elif r.category=='Suspicious' %}result-suspicious{% else %}result-phishing{% endif %}">
-          <h5>File Name: {{ r.filename }} — {{ r.category }} (Score: {{ r.score }}/10)</h5>
-          {% if r.error %}
-            <p class="text-danger">Error: {{ r.error }}</p>
-          {% else %}
-          <h1>Reasons:</h1>
-            <ul>
-              {% for reason in r.reasons %}
-                <li>{{ reason }}</li>
-              {% endfor %}
-            </ul>
-            <p><strong>Keywords:</strong> {{ r.keyword_count }}</p>
-            <p><strong>Domain Reputation:</strong> {{ r.domain_reputation }}</p>
-            <p class="mt-3"><strong>Email Body:</strong></p>
-            <pre class="email-body-box">{{ r.email_content }}</pre>
-          {% endif %}
-        </div>
-      {% endfor %}
-    {% endif %} -->
-
-
-
-
-
-
       <!-- UUPLOADING OF FILES HTML PART -->
       <div class="container">
         <p class="subtitle">Upload an email to check for phishing attempts</p>
@@ -425,26 +384,6 @@
 
         <button class="analyze-btn" id="analyzeBtn">Analyze for Phishing</button>
 
-        
-        <!-- <div class="result-area" id="resultArea" style="display:none;">
-          <div class="result-title" id="resultTitle">Result will be shown here</div>
-          <div class="result-details" id="resultDetails">Details will appear here after analysis</div>
-
-          <div class="analysis-details" id="analysisDetails">
-            <div class="detail-item">
-              <span>Suspicious Keywords:</span>
-              <span class="detail-value" id="keywordCount">0</span>
-            </div>
-            <div class="detail-item">
-              <span>Whitelist Check:</span>
-              <span class="detail-value" id="whitelistStatus">Not checked</span>
-            </div>
-            <div class="detail-item">
-              <span>Domain Reputation:</span>
-              <span class="detail-value" id="domainReputation">Unknown</span>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
 
@@ -460,7 +399,6 @@
           <div class="email-item d-flex justify-content-between">
             <div>
               <h6>{{ r.filename }} — Score: {{ r.score }}/100</h6> <!-- Filename and score -->
-              <p class="text-muted small">{{ r.domain_reputation }} | {{ r.keyword_count }} keywords</p>
             </div>
             <!-- Risk category badge with color coding -->
             <span class="risk-badge 
@@ -540,7 +478,6 @@
           <div class="email-item d-flex justify-content-between">
             <div>
               <h6>{{ category }} — Score: {{ score }}/100</h6>
-              <p class="text-muted small">{{ domain_reputation }} | {{ keyword_count }} keywords</p>
             </div>
             <span class="risk-badge 
         {% if category=='Phishing' %}Phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
@@ -573,41 +510,8 @@
       {% endif %}
     </div>
     
-   
-
-
-
-    <!-- Recent Emails -->
-    <!-- <div class="card mb-4">
-      <div class="card-header">Recent Email Analysis</div>
-      <div class="card-body p-0">
-        <div class="email-item d-flex justify-content-between">
-          <div><h6>Your account needs verification</h6><p class="text-muted small">security@bank-support.com</p></div>
-          <span class="risk-badge suspicious">Suspicious</span>
-        </div>
-        <div class="email-item d-flex justify-content-between">
-          <div><h6>URGENT: Your password has expired</h6><p class="text-muted small">no-reply@it-department.net</p></div>
-          <span class="risk-badge phishing">Phishing</span>
-        </div>
-        <div class="email-item d-flex justify-content-between">
-          <div><h6>Project Review Meeting</h6><p class="text-muted small">sarah.jones@company.com</p></div>
-          <span class="risk-badge safe">Safe</span>
-        </div>
-      </div>
-    </div> -->
 
     <!-- Analyzer -->
-
-
-    <!-- <div>{{category}}</div>
-    <div>{{reasons}}</div>
-    <div>{{result}}</div>
-    <div>{{keyword_count}}</div>
-    <div>{{domain_reputation}}</div>
-    <div>{{email_content}}</div> -->
-
-
-
 
     <script>
       // Show filename + size
