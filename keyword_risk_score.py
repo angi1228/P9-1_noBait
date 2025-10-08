@@ -1,4 +1,4 @@
-import Constants
+import Website.Constants as Constants
 
 # Initialise dictionary to count suspicious words
 early_count = {}
