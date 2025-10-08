@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from Constants import SUSPICIOUS_KEYWORDS
 from Constants import SAFE_DOMAIN_LIST
 
-SHORTENING_SERVICES = ['bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly', 't.co', 'is.gd']
+SHORTENING_SERVICES = ['bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly', 't.co', 'is.gd', 'us.yahoo.click']
 
 def extract_URL(email_body_text):
     '''Extract URLs from body string'''
