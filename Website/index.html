@@ -497,9 +497,9 @@
               <h6>{{ category }} — Score: {{ score }}/100</h6>
             </div>
             <span class="risk-badge 
-                        {% if 'Phishing' in r.category %}phishing
-                        {% elif 'Moderately' in r.category %}moderate
-                        {% elif 'Low' in r.category %}low
+                        {% if 'Phishing' in category %}phishing
+                        {% elif 'Moderately' in category %}moderate
+                        {% elif 'Low' in category %}low
                         {% else %}safe
                         {% endif %}">
               {{ category }}
