@@ -66,7 +66,7 @@ def check_Levenshtein_homoglyphs(input_string: str, SAFE_REFERENCE_LIST: List[st
     # Dictionary for unknown domain (not in the list)
     result_unknown = {'input': input_string,
                         'suspicious': "Unknown",
-                        'risk_score': 15,
+                        'risk_score': 25,
                         'similar_string': None
                         }
 
