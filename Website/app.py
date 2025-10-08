@@ -172,14 +172,14 @@ def analyze_email_content_detailed(content: str):
     score, reason = find_suspicious_keywords(subject_and_body)
     t_risk_score += score*0.0 # Ignore the risk score
     combined_analysis['combined_reasons'].append(reason)
-    print(f"============\n!!!Function 1 (1st: Get list of sus keyword) - Score: ({score*0.0}), Reason: ({reason})")
+    print(f"============\n!!!Function 1.1 (1st: Get list of sus keyword) - Score: ({score*0.0}), Reason: ({reason})")
     ## Assign risk score
     score, reason = assign_risk_score(email_subject, email_body)
-    t_risk_score += score
+    t_risk_score += score*0.30
     combined_analysis['combined_reasons'].append(reason)
    
     
-    print(f"============\n!!!Function 1 (2 functions) - Score: ({score}), Reason: ({reason})")
+    print(f"!!!Function 1.2 (2nd: Get risk score) - Score: ({score*0.30}), Reason: ({reason})")
 
     # Function 2: Verify whether domain is valid and in the whitelist
     score, reason = check_whitelist(email_address, email_domain_name)
