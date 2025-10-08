@@ -153,7 +153,6 @@ def analyze_email_content_detailed(content: str):
     # Set Initial values
     combined_analysis = {"f_risk_score":0, "combined_reasons":[]} # To store key-pairs in a dictionary to parse to the webpage
     t_risk_score = 0    # Store the total risk score from all analysis
-    n_analysis = 0      # Calulate the number of analysis
     f_risk_score = 0    # Store the final risk score after calculating overall risk
 
     # Retrieve email parts from the Constants.py
@@ -171,78 +170,68 @@ def analyze_email_content_detailed(content: str):
     subject_and_body = email_subject + '\n' + email_body
     ## Get suspicious keywords
     score, reason = find_suspicious_keywords(subject_and_body)
-    t_risk_score += score
+    t_risk_score += score*0.0 # Ignore the risk score
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
-
-    print(f"============\n!!!Function 1 (1st: Get list of sus keyword) - Score: ({score}), Reason: ({reason})")
-
+    print(f"============\n!!!Function 1 (1st: Get list of sus keyword) - Score: ({score*0.0}), Reason: ({reason})")
     ## Assign risk score
     score, reason = assign_risk_score(email_subject, email_body)
-    t_risk_score += score
+    t_risk_score += score*0.30
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
-    
-    print(f"============\n!!!Function 1 (2nd get risk score oni) - Score: ({score}), Reason: ({reason})")
+    print(f"!!!Function 1 (2nd get risk score oni) - Score: ({score*0.30}), Reason: ({reason})")
 
     # Function 2: Verify whether domain is valid and in the whitelist
     score, reason = check_whitelist(email_address, email_domain_name)
-    t_risk_score += score
+    t_risk_score += score*0.10
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
 
-    print(f"!!!Function 2 - Score: ({score}), Reason: ({reason})")
+    print(f"!!!Function 2 - Score: ({score*0.10}), Reason: ({reason})")
     
     # Function 3: Check URL
     score, reason = check_url(found_url_list=email_parts.get('urls', 'NA'))
-    t_risk_score += score
+    t_risk_score += score*0.15
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
 
-    print(f"!!!Function 3 - Score: ({score}), Reason: ({reason})")    
+    print(f"!!!Function 3 - Score: ({score*0.15}), Reason: ({reason})")    
     
     # Function 4: Check the Sender Name/Display Name for spoofing
     score, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
                                                    sender_name=email_sender_name, 
                                                    sender_domain=email_domain_name)
-    t_risk_score += score
+    t_risk_score += score*0.15
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
 
-    print(f"!!!Function 4 - Score: ({score}), Reason: ({reason})")
+    print(f"!!!Function 4 - Score: ({score*0.15}), Reason: ({reason})")
 
     # Function 5: Check Domain Name for spoofing     
     score, reason = check_domain(email_domain_name)
-    t_risk_score += score
+    t_risk_score += score*0.20
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
 
-    print(f"!!!Function 5 - Score: ({score}), Reason: ({reason})")
+    print(f"!!!Function 5 - Score: ({score*0.20}), Reason: ({reason})")
 
     # Function 6: Detect for any financial request
     score, reason = check_financial_request(email_body)
-    t_risk_score += score
+    t_risk_score += score*0.10
     combined_analysis['combined_reasons'].append(reason)
-    n_analysis += 1; 
     
-    print(f"!!!Function 6 - Score: ({score}), Reason: ({reason})")
+    print(f"!!!Function 6 - Score: ({score*0.10}), Reason: ({reason})")
     
     # Calculate te final risk score 
     if t_risk_score !=0:
-        f_risk_score = t_risk_score/n_analysis # Divide by total number of functions
+        f_risk_score = t_risk_score 
         combined_analysis['f_risk_score'] = f_risk_score
 
-    print(f"!!!Finial Risk Score (Divide by 7): {f_risk_score}")
+    print(f"!!!Finial Risk Score (add up): {f_risk_score}")
 
     # Map the risk score to a conclusion and risk level. 
-    if f_risk_score >= 81:
+    if f_risk_score >= 70:
         c_suspicious_email += 1 # Consider as suspicious email
         c_cmf_phishing += 1 # Add count to the number of confimred phsihing emails
         conclusion = "Phishing"
-    elif f_risk_score >= 65:
+    elif f_risk_score >= 50:
         c_suspicious_email += 1 # Consider as suspicious email
         conclusion = "Moderately Suspicious"
-    elif f_risk_score >= 50:
+    elif f_risk_score >= 30:
         c_suspicious_email += 1 # Consider as suspicious email
         conclusion = "Low Suspicious"
     else:
