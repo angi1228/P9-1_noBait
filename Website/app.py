@@ -175,9 +175,9 @@ def analyze_email_content_detailed(content: str):
     combined_analysis['combined_reasons'].append(reason)
     n_analysis += 1; 
     ## Assign risk score
-    score, reason = assign_risk_score(email_subject, email_body)
+    score, reason_list = assign_risk_score(email_subject, email_body)
     t_risk_score += score
-    combined_analysis['combined_reasons'].append(reason)
+    combined_analysis['combined_reasons'].extend(reason_list)
     n_analysis += 1; 
     
     print(f"============\n!!!Function 1 (2 functions) - Score: ({score}), Reason: ({reason})")
