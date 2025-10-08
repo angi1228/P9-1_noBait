@@ -315,6 +315,23 @@
       background: #fafafa;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+
+    /* Category-specific colors */
+    .risk-badge.safe {
+      color: var(--success); /* Green */
+    }
+
+    .risk-badge.low {
+      color: #f1c40f; /* Yellow */
+    }
+
+    .risk-badge.moderate {
+      color: #e67e22; /* Orange */
+    }
+
+    .risk-badge.phishing {
+      color: var(--danger); /* Red */
+    }
   </style>
 </head>
 
@@ -402,11 +419,11 @@
             </div>
             <!-- Risk category badge with color coding -->
             <span class="risk-badge 
-        {% if 'Phishing' in r.category %}phishing
-        {% elif r.category=='Suspicious' %}suspicious
-        {% else %}safe
-        {% endif %}">
-
+                          {% if 'Phishing' in r.category %}phishing
+                          {% elif 'Moderately Suspicious' in r.category %}moderate
+                          {% elif 'Low Suspicious' in r.category %}low
+                          {% else %}safe
+                          {% endif %}">
               {{ r.category }}
             </span>
           </div>
@@ -480,7 +497,11 @@
               <h6>{{ category }} — Score: {{ score }}/100</h6>
             </div>
             <span class="risk-badge 
-        {% if category=='Phishing' %}Phishing{% elif category=='Suspicious' %}suspicious{% else %}safe{% endif %}">
+                        {% if 'Phishing' in category %}phishing
+                        {% elif 'Moderately' in category %}moderate
+                        {% elif 'Low' in category %}low
+                        {% else %}safe
+                        {% endif %}">
               {{ category }}
             </span>
           </div>

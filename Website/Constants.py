@@ -78,7 +78,8 @@ def extract_email_parts(file_content):
 
     # 3. Extract URLs from the body using regex
     url_pattern = r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)'
-    email_parts['urls'] = re.findall(url_pattern, body)
+    email_parts['urls'] = list(set(re.findall(url_pattern, body)))
+    
 
     return email_parts
 
