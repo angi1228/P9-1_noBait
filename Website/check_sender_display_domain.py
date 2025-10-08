@@ -103,7 +103,7 @@ def check_domain(email_domain):
 
     # Check whether the result returns whether the sender's domain is suspicious
     if suspicious_result['suspicious'] == 'Unknown':
-        suspicious_reason = "The sender's domain is unknown"
+        suspicious_reason = ""
     elif suspicious_result['suspicious']:
         suspicious_reason = "The sender's domain \"" + suspicious_result['input'] + "\" is similar to a legitimate domain \"" + suspicious_result['similar_string'] + "\""
     else:
