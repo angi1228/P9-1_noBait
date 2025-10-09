@@ -21,7 +21,7 @@ SAFE_SENDER_LIST = ['google','microsoft','zoho','aol', 'tuta','tutanota','mailfe
 SUSPICIOUS_KEYWORDS = [
         "urgent", "immediately", "limited time", "account", "terminated", "suspended", "compromised", "on hold",
         "violation", "verify", "last warning", "final notice", "final call", "last call", "last chance",
-        "important notice", "login", "password", "security", "locked", "pay", "overdue", "action",  "required",
+        "important notice", "login", "password", "locked", "pay", "overdue", "action",  "required",
         "transfer", "claim your refund", "download", "click", "won", "winner", "free", "gift", "prize",
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "sex", "sexual" "hot", "single", "near you", "meet singles",
