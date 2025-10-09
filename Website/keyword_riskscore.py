@@ -49,23 +49,23 @@ def suspicious_body(email_body, early_count):
     return body_cleaned, early_count, later_count
 
 
-def count_capitals(clean_subject, clean_body):
-    """
-    this function counts the number of suspicious keywords that are fully capitalised in the subject and body
-    :param clean_subject: cleaned subject of email
-    :param clean_body: cleaned body of email
-    :return: dictionary of the count of each capital keyword
-    """
-    capital_words = {}
-    combined = clean_subject + "\n" + clean_body
-    combined_upper = combined.upper()
-    # check for uppercase suspicious keywords in the email
-    for word in Constants.SUSPICIOUS_KEYWORDS:
-        word_upper = word.upper()
-        count = combined_upper.count(word_upper)
-        if count > 0:
-            capital_words[word] = capital_words.get(word, 0) + count
-    return capital_words
+# def count_capitals(clean_subject, clean_body):
+#     """
+#     this function counts the number of suspicious keywords that are fully capitalised in the subject and body
+#     :param clean_subject: cleaned subject of email
+#     :param clean_body: cleaned body of email
+#     :return: dictionary of the count of each capital keyword
+#     """
+#     capital_words = {}
+#     combined = clean_subject + "\n" + clean_body
+#     combined_upper = combined.upper()
+#     # check for uppercase suspicious keywords in the email
+#     for word in Constants.SUSPICIOUS_KEYWORDS:
+#         word_upper = word.upper()
+#         count = combined_upper.count(word_upper)
+#         if count > 0:
+#             capital_words[word] = capital_words.get(word, 0) + count
+#     return capital_words
 
 
 def assign_risk_score(subject, body):
