@@ -54,8 +54,6 @@ def suspicious_body(email_body, early_count):
         matches_secondary = re.findall(pattern, secondary_text)
         if matches_secondary:
             later_count[word] = later_count.get(word, 0) + len(matches_secondary)
-    print(f"early count: {early_count}")
-    print(f"later count: {later_count}")
     return body_cleaned, early_count, later_count
 
 
