@@ -11,7 +11,8 @@ EMAIL_BODY = []
 SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','icloud.com','mycompany.com',
                     'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
                     'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 
-                    'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com']
+                    'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com', 'us.click.yahoo.com', 
+                    'www.pcworld.com', 'forms.google.com']
 
 
 # for sender domain check
@@ -27,7 +28,7 @@ SUSPICIOUS_KEYWORDS = [
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "sex", "sexual" "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "gambling", "horny" "money", "cash", "payment", "payments", "credit card", "credit cards", "loan",
-        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice", "message",
+        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice",
         "file", "request", "document", "verification", "VM"
     ]
 
