@@ -40,6 +40,17 @@ def home():
 # ----------------------------
 @app.route('/analyze', methods=['POST'])
 def analyze_email():
+    global c_cmf_phishing    # Declared global to modify
+    global c_suspicious_email   # Declared global to modify
+    global c_safe_emails        # Declared global to modify
+    global c_emails_analyse     # Declared global to modify
+    
+    # Reset values to 0 (When user upload multiple times)
+    c_cmf_phishing = 0 
+    c_suspicious_email=0 
+    c_safe_emails=0 
+    c_emails_analyse=0
+
     # Get email text from the form
     email_content = request.form.get('emailContent', '')
     if not email_content.strip():
@@ -67,7 +78,17 @@ def analyze_email():
 # ----------------------------
 @app.route('/analyze-file', methods=['POST'])
 def analyze_file():
-    
+    global c_cmf_phishing    # Declared global to modify
+    global c_suspicious_email   # Declared global to modify
+    global c_safe_emails        # Declared global to modify
+    global c_emails_analyse     # Declared global to modify
+
+    # Reset values to 0 (When user upload multiple times)
+    c_cmf_phishing = 0 
+    c_suspicious_email=0 
+    c_safe_emails=0 
+    c_emails_analyse=0
+
     # Check if a file was uploaded
     if 'file' not in request.files:
         return render_template("index.html", error="No file uploaded")
@@ -141,8 +162,7 @@ def analyze_email_content_detailed(content: str):
     Update the global variables.
     Calculate the final result and parse it to the webpage.
     """
-
-    global c_cmf_phishing       # Declared global to modify
+    global c_cmf_phishing    # Declared global to modify
     global c_suspicious_email   # Declared global to modify
     global c_safe_emails        # Declared global to modify
     global c_emails_analyse     # Declared global to modify
@@ -166,8 +186,6 @@ def analyze_email_content_detailed(content: str):
           ============\n!!Email sender name: {email_sender_name} \n\n ============\n!!Display name: {email_parts.get('display_name', 'N/A')} \n\n \
             ============\n!!Email domain name: {email_domain_name} \n\n ============\n!!URLs: {email_parts.get('urls', 'NA')}")
     
-    is_phishing = False
-
     # Function 4: Check the Sender Name/Display Name for spoofing
     score_func_4, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
                                                 sender_name=email_sender_name, 
@@ -180,11 +198,11 @@ def analyze_email_content_detailed(content: str):
     combined_analysis['combined_reasons'].append(reason)
     print(f"!!!Function 5 - Score: ({score_func_5*0.20}), Reason: ({reason})")
 
+    # If spoofing is found in the email header, display name, or the domain name, it is 100% a phishing email
     if score_func_4 == 100 or score_func_5 == 100:
-        is_phishing = True
-        f_risk_score += 100        
+        f_risk_score += 100
         
-    if is_phishing is False:
+    else: # Continue checking
         # Function 1: Suspicious Keyword checks on subject and body
         subject_and_body = email_subject + '\n' + email_body
         ## Get suspicious keywords
