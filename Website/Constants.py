@@ -8,15 +8,15 @@ from email.utils import parseaddr
 EMAIL_BODY = []
 
 # For whitelist, sender domain check, url check
-SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','icloud.com','mycompany.com',
-                    'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
-                    'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 
-                    'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com', 'us.click.yahoo.com', 
-                    'www.pcworld.com', 'forms.google.com', 'www.openssl.org', 'www.nme.org', 'www.unesco.org', 'www.oreilly.com']
-
+SAFE_DOMAIN_LIST = ['google.com','microsoft.com','amazon.com','mycompany.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
+                    'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 'home.cnet.com', 
+                    'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com', 'us.click.yahoo.com', 
+                    'www.pcworld.com', 'forms.google.com', 'www.openssl.org', 'www.nme.org', 'www.unesco.org', 'www.oreilly.com', 
+                    'grabfood.com', 'nlb.gov.sg', 'experience.nlb.gov.sg']
 
 # for sender domain check
-SAFE_SENDER_LIST = ['google','microsoft','zoho','aol', 'tuta','tutanota','mailfence', 'singaporetech','mycompany', 'list.theregister.co.uk']
+SAFE_SENDER_LIST = ['google','microsoft','yahoo','clickthruonline','newsletteronline','theregister','pcworld','openssl',
+                    'amazonsupport','homecnet','singaporetech','mycompany', 'list.theregister.co.uk', 'grabfood', 'golibrarybynlb']
 
 
 # For keyword check, url check

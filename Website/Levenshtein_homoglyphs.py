@@ -29,7 +29,7 @@ def check_Levenshtein_homoglyphs(input_string: str, SAFE_REFERENCE_LIST: List[st
     """
     Orchestrates a two-stage check for a single input string (domain or sender name) against a list of safe reference strings to detect typosquatting and homoglyph attacks.
     
-    The function first performs a fast Levenshtein check for common typos, then performs 
+    The function first performs a fast Levenshtein check for similarity between the input string and the SAFE_REFERENCE_LIST, if no similarity is found, it then performs 
     an intensive check involving character normalization (homoglyph replacement) followed by a second Levenshtein/substring check.
 
     :param input_string: The string to be checked (e.g., 'micr0soft' or 'microsfot.com').
