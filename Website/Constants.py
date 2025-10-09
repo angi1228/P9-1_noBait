@@ -8,7 +8,7 @@ from email.utils import parseaddr
 EMAIL_BODY = []
 
 # For whitelist, sender domain check, url check
-SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','yahoo.com','proton.me','protonmail.com','icloud.com','mycompany.com',
+SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','icloud.com','mycompany.com',
                     'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
                     'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com']
 
@@ -30,7 +30,13 @@ SUSPICIOUS_KEYWORDS = [
         "file", "request", "document", "verification", "VM"
     ]
 
-#regex to remove special characters from email
+# 1. Remove HTML tags like <p>, <b>, </a>, etc.
+TAG_CLEANER = re.compile(r'<[^>]+>')
+
+# 2. Remove encoded characters like =3D or <=
+ENCODED_CLEANER = re.compile(r'=[A-Za-z0-9]+|=<')
+
+# 3. Remove special characters
 WORD_CLEANER = re.compile(r'[^A-Za-z0-9 \n]+')
 
 
