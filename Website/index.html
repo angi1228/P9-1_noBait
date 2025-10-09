@@ -507,7 +507,12 @@
           </div>
           <div class="p-3">
             {% set valid_reasons = reasons | select | list %}
-            {% if valid_reasons | length > 0 %}
+
+            <!-- Optional: Print a positive message if the list is empty and the email is safe -->
+            {% if category == 'Safe' %}
+            <p class="mb-1 text-success"><strong>Analysis complete: No suspicious traits detected.</strong></p>
+
+            {% elif valid_reasons | length > 0 %}
             <p class="mb-1"><strong>Reasons:</strong></p>
             <ul>
               {% for r in valid_reasons %}
@@ -515,10 +520,7 @@
               {% endfor %}
             </ul>
             {% else %}
-            <!-- Optional: Print a positive message if the list is empty and the email is safe -->
-            {% if category == 'Safe' %}
-            <p class="mb-1 text-success"><strong>Analysis complete: No suspicious traits detected.</strong></p>
-            {% endif %}
+                  <p class="mb-1 text-warning"><strong>Warning: Analysis detected a risk ({{ r.category }}), but no specific reasons were recorded.</strong></p>
             {% endif %}
 
             <p class="mb-1"><strong>Email Body:</strong></p>
