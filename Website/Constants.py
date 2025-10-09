@@ -10,7 +10,7 @@ EMAIL_BODY = []
 # For whitelist, sender domain check, url check
 SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','icloud.com','mycompany.com',
                     'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
-                    'xsite.singaporetech.edu.sg', 'newsletter.online.com', *'cnet.com', 'www.cnet.com', 
+                    'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 
                     'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com']
 
 
