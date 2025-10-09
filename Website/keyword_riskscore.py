@@ -1,4 +1,5 @@
 import Constants
+import re
 
 
 def suspicious_subject(subject):
@@ -13,9 +14,11 @@ def suspicious_subject(subject):
     # split the words in the subject into elements of a list and ensure they are all in lowercase
     subject_lower = subject_cleaned.lower()
     for word in Constants.SUSPICIOUS_KEYWORDS:
-        count = subject_lower.count(word)
-        if count > 0:
-            early_count[word] = early_count.get(word, 0) + count
+        escaped_word = re.escape(word)
+        pattern = rf'\b{escaped_word}\b'
+        matches = re.findall(pattern, subject_lower)
+        if matches:
+            early_count[word] = early_count.get(word, 0) + len(matches)
     return subject_cleaned, early_count
 
 
@@ -23,7 +26,6 @@ def suspicious_body(email_body, early_count):
     """
     this function counts the number of each suspicious keyword found in the first 10 lines of the body of the email, and in the rest of the body
     :param email_body: body of the email to check
-    :param early_count: dictionary of keyword counts in subject and early in the body
     :return: cleaned body without special characters
     """
     later_count = {}
@@ -36,16 +38,24 @@ def suspicious_body(email_body, early_count):
     body_lines = body_lower.splitlines()
     # take the first 10 lines of the body as priority
     # join priority lines and secondary lines into strings
-    priority_text = "\n".join(body_lines[:11])
-    secondary_text = "\n".join(body_lines[11:])
+    priority_text = " ".join(body_lines[:11])
+    secondary_text = " ".join(body_lines[11:])
     # count suspicious words in priority body
     for word in Constants.SUSPICIOUS_KEYWORDS:
-        count_priority = priority_text.count(word)
-        if count_priority > 0:
-            early_count[word] = early_count.get(word, 0) + count_priority
-        count_secondary = secondary_text.count(word)
-        if count_secondary > 0:
-            later_count[word] = later_count.get(word, 0) + count_secondary
+        escaped_keyword = re.escape(word)
+        pattern = rf'\b{escaped_keyword}\b'
+
+        # Count in priority text
+        matches_priority = re.findall(pattern, priority_text)
+        if matches_priority:
+            early_count[word] = early_count.get(word, 0) + len(matches_priority)
+
+        # Count in secondary text
+        matches_secondary = re.findall(pattern, secondary_text)
+        if matches_secondary:
+            later_count[word] = later_count.get(word, 0) + len(matches_secondary)
+    print(f"early count: {early_count}")
+    print(f"later count: {later_count}")
     return body_cleaned, early_count, later_count
 
 
@@ -57,13 +67,25 @@ def count_capitals(clean_subject, clean_body):
     :return: dictionary of the count of each capital keyword
     """
     capital_words = {}
-    # add suspicious words found fully capitalised to the capital_words dict
-    for word in clean_subject.split():
-        if word.isupper() and word.lower() in Constants.SUSPICIOUS_KEYWORDS:
-            capital_words[word] = capital_words.get(word, 0) + 1
-    for word in clean_body.split():
-        if word.isupper() and word.lower() in Constants.SUSPICIOUS_KEYWORDS:
-            capital_words[word] = capital_words.get(word, 0) + 1
+    # combine the subject and body to check
+    combined = clean_subject + "\n" + clean_body
+    # normalize spaces
+    combined = re.sub(r'\s+', ' ', combined)
+
+    for word in Constants.SUSPICIOUS_KEYWORDS:
+        # escape special regex characters in the keyword
+        escaped_keyword = re.escape(word)
+        # match the keyword as a whole word/phrase, ignoring surrounding punctuation
+        pattern = rf'\b{escaped_keyword}\b'
+
+        # find all matches in the email
+        matches = re.findall(pattern, combined, flags=re.IGNORECASE)
+
+        # count only those matches where the word is fully uppercase
+        count = sum(1 for match in matches if match.isupper())
+
+        if count > 0:
+            capital_words[word] = count
     return capital_words
 
 
