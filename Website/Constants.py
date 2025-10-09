@@ -10,7 +10,8 @@ EMAIL_BODY = []
 # For whitelist, sender domain check, url check
 SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','icloud.com','mycompany.com',
                     'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
-                    'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com']
+                    'xsite.singaporetech.edu.sg', 'newsletter.online.com', *'cnet.com', 'www.cnet.com', 
+                    'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com']
 
 
 # for sender domain check
@@ -21,12 +22,12 @@ SAFE_SENDER_LIST = ['google','microsoft','zoho','aol', 'tuta','tutanota','mailfe
 SUSPICIOUS_KEYWORDS = [
         "urgent", "immediately", "limited time", "account", "terminated", "suspended", "compromised", "on hold",
         "violation", "verify", "last warning", "final notice", "final call", "last call", "last chance",
-        "important notice", "login", "password", "locked", "pay", "overdue", "action",  "required",
+        "important notice", "login", "password", "security", "locked", "pay", "overdue", "action",  "required",
         "transfer", "claim your refund", "download", "click", "won", "winner", "free", "gift", "prize",
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "sex", "sexual" "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "gambling", "horny" "money", "cash", "payment", "payments", "credit card", "credit cards", "loan",
-        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice",
+        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice", "message",
         "file", "request", "document", "verification", "VM"
     ]
 
@@ -89,7 +90,6 @@ def extract_email_parts(file_content):
     url_pattern_domain_addr = r'http[s]?:\/\/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*'
     email_parts['urls'] = list(set(re.findall(url_pattern_ip_addr, body)))
     email_parts['urls'] += list(set(re.findall(url_pattern_domain_addr, body)))
-    
 
     return email_parts
 
