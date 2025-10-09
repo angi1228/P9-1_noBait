@@ -191,12 +191,12 @@ def analyze_email_content_detailed(content: str):
                                                 sender_name=email_sender_name, 
                                                 sender_domain=email_domain_name)
     combined_analysis['combined_reasons'].append(reason)
-    print(f"!!!Function 4 - Score: ({score_func_4*0.15}), Reason: ({reason})")
+    print(f"!!!Function 4 - Score: ({score_func_4}), Reason: ({reason})")
    
     # Function 5: Check Domain Name for spoofing     
     score_func_5, reason = check_domain(email_domain_name)
     combined_analysis['combined_reasons'].append(reason)
-    print(f"!!!Function 5 - Score: ({score_func_5*0.20}), Reason: ({reason})")
+    print(f"!!!Function 5 - Score: ({score_func_5}), Reason: ({reason})")
 
     # If spoofing is found in the email header, display name, or the domain name, it is 100% a phishing email
     if score_func_4 == 100 or score_func_5 == 100:
