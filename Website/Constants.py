@@ -21,15 +21,15 @@ SAFE_SENDER_LIST = ['google','microsoft','zoho','aol', 'tuta','tutanota','mailfe
 
 # For keyword check, url check
 SUSPICIOUS_KEYWORDS = [
-        "urgent", "immediately", "limited time", "account", "terminated", "suspended", "compromised", "on hold",
+        "urgent", "limited time", "account", "terminated", "suspended", "compromised", "on hold",
         "violation", "verify", "last warning", "final notice", "final call", "last call", "last chance",
         "important notice", "login", "password", "security", "locked", "pay", "overdue", "action",  "required",
-        "transfer", "claim your refund", "download", "click", "won", "winner", "free", "gift", "prize",
+        "transfer", "claim your refund", "download", "won", "winner", "free", "gift", "prize",
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "sex", "sexual" "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "gambling", "horny" "money", "cash", "payment", "payments", "credit card", "credit cards", "loan",
-        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice",
-        "file", "request", "document", "verification", "VM"
+        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "fortunes", "invoice",
+        "file", "request", "document", "verification", "VM", "call"
     ]
 
 # 1. Remove HTML tags like <p>, <b>, </a>, etc.
