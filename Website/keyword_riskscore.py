@@ -11,11 +11,11 @@ def suspicious_subject(subject):
     # removes special characters and whitespaces from the subject
     subject_cleaned = Constants.WORD_CLEANER.sub('', subject)
     # split the words in the subject into elements of a list and ensure they are all in lowercase
-    subject_words = subject_cleaned.lower().split()
-    # loop through the words in the subject and count number of suspicious words found in a dict
-    for word in subject_words:
-        if word in Constants.SUSPICIOUS_KEYWORDS:
-            early_count[word] = early_count.get(word, 0) + 1
+    subject_lower = subject_cleaned.lower()
+    for word in Constants.SUSPICIOUS_KEYWORDS:
+        count = subject_lower.count(word)
+        if count > 0:
+            early_count[word] = early_count.get(word, 0) + count
     return subject_cleaned, early_count
 
 
@@ -26,6 +26,7 @@ def suspicious_body(email_body, early_count):
     :param early_count: dictionary of keyword counts in subject and early in the body
     :return: cleaned body without special characters
     """
+    later_count = {}
     # removes HTML tags, encoded characters and special chars from the body
     body_cleaned = Constants.TAG_CLEANER.sub('', email_body)
     body_cleaned = Constants.ENCODED_CLEANER.sub('', body_cleaned)
@@ -34,22 +35,17 @@ def suspicious_body(email_body, early_count):
     # split the cleaned body into its respective lines
     body_lines = body_lower.splitlines()
     # take the first 10 lines of the body as priority
-    priority_body = []
-    for line in body_lines[:11]:
-        priority_body.extend(line.split())
-    # rest of the body as secondary
-    secondary_body = []
-    for line in body_lines[11:]:
-        secondary_body.extend(line.split())
-    # count suspicious words in priority body and add to the early_count dict
-    for word in priority_body:
-            if word in Constants.SUSPICIOUS_KEYWORDS:
-                early_count[word] = early_count.get(word, 0) + 1
-    later_count = {}
-    # count suspicious words in secondary body and add to the later_count dict
-    for word in secondary_body:
-        if word in Constants.SUSPICIOUS_KEYWORDS:
-            later_count[word] = later_count.get(word, 0) + 1
+    # join priority lines and secondary lines into strings
+    priority_text = "\n".join(body_lines[:11])
+    secondary_text = "\n".join(body_lines[11:])
+    # count suspicious words in priority body
+    for word in Constants.SUSPICIOUS_KEYWORDS:
+        count_priority = priority_text.count(word)
+        if count_priority > 0:
+            early_count[word] = early_count.get(word, 0) + count_priority
+        count_secondary = secondary_text.count(word)
+        if count_secondary > 0:
+            later_count[word] = later_count.get(word, 0) + count_secondary
     return body_cleaned, early_count, later_count
 
 
@@ -61,13 +57,14 @@ def count_capitals(clean_subject, clean_body):
     :return: dictionary of the count of each capital keyword
     """
     capital_words = {}
-    # add suspicious words found fully capitalised to the capital_words dict
-    for word in clean_subject.split():
-        if word.isupper() and word.lower() in Constants.SUSPICIOUS_KEYWORDS:
-            capital_words[word] = capital_words.get(word, 0) + 1
-    for word in clean_body.split():
-        if word.isupper() and word.lower() in Constants.SUSPICIOUS_KEYWORDS:
-            capital_words[word] = capital_words.get(word, 0) + 1
+    combined = clean_subject + "\n" + clean_body
+    combined_upper = combined.upper()
+    # check for uppercase suspicious keywords in the email
+    for word in Constants.SUSPICIOUS_KEYWORDS:
+        word_upper = word.upper()
+        count = combined_upper.count(word_upper)
+        if count > 0:
+            capital_words[word] = capital_words.get(word, 0) + count
     return capital_words
 
 
