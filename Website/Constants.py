@@ -12,7 +12,7 @@ SAFE_DOMAIN_LIST = ['google.com','microsoft.com','neo.email','icloud.com','mycom
                     'aol.com','tuta.com','tutanota.com','mailfence.com','sit.singaporetech.edu.sg', 'singaporetech.edu.sg', 
                     'xsite.singaporetech.edu.sg', 'newsletter.online.com', 'cnet.com', 'www.cnet.com', 
                     'home.cnet.com', 'zdnet.com', 'www.theregister.co.uk', 'clickthru.online.com', 'docs.yahoo.com', 'us.click.yahoo.com', 
-                    'www.pcworld.com', 'forms.google.com']
+                    'www.pcworld.com', 'forms.google.com', 'www.openssl.org', 'www.nme.org', 'www.unesco.org', 'www.oreilly.com']
 
 
 # for sender domain check
