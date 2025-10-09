@@ -2,8 +2,10 @@ import Constants
 from Constants import SUSPICIOUS_KEYWORDS
 
 def preprocess_text(text):
-    # removes special characters, whitespaces from text, converts to lowercase
-    clean_text = Constants.WORD_CLEANER.sub(' ', text)
+    # removes HTML tags, encoded chars, special characters, whitespaces from text, converts to lowercase
+    clean_text = Constants.TAG_CLEANER.sub('', text)
+    clean_text = Constants.ENCODED_CLEANER.sub('', clean_text)
+    clean_text = Constants.WORD_CLEANER.sub(' ', clean_text)
     clean_text = clean_text.lower().strip()
     return clean_text
 

@@ -26,8 +26,10 @@ def suspicious_body(email_body, early_count):
     :param early_count: dictionary of keyword counts in subject and early in the body
     :return: cleaned body without special characters
     """
-    # removes special characters and whitespaces from the body
-    body_cleaned = Constants.WORD_CLEANER.sub('', email_body)
+    # removes HTML tags, encoded characters and special chars from the body
+    body_cleaned = Constants.TAG_CLEANER.sub('', email_body)
+    body_cleaned = Constants.ENCODED_CLEANER.sub('', body_cleaned)
+    body_cleaned = Constants.WORD_CLEANER.sub('', body_cleaned)
     body_lower = body_cleaned.lower()
     # split the cleaned body into its respective lines
     body_lines = body_lower.splitlines()
