@@ -26,7 +26,7 @@ SUSPICIOUS_KEYWORDS = [
         "congratulations", "you have been selected", "claim your reward", "exclusive", "special offer",
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "sex", "sexual" "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "gambling", "horny" "money", "cash", "payment", "payments", "credit card", "credit cards", "loan",
-        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice", "message",
+        "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "invoice",
         "file", "request", "document", "verification", "VM"
     ]
 
@@ -85,8 +85,10 @@ def extract_email_parts(file_content):
     email_parts['body'] = body
 
     # 3. Extract URLs from the body using regex
-    url_pattern = r'http[s]?:\/\/[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*'
-    email_parts['urls'] = list(set(re.findall(url_pattern, body)))
+    url_pattern_ip_addr = r'http[s]?:\/\/[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*'
+    url_pattern_domain_addr = r'http[s]?:\/\/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.\b[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*'
+    email_parts['urls'] = list(set(re.findall(url_pattern_ip_addr, body)))
+    email_parts['urls'] += list(set(re.findall(url_pattern_domain_addr, body)))
     
 
     return email_parts
