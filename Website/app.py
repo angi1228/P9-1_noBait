@@ -270,7 +270,7 @@ def analyze_email_content_detailed(content: str):
 
     # Map the risk score to a conclusion and risk level. 
     if f_risk_score >= 70:
-        c_cmf_phishing += 1 # Add count to the number of confimred phishing emails
+        c_cmf_phishing += 1 # Add count to the number of confirmed phishing emails
         conclusion = "Phishing"
     elif f_risk_score >= 50:
         c_suspicious_email += 1 # Consider as suspicious email

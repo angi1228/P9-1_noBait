@@ -10,7 +10,7 @@ def suspicious_subject(subject):
     """
     early_count = {}
     # removes special characters and whitespaces from the subject
-    subject_cleaned = Constants.WORD_CLEANER.sub('', subject)
+    subject_cleaned = Constants.WORD_CLEANER.sub(' ', subject)
     # split the words in the subject into elements of a list and ensure they are all in lowercase
     subject_lower = subject_cleaned.lower()
     for word in Constants.SUSPICIOUS_KEYWORDS:
@@ -32,7 +32,7 @@ def suspicious_body(email_body, early_count):
     # removes HTML tags, encoded characters and special chars from the body
     body_cleaned = Constants.TAG_CLEANER.sub('', email_body)
     body_cleaned = Constants.ENCODED_CLEANER.sub('', body_cleaned)
-    body_cleaned = Constants.WORD_CLEANER.sub('', body_cleaned)
+    body_cleaned = Constants.WORD_CLEANER.sub(' ', body_cleaned)
     body_lower = body_cleaned.lower()
     # split the cleaned body into its respective lines
     body_lines = body_lower.splitlines()

@@ -29,7 +29,7 @@ SUSPICIOUS_KEYWORDS = [
         "no cost", "guaranteed", "dear customer", "favour", "sexy", "sex", "sexual", "hot", "single", "near you", "meet singles",
         "dating", "babes", "babe", "nude", "naked", "gambling", "horny", "money", "cash", "payment", "payments", "credit card", "credit cards", "loan",
         "offer", "deal", "sales", "earn", "membership", "bank", "fees", "visa", "mastercard", "insurance", "rates", "income", "fortune", "fortunes", "invoice",
-        "file", "request", "verification", "VM", "call"
+        "request", "verification", "VM", "call", "click here"
     ]
 
 # 1. Remove HTML tags like <p>, <b>, </a>, etc.
