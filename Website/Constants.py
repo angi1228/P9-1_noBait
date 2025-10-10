@@ -16,7 +16,7 @@ SAFE_DOMAIN_LIST = ['google.com','microsoft.com','amazon.com','mycompany.com','s
 
 # for sender domain check
 SAFE_SENDER_LIST = ['google','microsoft','yahoo','clickthruonline','newsletteronline','theregister','pcworld','openssl',
-                    'amazonsupport','homecnet','singaporetech','mycompany', 'list.theregister.co.uk', 'grabfood', 'golibrarybynlb']
+                    'amazonsupport','homecnet','singaporetech','mycompany', 'list.theregister.co.uk', 'grabfood', 'grabsingapore','golibrarybynlb']
 
 
 # For keyword check, url check

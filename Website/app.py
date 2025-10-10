@@ -166,7 +166,7 @@ def analyze_email_content_detailed(content: str):
     It aggregates scores, determines a final conclusion, and updates global counters for dashboard statistics.
 
     Analysis Hierarchy:
-    1. **Header Spoofing Check (Functions 4 & 5):** 
+    1. **Critical Spoofing Check (Functions 4 & 5):** 
         If sender/domain spoofing (Levenshtein or homoglyph match to a safe domain) 
         is detected, the score is immediately set to 100, bypassing further weighted checks.
     2. **Weighted Checks:** 
