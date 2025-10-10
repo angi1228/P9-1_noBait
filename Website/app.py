@@ -47,6 +47,16 @@ def analyze_email():
     such as sender, subject, and body, and performs multiple phishing detection 
     checks using imported modules. The combined risk score and reasoning are 
     displayed in the rendered HTML template.
+
+      Global Counters Updated:
+        - c_cmf_phishing
+        - c_suspicious_email
+        - c_safe_emails
+        - c_emails_analyse
+
+    Returns:
+        flask.Response: Renders `index.html` with detailed analysis results 
+        (risk score, category, reasons, and original email content).
     """
     global c_cmf_phishing    # Declared global to modify
     global c_suspicious_email   # Declared global to modify
@@ -98,6 +108,16 @@ def analyze_file():
         - For single email files: Analyzes and displays one result.
         - For ZIP files: Extracts, reads, and analyzes each email individually.
         - Ignores folders and non-email attachments inside ZIPs.
+
+          Global Counters Updated:
+        - c_cmf_phishing
+        - c_suspicious_email
+        - c_safe_emails
+        - c_emails_analyse
+
+    Returns:
+        flask.Response: Renders `index.html` with either single or batch analysis
+        results, or an error message if file processing fails.
 
     """
     global c_cmf_phishing    # Declared global to modify
