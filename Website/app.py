@@ -40,6 +40,14 @@ def home():
 # ----------------------------
 @app.route('/analyze', methods=['POST'])
 def analyze_email():
+    """
+     Analyze raw email content submitted through the text form.
+
+    This endpoint accepts raw email text via POST request, extracts key components 
+    such as sender, subject, and body, and performs multiple phishing detection 
+    checks using imported modules. The combined risk score and reasoning are 
+    displayed in the rendered HTML template.
+    """
     global c_cmf_phishing    # Declared global to modify
     global c_suspicious_email   # Declared global to modify
     global c_safe_emails        # Declared global to modify
@@ -78,6 +86,20 @@ def analyze_email():
 # ----------------------------
 @app.route('/analyze-file', methods=['POST'])
 def analyze_file():
+    """
+    Analyze one or more uploaded email files for phishing indicators.
+
+    This endpoint processes uploaded files, which can be individual email files
+    (.eml, .txt, .html) or ZIP archives containing multiple emails. Each file 
+    is decoded, analyzed via the `analyze_email_content_detailed()` function, 
+    and summarized on the results page.
+
+    Behavior:
+        - For single email files: Analyzes and displays one result.
+        - For ZIP files: Extracts, reads, and analyzes each email individually.
+        - Ignores folders and non-email attachments inside ZIPs.
+
+    """
     global c_cmf_phishing    # Declared global to modify
     global c_suspicious_email   # Declared global to modify
     global c_safe_emails        # Declared global to modify
