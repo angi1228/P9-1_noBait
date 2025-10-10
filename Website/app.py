@@ -160,10 +160,34 @@ def analyze_file():
 
 def analyze_email_content_detailed(content: str):
     """
-    Run all the analysis functions.
-    Update the global variables.
-    Calculate the final result and parse it to the webpage.
+    Performs a detailed, multi-stage phishing analysis on raw email content.
+
+    The analysis includes checks for sender/domain spoofing, suspicious keywords, URL safety, and financial requests. 
+    It aggregates scores, determines a final conclusion, and updates global counters for dashboard statistics.
+
+    Analysis Hierarchy:
+    1. **Critical Spoofing Check (Functions 4 & 5):** 
+        If sender/domain spoofing (Levenshtein or homoglyph match to a safe domain) 
+        is detected, the score is immediately set to 100, bypassing further weighted checks.
+    2. **Weighted Checks:** 
+        If no definitive spoofing is found, the final score is calculated based on weighted contributions from keyword 
+        analysis (40%), whitelisting (20%), URL analysis (20%), and financial request detection (20%).
+
+    :param content: The raw content of the email (including headers and body) as a single string.
+    :type content: str
+    :raises Exception: Catches general exceptions that may occur during external function calls (e.g., URL check failures).
+    :global c_cmf_phishing: Counter for confirmed phishing emails (score >= 70).
+    :global c_suspicious_email: Counter for suspicious emails (score 40-69).
+    :global c_safe_emails: Counter for safe emails (score < 40).
+    :global c_emails_analyse: Total number of emails processed.
+    
+    :return: A dictionary containing the final analysis results:
+             - 'score': The final aggregated risk score, rounded to one decimal place.
+             - 'category': The final conclusion (e.g., "Phishing", "Low Suspicous", "Moderately Suspicious", or "Safe").
+             - 'reasons': A list of non-empty strings detailing all suspicious findings.
+    :rtype: dict
     """
+
     global c_cmf_phishing    # Declared global to modify
     global c_suspicious_email   # Declared global to modify
     global c_safe_emails        # Declared global to modify
@@ -242,11 +266,11 @@ def analyze_email_content_detailed(content: str):
 
     combined_analysis['f_risk_score'] = f_risk_score
 
-    print(f"!!!Finial Risk Score (add up): {f_risk_score}")
+    print(f"!!!Final Risk Score (add up): {f_risk_score}")
 
     # Map the risk score to a conclusion and risk level. 
     if f_risk_score >= 70:
-        c_cmf_phishing += 1 # Add count to the number of confimred phsihing emails
+        c_cmf_phishing += 1 # Add count to the number of confirmed phishing emails
         conclusion = "Phishing"
     elif f_risk_score >= 50:
         c_suspicious_email += 1 # Consider as suspicious email

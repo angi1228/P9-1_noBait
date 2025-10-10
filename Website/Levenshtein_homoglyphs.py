@@ -29,8 +29,8 @@ def check_Levenshtein_homoglyphs(input_string: str, SAFE_REFERENCE_LIST: List[st
     """
     Orchestrates a two-stage check for a single input string (domain or sender name) against a list of safe reference strings to detect typosquatting and homoglyph attacks.
     
-    The function first performs a fast Levenshtein check for common typos, then performs 
-    an intensive check involving character normalization (homoglyph replacement) followed by a second Levenshtein/substring check.
+    The function first performs a fast Levenshtein check for similarity between the input string and the SAFE_REFERENCE_LIST, if no similarity is found, it then performs 
+    an intensive check involving character normalization (homoglyph detection and replacement) followed by a second Levenshtein/substring check.
 
     :param input_string: The string to be checked (e.g., 'micr0soft' or 'microsfot.com').
     :type input_string: str
@@ -84,40 +84,37 @@ def check_Levenshtein_homoglyphs(input_string: str, SAFE_REFERENCE_LIST: List[st
             result_suspicious['similar_string'] = safe_string
             # Return suspicious if distance is within the threshold 
             return result_suspicious
-        
-         
-    # --- Stage 2: Intensive Homoglyph Check (Normalization + Levenshtein) ---
-    for safe_string in SAFE_REFERENCE_LIST:
-
+    
         # Initialise variable
-        normalised_string = None # To be used if input_string have been amended (means homoglyphs found and removed to a normal string) 
+    normalised_string = None # To be used if input_string have been amended (means homoglyphs found and removed to a normal string) 
 
-        for homoglyph, standard in COMMON_HOMOGLYPH_MAP.items():
-            # If the homoglyph character is found in the input_string,
-            if homoglyph in input_string:
-                # replaces common homoglyphs with the standard string
-                normalised_string = input_string.replace(homoglyph, standard)
+    for homoglyph, standard in COMMON_HOMOGLYPH_MAP.items():
+        # If the homoglyph character is found in the input_string,
+        if homoglyph in input_string:
+            # replaces common homoglyphs with the standard string
+            normalised_string = input_string.replace(homoglyph, standard)
+         
+    # --- Stage 2: Intensive Homoglyph Check (Normalization + Levenshtein) ---        
+    # If the original string was found to have homoglyphs,
+    if normalised_string is not None: 
         
-        # If the original string was found to have homoglyphs,
-        if normalised_string is not None: 
-            
-            # 'search' if any parts of the normalised string matches any string in the SAFE_REFERENCE_LIST
-            if any(safe in normalised_string for safe in SAFE_REFERENCE_LIST):
-                result_suspicious['similar_string'] = safe_string
-                # Return suspicious is True (parts of the normalised string is found in SAFE_REFERENCE_LIST)
-                return result_suspicious
-                        
-            # Run Levenshtein on the normalized strings
-            dist_homoglyph = levenshtein_distance(normalised_string, safe_string)
-            if dist_homoglyph <= threshold:
-                result_suspicious['similar_string'] = safe_string
-                # Return suspicious if found a close match (using Levenshtein distance) after homoglyph normalization 
-                return result_suspicious
-            
-            # If the loop finishes without finding a close match of homoglyp
-            return result_unknown
+        # 'search' if any parts of the normalised string matches any string in the SAFE_REFERENCE_LIST
+        if any(safe in normalised_string for safe in SAFE_REFERENCE_LIST):
+            result_suspicious['similar_string'] = safe_string
+            # Return suspicious is True (parts of the normalised string is found in SAFE_REFERENCE_LIST)
+            return result_suspicious
+                    
+        # Run Levenshtein on the normalized strings
+        dist_homoglyph = levenshtein_distance(normalised_string, safe_string)
+        if dist_homoglyph <= threshold:
+            result_suspicious['similar_string'] = safe_string
+            # Return suspicious if found a close match (using Levenshtein distance) after homoglyph normalization 
+            return result_suspicious
         
-        # If there is no homoglyph characters in the input_string
-        else:
-            # Return unknown 
-            return result_unknown
+        # If the loop finishes without finding a close match of homoglyp
+        return result_unknown
+    
+    # If there is no homoglyph characters in the input_string
+    else:
+        # Return unknown 
+        return result_unknown

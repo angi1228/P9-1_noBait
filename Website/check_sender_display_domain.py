@@ -75,7 +75,7 @@ def check_sender_and_display_name(display_name, sender_name, sender_domain):
                 break
 
         else: # If sender_name or display_name is in the safe senders list without needing to check for Levenshtein distance and homoglyphs
-            suspicious_reason = 'Deceptive sender name or display name, non-matching domain'
+            suspicious_reason = (f'Deceptive sender name "{sender_name}" or display name "{display_name}", non-matching domain')
 
         # Return the risk_score and reason for being suspicious (if any)
         if is_suspicious:
