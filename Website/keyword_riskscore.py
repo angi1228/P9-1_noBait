@@ -44,13 +44,11 @@ def suspicious_body(email_body, early_count):
     for word in Constants.SUSPICIOUS_KEYWORDS:
         escaped_keyword = re.escape(word)
         pattern = rf'\b{escaped_keyword}\b'
-
-        # Count in priority text
+        # count in priority text
         matches_priority = re.findall(pattern, priority_text)
         if matches_priority:
             early_count[word] = early_count.get(word, 0) + len(matches_priority)
-
-        # Count in secondary text
+        # count in secondary text
         matches_secondary = re.findall(pattern, secondary_text)
         if matches_secondary:
             later_count[word] = later_count.get(word, 0) + len(matches_secondary)
@@ -71,17 +69,14 @@ def count_capitals(clean_subject, clean_body):
     combined = re.sub(r'\s+', ' ', combined)
 
     for word in Constants.SUSPICIOUS_KEYWORDS:
-        # escape special regex characters in the keyword
+        # escape special characters in the keyword
         escaped_keyword = re.escape(word)
         # match the keyword as a whole word/phrase, ignoring surrounding punctuation
         pattern = rf'\b{escaped_keyword}\b'
-
         # find all matches in the email
         matches = re.findall(pattern, combined, flags=re.IGNORECASE)
-
         # count only those matches where the word is fully uppercase
         count = sum(1 for match in matches if match.isupper())
-
         if count > 0:
             capital_words[word] = count
     return capital_words
