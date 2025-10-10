@@ -25,6 +25,26 @@ c_emails_analyse=0 # Count the number of emails scanned. Initial value: 0
 # ----------------------------
 @app.route("/")
 def home():
+    """
+    Renders the main dashboard page, passing current email analysis statistics
+    to the template for display.
+
+    This function serves as the Flask route handler for the application's root URL ('/').
+
+    :global c_cmf_phishing: Global counter for confirmed phishing emails.
+    :global c_safe_emails: Global counter for safe emails.
+    :global c_emails_analyse: Global counter for the total number of emails analyzed.
+    :global c_suspicious_email: Global counter for suspicious emails.
+
+    :return: The rendered 'index.html' template populated with current analysis statistics.
+    :rtype: str (HTML content)
+    """
+
+    global c_cmf_phishing    # Declared global to modify
+    global c_suspicious_email   # Declared global to modify
+    global c_safe_emails        # Declared global to modify
+    global c_emails_analyse     # Declared global to modify
+
     # When you open the main page, show index.html
     # Some sample values (phishing, anothernumber, etc.) are sent to template
     return render_template(
@@ -41,7 +61,7 @@ def home():
 @app.route('/analyze', methods=['POST'])
 def analyze_email():
     """
-     Analyze raw email content submitted through the text form.
+    Analyze raw email content submitted through the text form.
 
     This endpoint accepts raw email text via POST request, extracts key components 
     such as sender, subject, and body, and performs multiple phishing detection 
