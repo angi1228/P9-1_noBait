@@ -105,6 +105,8 @@ def analyze_file():
             with zipfile.ZipFile(io.BytesIO(file.read())) as z:
                 # Loop through each file inside the zip
                 for name in z.namelist():
+                    if name.endswith("/"):
+                        continue
                     # Only process email-like files and non attachment
                     if name.lower().endswith(('.eml', '.txt', '.html', '')):
                         try:

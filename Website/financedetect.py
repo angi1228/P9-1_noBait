@@ -25,7 +25,7 @@ def check_financial_request(content: str) -> Tuple[float, str]:
         score += 40
         reasons += "Request or mention of payment or account details; "
 
-    # Monetary amounts, To detect any monetary amounts written in text — e.g.$1,200, SGD 300, €1500.50, 200 usd.
+    # Monetary amounts, To detect any monetary amounts written in text — e.g.$1,200, 200 usd.
     currency_regex = re.compile(
         r"(\$\s?\d{1,3}(?:[,0-9]{0,}|(?:[0-9]{3},)*\d{3})(?:\.\d+)?|"
         r"£\s?\d+(?:\.\d+)?|€\s?\d+(?:\.\d+)?|"
