@@ -43,7 +43,25 @@ WORD_CLEANER = re.compile(r'[^A-Za-z0-9 \n]+')
 
 
 def extract_email_parts(file_content):
-    """Parses a file to extract headers, body, and URLs."""
+    """
+    Parses the raw content of an email message (including headers) to extract critical components necessary for security analysis.
+
+    This function uses the email module's parser to handle MIME structure, extracts sender identity components, and uses 
+    Regular Expressions to locate all embedded URLs within the email body.
+
+    :param file_content: The raw content of the email (including headers) as a string.
+    :type file_content: str
+    :return: A dictionary containing all extracted email parts:
+             - 'headers': Dictionary of all raw header items.
+             - 'display_name': The user-friendly sender name (e.g., 'Microsoft Support').
+             - 'email_address': The full sender email address (e.g., 'support@microsoft.com').
+             - 'sender_name': The local part of the email address (e.g., 'support').
+             - 'sender_domain': The domain part of the email address (e.g., 'microsoft.com').
+             - 'subject': The subject line of the email.
+             - 'body': The extracted plain text body content.
+             - 'urls': A list of unique URLs found within the body content.
+    :rtype: dict
+    """
 
     # with open(eml_file_path, 'rb') as fp:
     parser = Parser()

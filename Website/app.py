@@ -261,30 +261,23 @@ def analyze_email_content_detailed(content: str):
     # Set Initial values
     combined_analysis = {"f_risk_score":0, "combined_reasons":[]} # To store key-pairs in a dictionary to parse to the webpage
     f_risk_score = 0    # Store the total risk score from all analysis
-    f_risk_score = 0    # Store the final risk score after calculating overall risk
 
-    # Retrieve email parts from the Constants.py
+    # Retrieve email parts from Constants.py
     email_subject = email_parts.get('subject', 'N/A')
     email_body = email_parts.get('body', 'N/A')
     email_sender_name = email_parts.get('sender_name','NA')
     email_domain_name = email_parts.get('sender_domain','NA')
     email_address = email_parts.get('email_address', "NA")
-    
-    print(f"============\n!!Email Subject: {email_subject} \n\n ============\n!!Email Body: {email_body} \n\n !============\n!Email address: {email_address} \n\n \
-          ============\n!!Email sender name: {email_sender_name} \n\n ============\n!!Display name: {email_parts.get('display_name', 'N/A')} \n\n \
-            ============\n!!Email domain name: {email_domain_name} \n\n ============\n!!URLs: {email_parts.get('urls', 'NA')}")
-    
+        
     # Function 4: Check the Sender Name/Display Name for spoofing
     score_func_4, reason = check_sender_and_display_name(display_name=email_parts.get('display_name', 'N/A'), 
                                                 sender_name=email_sender_name, 
                                                 sender_domain=email_domain_name)
     combined_analysis['combined_reasons'].append(reason)
-    print(f"!!!Function 4 - Score: ({score_func_4}), Reason: ({reason})")
-   
+
     # Function 5: Check Domain Name for spoofing     
     score_func_5, reason = check_domain(email_domain_name)
     combined_analysis['combined_reasons'].append(reason)
-    print(f"!!!Function 5 - Score: ({score_func_5}), Reason: ({reason})")
 
     # If spoofing is found in the email header, display name, or the domain name, it is 100% a phishing email
     if score_func_4 == 100 or score_func_5 == 100:
@@ -297,38 +290,27 @@ def analyze_email_content_detailed(content: str):
         score, reason = find_suspicious_keywords(subject_and_body)
         f_risk_score += score*0.0 # Ignore the risk score
         combined_analysis['combined_reasons'].append(reason)
-        print(f"============\n!!!Function 1.1 (1st: Get list of sus keyword) - Score: ({score*0.0}), Reason: ({reason})")
         ## Assign risk score
         score, reason = assign_risk_score(email_subject, email_body)
         f_risk_score += score*0.40
         combined_analysis['combined_reasons'].append(reason)
-        print(f"!!!Function 1.2 (2nd: Get risk score) - Score: ({score*0.40}), Reason: ({reason})")
 
         # Function 2: Verify whether domain is valid and in the whitelist
         score, reason = check_whitelist(email_address, email_domain_name)
         f_risk_score += score*0.20
         combined_analysis['combined_reasons'].append(reason)
-
-        print(f"!!!Function 2 - Score: ({score*0.20}), Reason: ({reason})")
         
         # Function 3: Check URL
         score, reason = check_url(found_url_list=email_parts.get('urls', 'NA'))
         f_risk_score += score*0.20
         combined_analysis['combined_reasons'].append(reason)
 
-        print(f"!!!Function 3 - Score: ({score*0.20}), Reason: ({reason})")    
-
         # Function 6: Detect for any financial request
         score, reason = check_financial_request(email_body)
         f_risk_score += score*0.20
         combined_analysis['combined_reasons'].append(reason)
 
-        print(f"!!!Function 6 - Score: ({score*0.20}), Reason: ({reason})")
-
-
     combined_analysis['f_risk_score'] = f_risk_score
-
-    print(f"!!!Final Risk Score (add up): {f_risk_score}")
 
     # Map the risk score to a conclusion and risk level. 
     if f_risk_score >= 70:
@@ -349,8 +331,6 @@ def analyze_email_content_detailed(content: str):
     
     # Add conclusion to the dictionary for parsing to webpage
     combined_analysis['conclusion'] = conclusion
-
-    print(f"=============\n!!!Conclusion/Category: {conclusion}\nTotal Reasons: {combined_analysis['combined_reasons']}")
 
     # Return to parse to the webpage
     return {
