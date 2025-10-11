@@ -6,11 +6,6 @@ from Constants import SAFE_DOMAIN_LIST
 
 SHORTENING_SERVICES = ['bit.ly', 'goo.gl', 'tinyurl.com', 'ow.ly', 't.co', 'is.gd', 'bitly.com']
 
-def extract_URL(email_body_text):
-    '''Extract URLs from body string'''
-    URL_REGEX = r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)' 
-    found_urls = re.findall(URL_REGEX, email_body_text)
-    return found_urls
 
 def parse_URL(url_list):
     '''splits URLS into different parts
@@ -107,15 +102,6 @@ def generate_reason(domainscore, found_url_list):
             reasonList.append(reason)
         
         counter+=1
-
-    # Dict Format {1: [riskscore,reason], 2:[riskscore,reason]....}
-    # length = len(domainscore)          # length helps for defines number of loops to append to Dict
-
-    # URL_Check_Dict = {}
-    # for count in range(length):
-    #     print(count, domainscore[count], reasonList[count])
-        # generate dict of all urls checked
-        # URL_Check_Dict[count] = [domainscore[count], reasonList[count]]
         
     # get index of highest score 
     result_index = domainscore.index(max(domainscore, default=0))
